@@ -1,0 +1,3 @@
+version: 1
+# Troque pelo seu identificador. Precisa ser único na sua conta Apple.
+bundleID: com.example.Psique
