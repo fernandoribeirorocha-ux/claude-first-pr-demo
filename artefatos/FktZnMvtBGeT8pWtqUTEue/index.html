@@ -1,0 +1,458 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Seu Primeiro Agente de IA</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: página limpa com um palco de vídeo escuro; legenda, controles e capítulos abaixo. */
+:root{
+  --bg:#EDF1F3; --fg:#0F1D29; --muted:#4C5D69; --line:#C9D3DA; --panel:#FFFFFF;
+  --accent:#9A5200; --ctl:#0F1D29; --ctl-fg:#FFFFFF;
+  --display:'Bricolage Grotesque',system-ui,sans-serif;
+  --body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0A121A;--fg:#E6EDF2;--muted:#93A4B1;--line:#22323F;--panel:#101C27;--accent:#FFB43A;--ctl:#FFB43A;--ctl-fg:#1A1203;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#0A121A;--fg:#E6EDF2;--muted:#93A4B1;--line:#22323F;--panel:#101C27;--accent:#FFB43A;--ctl:#FFB43A;--ctl-fg:#1A1203;color-scheme:dark}
+
+body{background:var(--bg);color:var(--fg);font-family:var(--body);padding-inline:16px;padding-block:22px 48px;font-size:15px;line-height:1.5}
+.wrap{max-width:1040px;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
+.eyebrow{font:500 12px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,5vw,40px);line-height:1.08;margin:0;text-wrap:balance}
+.sub{margin:8px 0 0;color:var(--muted);max-width:60ch}
+
+.player{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+
+/* ---------- Palco (sempre escuro, como um quadro de vídeo) ---------- */
+.stage{
+  --st-bg:#0E1B2A; --st-fg:#EAF1F6; --st-dim:#9DB0BF; --st-amber:#FFB43A; --st-amber-dim:#3A3220;
+  --st-mint:#62D6B2; --st-coral:#FF7A6B; --st-card:#16283A; --st-line:#2A4157; --st-ink:#0E1B2A;
+  background:var(--st-bg);color:var(--st-fg);position:relative;overflow:hidden;
+  container-type:inline-size;aspect-ratio:16/9;
+}
+@media (max-width:899px){.stage{aspect-ratio:4/3}}
+@media (max-width:719px){.stage{aspect-ratio:auto;min-height:600px}}
+.scene{
+  position:absolute;inset:0;overflow:auto;box-sizing:border-box;
+  padding:clamp(14px,3.2cqw,38px);font-size:clamp(12.5px,1.55cqw,17px);
+  display:flex;flex-direction:column;gap:1em;
+}
+@media (max-width:719px){.scene{position:relative;inset:auto;min-height:600px}}
+.kicker{font:500 .78em var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--st-amber)}
+.sc-title{font-family:var(--display);font-weight:700;font-size:2.05em;line-height:1.08;margin:0;text-wrap:balance}
+.hero{font-family:var(--display);font-weight:700;font-size:3.6em;line-height:1.02;margin:0;text-wrap:balance}
+.lead{font-size:1.2em;color:var(--st-dim);max-width:32em;margin:0}
+.dim{color:var(--st-dim)}
+.reveal{opacity:0;transform:translateY(10px);transition:opacity .55s ease,transform .55s ease}
+.reveal.on{opacity:1;transform:none}
+.grow{transform:scaleY(0);transform-origin:bottom;transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+.grow.on{transform:scaleY(1)}
+.rm .reveal{opacity:1;transform:none;transition:none}
+.rm .grow{transform:none;transition:none}
+.paused *{animation-play-state:paused!important}
+
+.card{background:var(--st-card);border:1px solid var(--st-line);border-radius:10px;padding:.85em 1em}
+.card h3{font:600 1.05em var(--body);margin:0 0 .25em}
+.card p{margin:0;color:var(--st-dim)}
+.tag{display:inline-block;font:500 .72em var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:.2em .6em;border-radius:99px;border:1px solid var(--st-line);color:var(--st-dim)}
+.tag.amber{color:var(--st-amber);border-color:var(--st-amber)}
+.tag.mint{color:var(--st-mint);border-color:var(--st-mint)}
+.tag.coral{color:var(--st-coral);border-color:var(--st-coral)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1em;align-content:start;flex:1;min-height:0}
+.grid2>*{min-width:0}
+@media (max-width:719px){.grid2{grid-template-columns:1fr}}
+.col{display:flex;flex-direction:column;gap:.7em;min-width:0}
+.row{display:flex;gap:.6em;flex-wrap:wrap;align-items:center}
+.arrow{color:var(--st-amber);font-size:1.3em;line-height:1}
+
+/* abertura */
+.s-title{flex:1;display:grid;grid-template-columns:1.25fr 1fr;gap:1.5em;align-items:center}
+@media (max-width:719px){.s-title{grid-template-columns:1fr}}
+.s-title svg{width:100%;height:auto;max-height:100%}
+.dash{stroke-dasharray:6 6;animation:flow 1.4s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-24}}
+
+/* balões */
+.bubble{padding:.6em .9em;border-radius:12px;max-width:92%}
+.bubble.me{background:var(--st-line);align-self:flex-end}
+.bubble.ai{background:var(--st-card);border:1px solid var(--st-line);align-self:flex-start}
+.chip{background:var(--st-amber-dim);color:var(--st-amber);border:1px solid var(--st-amber);border-radius:8px;padding:.3em .7em;font-weight:500}
+.goal{background:var(--st-card);border:1px solid var(--st-amber);border-radius:10px;padding:.6em .9em}
+.done{background:var(--st-mint);color:var(--st-ink);border-radius:10px;padding:.6em .9em;font-weight:600}
+
+/* peças */
+.ico{width:2.2em;height:2.2em;flex:none}
+.piece{display:flex;gap:.8em}
+.ex{margin-top:.5em;font:400 .9em var(--mono);color:var(--st-mint)}
+
+/* ciclo */
+.cycle{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:1.5em;align-items:center;flex:1}
+@media (max-width:719px){.cycle{grid-template-columns:1fr}}
+.cycle svg{width:100%;height:auto;max-height:100%}
+.node circle{fill:var(--st-card);stroke:var(--st-line);stroke-width:2;animation:pulse 5s infinite;animation-delay:calc(var(--i)*1s)}
+@keyframes pulse{0%,20%{stroke:var(--st-amber);fill:var(--st-amber-dim)}21%,100%{stroke:var(--st-line);fill:var(--st-card)}}
+.node text{fill:var(--st-fg);font:500 12px var(--body);text-anchor:middle}
+.steplist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55em}
+.steplist li{display:flex;gap:.7em;align-items:baseline}
+.steplist b{font:500 .85em var(--mono);color:var(--st-amber);min-width:1.4em}
+
+/* exemplos */
+.typewrap{position:relative;background:#0A1420;border:1px solid var(--st-line);border-radius:10px}
+.typewrap pre{margin:0;padding:.9em 1em;font:400 .88em/1.55 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;color:var(--st-fg)}
+.typewrap .ghost{visibility:hidden}
+.typewrap .typer{position:absolute;inset:0}
+.typewrap .cap{position:absolute;top:-.8em;left:.8em;background:var(--st-bg);padding:0 .5em;font:500 .7em var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--st-amber)}
+.out{border-left:4px solid var(--st-line);background:var(--st-card);border-radius:0 10px 10px 0;padding:.6em .9em}
+.out.coral{border-color:var(--st-coral)}.out.amber{border-color:var(--st-amber)}.out.mint{border-color:var(--st-mint)}
+.out b{display:block;font:500 .75em var(--mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.15em}
+.out.coral b{color:var(--st-coral)}.out.amber b{color:var(--st-amber)}.out.mint b{color:var(--st-mint)}
+.docs{display:flex;align-items:center;gap:.7em}
+.bars{display:flex;align-items:flex-end;gap:1.2em;height:8.5em;padding:0 .5em;border-bottom:1px solid var(--st-line)}
+.bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:.3em;height:100%}
+.bar i{display:block;width:100%;border-radius:6px 6px 0 0}
+.bar span{font:500 .8em var(--mono);color:var(--st-dim)}
+
+/* passos */
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:.8em;align-content:start}
+@media (max-width:719px){.steps{grid-template-columns:1fr}}
+.stp{display:flex;gap:.8em;align-items:flex-start}
+.num{flex:none;width:2em;height:2em;border-radius:50%;background:var(--st-amber);color:var(--st-ink);display:grid;place-items:center;font:600 .95em var(--mono)}
+.stp b{display:block}
+
+/* antes e depois */
+.cmp{display:grid;grid-template-columns:.8fr 1.4fr;gap:1em;align-items:start}
+@media (max-width:719px){.cmp{grid-template-columns:1fr}}
+.lines{display:flex;flex-direction:column;gap:.5em}
+.ln{display:flex;gap:.7em;align-items:baseline}
+.ln .tag{flex:none;min-width:7.2em;text-align:center}
+
+/* erros */
+.errs{display:flex;flex-direction:column;gap:.55em}
+.err{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1.1fr);gap:.8em;align-items:center}
+@media (max-width:719px){.err{grid-template-columns:1fr;gap:.2em}.err .arrow{display:none}}
+.err .bad{color:var(--st-coral);font-weight:500}
+.err .ok{color:var(--st-mint)}
+
+/* segurança */
+.ladder{display:flex;gap:.6em;align-items:stretch;flex-wrap:wrap}
+.ladder .card{flex:1 1 9em}
+.gate{display:flex;gap:.6em;align-items:center;flex-wrap:wrap}
+.gate .card{flex:1 1 8em;text-align:center}
+.gate .you{border-color:var(--st-amber);color:var(--st-amber);font-weight:600}
+
+/* desafio */
+.btn-copy{font:500 .85em var(--body);background:var(--st-amber);color:var(--st-ink);border:0;border-radius:8px;padding:.5em 1em;cursor:pointer}
+.btn-copy:focus-visible{outline:2px solid var(--st-fg);outline-offset:2px}
+.check{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.6em}
+.check li{display:flex;gap:.6em;align-items:baseline}
+.check li::before{content:"";flex:none;width:.9em;height:.9em;border:2px solid var(--st-mint);border-radius:3px;transform:translateY(.1em)}
+
+/* botão grande de início */
+.bigplay{position:absolute;inset:0;display:grid;place-items:center;background:rgba(8,16,26,.72);border:0;cursor:pointer;color:var(--st-fg,#EAF1F6);z-index:3}
+.bigplay span{display:inline-flex;align-items:center;gap:.7em;background:#FFB43A;color:#0E1B2A;font:600 17px var(--body);padding:.8em 1.4em;border-radius:99px}
+.bigplay:focus-visible span{outline:3px solid #fff;outline-offset:3px}
+
+/* ---------- Legenda e controles ---------- */
+.caption{padding:14px 18px 6px;min-height:3.4em;font-size:16px;line-height:1.45;text-wrap:pretty}
+.segs{display:flex;gap:4px;padding:6px 18px 4px}
+.seg{flex:1;height:6px;border-radius:3px;background:var(--line);overflow:hidden;cursor:pointer;border:0;padding:0}
+.seg i{display:block;height:100%;width:0;background:var(--accent)}
+.seg:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:8px 18px 16px}
+.cbtn{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer}
+.cbtn.main{background:var(--ctl);color:var(--ctl-fg);border-color:var(--ctl);width:46px;height:46px}
+.cbtn:focus-visible,.pill:focus-visible,select:focus-visible,.chap:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.time{font:500 13px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;margin-inline:4px}
+.spacer{flex:1}
+.pill,select{font:500 13px var(--body);border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:99px;padding:8px 14px;cursor:pointer}
+.pill[aria-pressed="true"]{background:var(--ctl);color:var(--ctl-fg);border-color:var(--ctl)}
+
+/* ---------- Capítulos e roteiro ---------- */
+h2.sec{font-family:var(--display);font-size:20px;margin:0 0 10px}
+.chaps{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.chap{display:flex;gap:10px;align-items:baseline;text-align:left;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:10px;padding:10px 12px;cursor:pointer;font:500 14px var(--body)}
+.chap b{font:500 12px var(--mono);color:var(--accent);font-variant-numeric:tabular-nums}
+.chap[aria-current="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+details{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+summary{cursor:pointer;font-weight:600}
+.script{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.script h3{font:600 14px var(--body);margin:0 0 2px;color:var(--accent)}
+.script p{margin:0;max-width:70ch}
+
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.grow{transform:none;transition:none}.dash,.node circle{animation:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow" id="eyebrow">Videoaula para iniciantes</p>
+    <h1>Seu primeiro agente de IA</h1>
+    <p class="sub">Do zero e sem código: o que é um agente, como ele funciona e três exemplos prontos para adaptar ao seu trabalho.</p>
+  </header>
+
+  <section class="player" aria-label="Videoaula">
+    <div class="stage paused" id="stage">
+      <div class="scene" id="scene"></div>
+      <button class="bigplay" id="bigplay" aria-label="Assistir a videoaula">
+        <span><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>Assistir à videoaula</span>
+      </button>
+    </div>
+    <div class="caption" id="caption"></div>
+    <div class="segs" id="segs"></div>
+    <div class="controls">
+      <button class="cbtn" id="prev" aria-label="Cena anterior"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+      <button class="cbtn main" id="play" aria-label="Reproduzir"></button>
+      <button class="cbtn" id="next" aria-label="Próxima cena"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M16 5h2v14h-2zM4 5l11 7L4 19z"/></svg></button>
+      <span class="time" id="time">0:00 / 0:00</span>
+      <span class="spacer"></span>
+      <button class="pill" id="voice" aria-pressed="true">Narração em voz</button>
+      <select id="speed" aria-label="Velocidade">
+        <option value="0.8">0,8×</option><option value="1" selected>1×</option><option value="1.25">1,25×</option><option value="1.5">1,5×</option>
+      </select>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec">Capítulos</h2>
+    <div class="chaps" id="chaps"></div>
+  </section>
+
+  <details>
+    <summary>Roteiro completo da narração</summary>
+    <div class="script" id="script"></div>
+  </details>
+</div>
+
+<script>
+(function(){
+var $=function(s){return document.querySelector(s)};
+var RM=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function typer(cap,text,f0,f1){
+  return '<div class="typewrap reveal" data-f="'+(f0-0.02)+'"><span class="cap">'+cap+'</span><pre class="ghost">'+esc(text)+'</pre><pre class="typer" data-f0="'+f0+'" data-f1="'+f1+'" data-text="'+esc(text)+'"></pre></div>';
+}
+function head(n,t){return '<div class="kicker reveal" data-f="0">Cena '+n+' de 12</div><h2 class="sc-title reveal" data-f="0.02">'+t+'</h2>';}
+
+var P1='Objetivo: toda manhã, ler os e-mails não lidos e classificar em Urgente, Responder hoje e Pode esperar.\nRegras: somente leitura. Nunca enviar, apagar ou arquivar.\nFormato: lista com remetente, assunto e uma frase explicando o motivo.';
+var P2='Objetivo: ler o texto que eu enviar e preparar material de estudo.\nEntregue: resumo em 10 linhas, 5 conceitos com definição simples e 5 perguntas de revisão.\nRegra: indique a página ou o trecho de cada ponto. Se não encontrar no texto, diga que não encontrou.';
+var P3='Objetivo: toda sexta, ler a planilha de vendas e escrever um resumo de 3 linhas para meu gestor.\nRegras: mostre a conta de cada número. Nunca estime nem arredonde sem avisar.\nFormato: total da semana, variação sobre a anterior e um ponto de atenção.';
+var TPL='Objetivo:\nRegras:\nFerramentas:\nContexto:\nFormato da entrega:\nQuando parar e perguntar:';
+
+var ic={
+ goal:'<svg class="ico" viewBox="0 0 32 32" fill="none" stroke="#FFB43A" stroke-width="2"><circle cx="16" cy="16" r="12"/><circle cx="16" cy="16" r="7"/><circle cx="16" cy="16" r="2" fill="#FFB43A"/></svg>',
+ rules:'<svg class="ico" viewBox="0 0 32 32" fill="none" stroke="#FFB43A" stroke-width="2" stroke-linecap="round"><path d="M6 8h20M6 16h20M6 24h12"/></svg>',
+ tools:'<svg class="ico" viewBox="0 0 32 32" fill="none" stroke="#FFB43A" stroke-width="2"><rect x="5" y="5" width="9" height="9" rx="2"/><rect x="18" y="5" width="9" height="9" rx="2"/><rect x="5" y="18" width="9" height="9" rx="2"/><rect x="18" y="18" width="9" height="9" rx="2"/></svg>',
+ ctx:'<svg class="ico" viewBox="0 0 32 32" fill="none" stroke="#FFB43A" stroke-width="2" stroke-linejoin="round"><path d="M16 4l12 6-12 6-12-6z"/><path d="M4 16l12 6 12-6"/><path d="M4 22l12 6 12-6"/></svg>'
+};
+
+var scenes=[
+{t:'Abertura',
+ say:'Neste vídeo você vai criar seu primeiro agente de IA, sem escrever código e sem experiência. Em poucos minutos você entende o que é, como funciona e como montar um que faça um trabalho de verdade para você.',
+ html:function(){return '<div class="s-title"><div class="col" style="gap:1em"><div class="kicker reveal" data-f="0">Videoaula para iniciantes</div><h2 class="hero reveal" data-f="0.08">Crie seu primeiro agente de IA</h2><p class="lead reveal" data-f="0.3">Sem código e sem experiência prévia, com exemplos que você pode copiar.</p><div class="row reveal" data-f="0.55"><span class="tag amber">O que é</span><span class="tag amber">Como funciona</span><span class="tag amber">3 exemplos</span><span class="tag amber">Passo a passo</span></div></div>'+
+ '<svg class="reveal" data-f="0.2" viewBox="0 0 300 240" fill="none" aria-hidden="true"><path class="dash" d="M70 120 L150 55 L230 120 L150 185 Z" stroke="#2A4157" stroke-width="2"/><path class="dash" d="M70 120 H230 M150 55 V185" stroke="#2A4157" stroke-width="2"/><circle cx="70" cy="120" r="22" fill="#16283A" stroke="#FFB43A" stroke-width="2"/><circle cx="150" cy="55" r="22" fill="#16283A" stroke="#62D6B2" stroke-width="2"/><circle cx="230" cy="120" r="22" fill="#16283A" stroke="#62D6B2" stroke-width="2"/><circle cx="150" cy="185" r="22" fill="#16283A" stroke="#FFB43A" stroke-width="2"/><circle cx="150" cy="120" r="30" fill="#FFB43A"/><path d="M138 120h24M150 108v24" stroke="#0E1B2A" stroke-width="4" stroke-linecap="round"/></svg></div>';}},
+
+{t:'Chat ou agente',
+ say:'Primeiro, a diferença. Num chat comum, você pergunta e a IA responde. Um agente recebe um objetivo, decide os passos, usa ferramentas como e-mail, planilha ou busca, confere o resultado e só então entrega. O chat conversa. O agente trabalha.',
+ html:function(){return head(2,'Chat responde. Agente trabalha.')+
+ '<div class="grid2"><div class="col card"><span class="tag reveal" data-f="0.08">Chat comum</span><div class="bubble me reveal" data-f="0.14">Resuma meus e-mails de hoje.</div><div class="bubble ai reveal" data-f="0.26">Claro. Cole os e-mails aqui e eu resumo.</div><p class="dim reveal" data-f="0.32" style="margin:0">Você faz o trabalho de buscar e colar.</p></div>'+
+ '<div class="col card" style="border-color:var(--st-amber)"><span class="tag amber reveal" data-f="0.36">Agente</span><div class="goal reveal" data-f="0.4"><b>Objetivo:</b> resumir e organizar meus e-mails de hoje.</div><div class="row"><span class="chip reveal" data-f="0.5">Buscar</span><span class="arrow reveal" data-f="0.52">→</span><span class="chip reveal" data-f="0.58">Ler</span><span class="arrow reveal" data-f="0.6">→</span><span class="chip reveal" data-f="0.66">Classificar</span><span class="arrow reveal" data-f="0.68">→</span><span class="chip reveal" data-f="0.74">Conferir</span></div><div class="done reveal" data-f="0.84">Entrega: resumo organizado, pronto para ler.</div></div></div>';}},
+
+{t:'As quatro peças',
+ say:'Todo agente tem quatro peças. Objetivo: o que ele deve entregar. Instruções: as regras de como trabalhar. Ferramentas: o que ele pode usar e acessar. E contexto: o que ele precisa saber sobre você e sobre o assunto. Se você consegue preencher essas quatro peças, você consegue criar um agente.',
+ html:function(){return head(3,'Quatro peças formam um agente')+
+ '<div class="grid2">'+
+ '<div class="card piece reveal" data-f="0.1">'+ic.goal+'<div><h3>Objetivo</h3><p>O que ele deve entregar.</p><div class="ex">Separar meus e-mails por urgência.</div></div></div>'+
+ '<div class="card piece reveal" data-f="0.3">'+ic.rules+'<div><h3>Instruções</h3><p>Como ele deve trabalhar.</p><div class="ex">Só leitura. Resposta em lista curta.</div></div></div>'+
+ '<div class="card piece reveal" data-f="0.5">'+ic.tools+'<div><h3>Ferramentas</h3><p>O que ele pode usar e acessar.</p><div class="ex">E-mail, planilha, busca na web.</div></div></div>'+
+ '<div class="card piece reveal" data-f="0.68">'+ic.ctx+'<div><h3>Contexto</h3><p>O que ele precisa saber.</p><div class="ex">Quem são meus clientes prioritários.</div></div></div>'+
+ '</div><div class="done reveal" data-f="0.9">Quatro peças preenchidas: você já tem um agente no papel.</div>';}},
+
+{t:'O ciclo do agente',
+ say:'Por dentro, o agente repete um ciclo. Ele entende o pedido, planeja, age usando uma ferramenta, observa o que aconteceu e confere se atingiu o objetivo. Se não atingiu, volta e tenta de novo. Esse ciclo é o que diferencia um agente de uma resposta única.',
+ html:function(){return head(4,'Por dentro, um ciclo que se repete')+
+ '<div class="cycle"><svg viewBox="0 0 400 290" aria-hidden="true"><polygon points="200,45 299.9,117.6 261.7,234.9 138.3,234.9 100.1,117.6" fill="none" stroke="#2A4157" stroke-width="2" stroke-dasharray="5 6" class="dash"/>'+
+ '<g class="node" style="--i:0"><circle cx="200" cy="45" r="36"/><text x="200" y="49">Entender</text></g>'+
+ '<g class="node" style="--i:1"><circle cx="299.9" cy="117.6" r="36"/><text x="299.9" y="121.6">Planejar</text></g>'+
+ '<g class="node" style="--i:2"><circle cx="261.7" cy="234.9" r="36"/><text x="261.7" y="238.9">Agir</text></g>'+
+ '<g class="node" style="--i:3"><circle cx="138.3" cy="234.9" r="36"/><text x="138.3" y="238.9">Observar</text></g>'+
+ '<g class="node" style="--i:4"><circle cx="100.1" cy="117.6" r="36"/><text x="100.1" y="121.6">Conferir</text></g>'+
+ '<text x="200" y="150" style="fill:#9DB0BF;font:500 12px IBM Plex Sans,sans-serif;text-anchor:middle">repete até</text><text x="200" y="167" style="fill:#9DB0BF;font:500 12px IBM Plex Sans,sans-serif;text-anchor:middle">concluir</text></svg>'+
+ '<ol class="steplist"><li class="reveal" data-f="0.18"><b>1</b><span><strong>Entender</strong> o pedido e o objetivo.</span></li><li class="reveal" data-f="0.3"><b>2</b><span><strong>Planejar</strong> os passos necessários.</span></li><li class="reveal" data-f="0.42"><b>3</b><span><strong>Agir</strong> usando uma ferramenta.</span></li><li class="reveal" data-f="0.54"><b>4</b><span><strong>Observar</strong> o resultado da ação.</span></li><li class="reveal" data-f="0.66"><b>5</b><span><strong>Conferir</strong> se atingiu o objetivo. Se não, volta ao passo 2.</span></li></ol></div>';}},
+
+{t:'Exemplo: e-mails',
+ say:'Exemplo um: um agente que organiza sua caixa de entrada. O objetivo é, toda manhã, separar os e-mails em urgente, responder hoje e pode esperar. A ferramenta é acesso de leitura ao e-mail. A regra mais importante: ele nunca envia nem apaga nada sozinho. Veja como a instrução fica escrita.',
+ html:function(){return head(5,'Exemplo 1: triagem da caixa de entrada')+
+ '<div class="row reveal" data-f="0.1"><span class="tag mint">Ferramenta: leitura de e-mail</span><span class="tag coral">Nunca envia nem apaga</span></div>'+
+ '<div class="grid2"><div>'+typer('Instrução do agente',P1,0.3,0.7)+'</div><div class="col"><div class="out coral reveal" data-f="0.7"><b>Urgente</b>Cliente Alfa: contrato vence amanhã. Exige resposta hoje.</div><div class="out amber reveal" data-f="0.8"><b>Responder hoje</b>RH: confirmar período de férias até sexta.</div><div class="out mint reveal" data-f="0.9"><b>Pode esperar</b>Newsletter semanal. Sem prazo nem pedido.</div></div></div>';}},
+
+{t:'Exemplo: estudos',
+ say:'Exemplo dois: um agente de estudos. Você envia um texto e ele devolve um resumo, os conceitos principais e cinco perguntas de revisão. A regra de ouro aqui é pedir que ele indique de onde tirou cada ponto, para você conferir no texto original.',
+ html:function(){return head(6,'Exemplo 2: assistente de estudos')+
+ '<div class="row reveal" data-f="0.1"><span class="tag mint">Ferramenta: leitura de arquivos</span><span class="tag amber">Regra de ouro: citar a fonte</span></div>'+
+ '<div class="grid2"><div>'+typer('Instrução do agente',P2,0.3,0.72)+'</div><div class="col"><div class="docs reveal" data-f="0.68"><span class="chip">texto.pdf</span><span class="arrow">→</span><span class="dim">você envia</span></div><div class="out amber reveal" data-f="0.74"><b>Resumo</b>10 linhas, com a página de cada ideia.</div><div class="out mint reveal" data-f="0.83"><b>5 conceitos</b>Definição simples e trecho de origem.</div><div class="out coral reveal" data-f="0.92"><b>5 perguntas</b>Para revisar antes da prova.</div></div></div>';}},
+
+{t:'Exemplo: relatório',
+ say:'Exemplo três: um agente de relatório semanal. Toda sexta ele lê a planilha de vendas, calcula o total da semana, compara com a anterior e escreve três linhas para o seu gestor. A ferramenta é a planilha, e a regra é nunca estimar um número sem mostrar a conta.',
+ html:function(){return head(7,'Exemplo 3: relatório semanal')+
+ '<div class="row reveal" data-f="0.1"><span class="tag mint">Ferramenta: planilha</span><span class="tag amber">Regra: mostrar a conta</span></div>'+
+ '<div class="grid2"><div>'+typer('Instrução do agente',P3,0.3,0.68)+'</div><div class="col"><div class="bars reveal" data-f="0.66"><div class="bar"><span>R$ 120 mil</span><i class="grow" data-f="0.7" style="height:72%;background:#2A4157"></i></div><div class="bar"><span>R$ 138 mil</span><i class="grow" data-f="0.76" style="height:100%;background:#FFB43A"></i></div></div><div class="row reveal" data-f="0.7" style="justify-content:space-around"><span class="dim">Semana anterior</span><span>Esta semana</span></div>'+
+ '<div class="out mint reveal" data-f="0.82"><b>Resumo para o gestor</b>Total: R$ 138 mil (anterior: R$ 120 mil). Variação: +15%, pela conta (138 − 120) ÷ 120. Atenção: confira vendas lançadas após o fechamento.</div><span class="dim reveal" data-f="0.9" style="font-size:.8em">Dados de exemplo.</span></div></div>';}},
+
+{t:'Passo a passo',
+ say:'Agora o passo a passo. Um: escolha uma tarefa repetitiva que você já faz. Dois: escreva o objetivo em uma frase. Três: defina as regras e o formato da entrega. Quatro: conecte só as ferramentas necessárias. Cinco: teste com cinco casos reais. Seis: ajuste as instruções com base nos erros. Comece pequeno e melhore aos poucos.',
+ html:function(){function s(n,f,a,b){return '<div class="stp reveal" data-f="'+f+'"><span class="num">'+n+'</span><div><b>'+a+'</b><span class="dim">'+b+'</span></div></div>';}
+ return head(8,'Do zero ao agente em seis passos')+
+ '<div class="steps">'+s(1,0.14,'Escolha uma tarefa repetitiva','Algo que você já faz toda semana.')+s(2,0.28,'Escreva o objetivo em uma frase','Comece com um verbo: classificar, resumir, comparar.')+s(3,0.42,'Defina regras e formato','O que pode, o que não pode e como entregar.')+s(4,0.56,'Conecte só o necessário','Uma ferramenta já basta no começo.')+s(5,0.68,'Teste com cinco casos reais','Inclua pelo menos um caso difícil.')+s(6,0.8,'Ajuste e repita','Cada erro vira uma regra nova.')+'</div>'+
+ '<div class="done reveal" data-f="0.92">Comece pequeno. Melhore aos poucos.</div>';}},
+
+{t:'Boas instruções',
+ say:'A qualidade do agente depende da instrução. Compare. Esta é vaga: ajude com meus e-mails. Esta é clara: diz o papel, o objetivo, as regras, o formato e quando parar e perguntar. Quanto mais específico o limite, mais previsível o resultado.',
+ html:function(){function l(tag,f,txt){return '<div class="ln reveal" data-f="'+f+'"><span class="tag amber">'+tag+'</span><span>'+txt+'</span></div>';}
+ return head(9,'A instrução decide a qualidade')+
+ '<div class="cmp"><div class="card reveal" data-f="0.2" style="border-color:var(--st-coral)"><span class="tag coral">Vaga</span><p style="margin:.7em 0 0;color:var(--st-fg);font-size:1.15em">Ajude com meus e-mails.</p><p class="dim" style="margin-top:.6em">O agente adivinha o que fazer. O resultado muda a cada execução.</p></div>'+
+ '<div class="card reveal" data-f="0.34" style="border-color:var(--st-mint)"><span class="tag mint">Clara</span><div class="lines" style="margin-top:.8em">'+l('Papel',0.42,'Você é minha assistente de caixa de entrada.')+l('Objetivo',0.5,'Classificar e-mails não lidos por urgência.')+l('Regras',0.58,'Somente leitura. Nunca enviar nem apagar.')+l('Formato',0.66,'Lista com remetente e motivo.')+l('Quando perguntar',0.76,'Se houver dúvida sobre a urgência, pergunte antes.')+'</div></div></div>';}},
+
+{t:'Erros comuns',
+ say:'Cinco erros comuns de quem está começando. Instrução vaga. Ferramentas demais de uma vez. Nenhum limite para ações que não dá para desfazer. Não testar com casos reais. E confiar sem conferir. Todos têm solução simples: seja específico, comece com uma ferramenta, exija confirmação, teste e revise.',
+ html:function(){function e(f,a,b){return '<div class="err card reveal" data-f="'+f+'"><span class="bad">'+a+'</span><span class="arrow">→</span><span class="ok">'+b+'</span></div>';}
+ return head(10,'Cinco erros de iniciante e a correção')+'<div class="errs">'+e(0.12,'Instrução vaga','Diga objetivo, regras e formato.')+e(0.28,'Ferramentas demais','Comece com uma só.')+e(0.44,'Sem limite para ações irreversíveis','Exija a sua confirmação.')+e(0.6,'Nenhum teste real','Rode cinco casos antes de usar.')+e(0.76,'Confiar sem conferir','Peça a fonte e a conta dos números.')+'</div>';}},
+
+{t:'Segurança',
+ say:'Uma regra de segurança vale para qualquer agente. Ações que não dá para desfazer, como enviar mensagem, apagar arquivo, pagar ou publicar, precisam da sua confirmação antes. Dê ao agente o menor acesso possível e aumente só quando ele provar que merece.',
+ html:function(){return head(11,'Menor acesso possível, aprovação antes de agir')+
+ '<div class="dim reveal" data-f="0.08">Níveis de acesso, do mais seguro ao mais arriscado</div>'+
+ '<div class="ladder"><div class="card reveal" data-f="0.14"><span class="tag mint">Comece aqui</span><h3 style="margin-top:.5em">Ler</h3><p>Consulta e analisa.</p></div><div class="card reveal" data-f="0.24"><span class="tag amber">Depois</span><h3 style="margin-top:.5em">Rascunhar</h3><p>Prepara, você revisa.</p></div><div class="card reveal" data-f="0.34"><span class="tag coral">Por último</span><h3 style="margin-top:.5em">Agir</h3><p>Só com sua aprovação.</p></div></div>'+
+ '<div class="dim reveal" data-f="0.5">Antes de qualquer ação que não dá para desfazer</div>'+
+ '<div class="gate"><div class="card reveal" data-f="0.56">Agente</div><span class="arrow reveal" data-f="0.6">→</span><div class="card you reveal" data-f="0.66">Você aprova</div><span class="arrow reveal" data-f="0.72">→</span><div class="card reveal" data-f="0.78">Enviar · Apagar · Pagar · Publicar</div></div>';}},
+
+{t:'Seu desafio',
+ say:'Seu desafio de hoje: escolha uma tarefa que você repete toda semana, escreva as quatro peças em poucas linhas e teste com um caso real. Esse primeiro agente simples ensina mais do que qualquer teoria. Bom trabalho.',
+ html:function(){return head(12,'Seu desafio de hoje')+
+ '<div class="grid2"><div class="col"><ul class="check"><li class="reveal" data-f="0.15">Escolha uma tarefa que você repete toda semana.</li><li class="reveal" data-f="0.3">Preencha o modelo ao lado, em poucas linhas.</li><li class="reveal" data-f="0.45">Teste com um caso real e anote o que falhou.</li><li class="reveal" data-f="0.6">Transforme cada falha em uma regra nova.</li></ul></div>'+
+ '<div class="col reveal" data-f="0.2"><div class="typewrap"><span class="cap">Modelo para copiar</span><pre id="tpl" style="margin:0">'+esc(TPL)+'</pre></div><div><button class="btn-copy" data-copy="1">Copiar modelo</button></div></div></div>';}}
+];
+
+var total=0;
+scenes.forEach(function(s,i){
+  var w=s.say.trim().split(/\s+/).length;
+  s.dur=Math.max(14,w/2.5+3);
+  s.sents=s.say.match(/[^.!?:]+[.!?:]+/g)||[s.say];
+  var len=s.sents.reduce(function(a,b){return a+b.length},0),c=0;
+  s.cum=s.sents.map(function(x){c+=x.length;return c/len});
+  s.start=total; total+=s.dur;
+});
+function fmt(x){x=Math.max(0,Math.round(x));var m=Math.floor(x/60),s=x%60;return m+':'+(s<10?'0':'')+s}
+$('#eyebrow').textContent='Videoaula para iniciantes · 12 cenas · cerca de '+Math.round(total/60)+' min';
+
+var stage=$('#stage'),sceneEl=$('#scene'),capEl=$('#caption'),segsEl=$('#segs'),playBtn=$('#play'),timeEl=$('#time');
+var idx=0,t=0,playing=false,started=false,speed=1,voice=('speechSynthesis' in window),speaking=false,speechId=0,last=0,lastSent=-1;
+var revs=[],typs=[];
+if(RM) stage.classList.add('rm');
+var ICON_PLAY='<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+var ICON_PAUSE='<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';
+var ICON_REPLAY='<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"/></svg>';
+
+/* barra de segmentos, capítulos e roteiro */
+scenes.forEach(function(s,i){
+  var b=document.createElement('button');b.className='seg';b.setAttribute('aria-label','Ir para a cena '+(i+1)+': '+s.t);b.innerHTML='<i></i>';
+  b.addEventListener('click',function(){begin();goTo(i)});segsEl.appendChild(b);
+  var c=document.createElement('button');c.className='chap';c.innerHTML='<b>'+(i+1)+'</b><span>'+s.t+'</span>';
+  c.addEventListener('click',function(){begin();goTo(i)});$('#chaps').appendChild(c);
+  var d=document.createElement('div');d.innerHTML='<h3>'+(i+1)+'. '+s.t+'</h3><p>'+esc(s.say)+'</p>';$('#script').appendChild(d);
+});
+var segFills=[].slice.call(segsEl.querySelectorAll('i')),chapBtns=[].slice.call(document.querySelectorAll('.chap'));
+
+function render(){
+  sceneEl.innerHTML=scenes[idx].html();
+  revs=[].slice.call(sceneEl.querySelectorAll('[data-f]'));
+  typs=[].slice.call(sceneEl.querySelectorAll('.typer'));
+  lastSent=-1;sceneEl.scrollTop=0;
+  chapBtns.forEach(function(c,i){if(i===idx)c.setAttribute('aria-current','true');else c.removeAttribute('aria-current')});
+}
+function update(){
+  var s=scenes[idx],real=Math.min(1,t/s.dur),prog=(RM||!started)?1:real;
+  revs.forEach(function(el){el.classList.toggle('on',prog>=parseFloat(el.getAttribute('data-f')))});
+  typs.forEach(function(el){
+    var f0=parseFloat(el.getAttribute('data-f0')),f1=parseFloat(el.getAttribute('data-f1')),txt=el.getAttribute('data-text');
+    var p=Math.max(0,Math.min(1,(prog-f0)/(f1-f0)));var n=Math.round(txt.length*p);
+    var out=txt.slice(0,n)+(p>0&&p<1?'▌':'');if(el.textContent!==out)el.textContent=out;
+  });
+  var k=0;while(k<s.cum.length-1&&prog>s.cum[k])k++;
+  if(k!==lastSent){lastSent=k;capEl.textContent=s.sents[k].trim()}
+  segFills.forEach(function(f,i){f.style.width=(!started?0:i<idx?100:i===idx?real*100:0)+'%'});
+  timeEl.textContent=fmt(s.start+Math.min(t,s.dur))+' / '+fmt(total);
+}
+function setPlayIcon(ended){
+  playBtn.innerHTML=ended?ICON_REPLAY:(playing?ICON_PAUSE:ICON_PLAY);
+  playBtn.setAttribute('aria-label',ended?'Assistir novamente':(playing?'Pausar':'Reproduzir'));
+  stage.classList.toggle('paused',!playing);
+}
+function speak(){
+  if(!voice||!('speechSynthesis' in window))return;
+  try{
+    var id=++speechId;speaking=false;window.speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(scenes[idx].say);u.lang='pt-BR';u.rate=Math.min(1.6,speed);
+    var v=window.speechSynthesis.getVoices().filter(function(x){return /pt[-_]BR/i.test(x.lang)})[0];if(v)u.voice=v;
+    u.onstart=function(){if(id===speechId)speaking=true};
+    u.onend=u.onerror=function(){if(id===speechId)speaking=false};
+    window.speechSynthesis.speak(u);
+  }catch(e){speaking=false}
+}
+function stopSpeech(){speechId++;speaking=false;try{if('speechSynthesis' in window)window.speechSynthesis.cancel()}catch(e){}}
+function goTo(i){
+  idx=Math.max(0,Math.min(scenes.length-1,i));t=0;stopSpeech();render();update();
+  if(playing)speak();
+}
+function begin(){
+  if(started)return;started=true;t=0;playing=true;$('#bigplay').hidden=true;setPlayIcon(false);speak();
+}
+function toggle(){
+  if(!started){begin();return}
+  var ended=!playing&&idx===scenes.length-1&&t>=scenes[idx].dur;
+  if(ended){goTo(0);playing=true;setPlayIcon(false);speak();return}
+  playing=!playing;setPlayIcon(false);
+  try{if('speechSynthesis' in window){playing?window.speechSynthesis.resume():window.speechSynthesis.pause()}}catch(e){}
+}
+function loop(ts){
+  var dt=Math.min(0.1,(ts-last)/1000);last=ts;
+  if(playing){
+    t+=dt*speed;
+    if(t>=scenes[idx].dur&&!speaking){
+      if(idx<scenes.length-1){goTo(idx+1);}
+      else{t=scenes[idx].dur;playing=false;setPlayIcon(true)}
+    }
+    update();
+  }
+  requestAnimationFrame(loop);
+}
+
+$('#bigplay').addEventListener('click',begin);
+playBtn.addEventListener('click',toggle);
+$('#prev').addEventListener('click',function(){begin();goTo(t>3?idx:idx-1)});
+$('#next').addEventListener('click',function(){begin();goTo(idx+1)});
+$('#speed').addEventListener('change',function(e){speed=parseFloat(e.target.value)});
+var vb=$('#voice');
+if(!voice){vb.hidden=true}
+vb.addEventListener('click',function(){voice=!voice;vb.setAttribute('aria-pressed',String(voice));if(!voice)stopSpeech();else if(playing)speak()});
+document.addEventListener('keydown',function(e){
+  var tg=e.target&&e.target.tagName;if(tg==='SELECT'||tg==='INPUT'||tg==='TEXTAREA')return;
+  if(e.key==='ArrowRight'){begin();goTo(idx+1)}
+  else if(e.key==='ArrowLeft'){begin();goTo(idx-1)}
+  else if(e.key===' '&&tg!=='BUTTON'){e.preventDefault();toggle()}
+});
+sceneEl.addEventListener('click',function(e){
+  var b=e.target.closest&&e.target.closest('[data-copy]');if(!b)return;
+  var pre=$('#tpl');
+  function sel(){try{var r=document.createRange();r.selectNodeContents(pre);var s=window.getSelection();s.removeAllRanges();s.addRange(r)}catch(x){}}
+  try{
+    navigator.clipboard.writeText(TPL).then(function(){b.textContent='Copiado'},function(){sel();b.textContent='Selecionado: use Ctrl+C'});
+  }catch(x){sel();b.textContent='Selecionado: use Ctrl+C'}
+});
+if('speechSynthesis' in window){try{window.speechSynthesis.getVoices()}catch(e){}}
+
+render();update();setPlayIcon(false);
+if(RM){started=false}
+requestAnimationFrame(function(ts){last=ts;requestAnimationFrame(loop)});
+})();
+</script>
+
+</body></html>

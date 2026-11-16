@@ -1,0 +1,859 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Originalis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<style>
+/* Layout: mesa do avaliador em três colunas — acervo | trabalho corrigido (papel) | relatório. Empilha no celular. */
+:root {
+  --paper: #f3f5f8;
+  --surface: #ffffff;
+  --sheet: #fffefb;
+  --ink: #18202c;
+  --muted: #5a6474;
+  --line: #dbe0e8;
+  --accent: #2b47c9;
+  --accent-ink: #ffffff;
+  --band-low: #2b8a3e;
+  --band-mid: #b7791f;
+  --band-high: #d9480f;
+  --band-max: #c92a2a;
+  --s1: #2f6fde; --s2: #d9480f; --s3: #2b8a3e; --s4: #c2255c;
+  --s5: #7048e8; --s6: #0c8599; --s7: #e67700; --s8: #5c940d;
+  --hl: 30%;
+  --font-ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-doc: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-data: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #11151c; --surface: #191e27; --sheet: #1d232d; --ink: #e5e9f0; --muted: #9ba5b5; --line: #2c3442;
+    --accent: #8aa0ff; --accent-ink: #0d1220;
+    --band-low: #69db7c; --band-mid: #ffd43b; --band-high: #ff922b; --band-max: #ff6b6b;
+    --s1: #74a8ff; --s2: #ff8a50; --s3: #63d17a; --s4: #f06595; --s5: #a991ff; --s6: #3bc9db; --s7: #ffb347; --s8: #a9e34b;
+    --hl: 34%; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #11151c; --surface: #191e27; --sheet: #1d232d; --ink: #e5e9f0; --muted: #9ba5b5; --line: #2c3442;
+  --accent: #8aa0ff; --accent-ink: #0d1220;
+  --band-low: #69db7c; --band-mid: #ffd43b; --band-high: #ff922b; --band-max: #ff6b6b;
+  --s1: #74a8ff; --s2: #ff8a50; --s3: #63d17a; --s4: #f06595; --s5: #a991ff; --s6: #3bc9db; --s7: #ffb347; --s8: #a9e34b;
+  --hl: 34%; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font-family: var(--font-ui); font-size: 14px; line-height: 1.5; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+
+.top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px;
+  padding: 14px 20px; background: var(--surface); border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: baseline; gap: 10px; }
+.brand b { font-family: var(--font-doc); font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+.brand b i { font-style: normal; color: var(--accent); }
+.brand span { color: var(--muted); font-size: 13px; }
+.docsel { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.docsel label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); white-space: nowrap; }
+select, input[type="text"], textarea { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 7px 10px; max-width: 100%; }
+.docsel select { min-width: 0; max-width: 340px; }
+
+.layout { display: grid; grid-template-columns: 260px minmax(0, 1fr) 340px; grid-template-areas: "lib viewer report";
+  gap: 20px; padding-block: 20px; padding-inline: 20px; max-width: 1500px; margin: 0 auto; align-items: start; }
+.lib { grid-area: lib; } .viewer { grid-area: viewer; min-width: 0; } .report { grid-area: report; min-width: 0; }
+@media (max-width: 1100px) {
+  .layout { grid-template-columns: minmax(0, 1fr) 320px; grid-template-areas: "viewer report" "lib report"; }
+}
+@media (max-width: 760px) {
+  .layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "report" "viewer" "lib"; padding-inline: 16px; }
+  .top { padding-inline: 16px; }
+}
+
+.eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 6px; padding: 6px 12px; font-weight: 500; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.small { padding: 3px 9px; font-size: 12px; }
+.btn.danger { color: var(--band-max); }
+
+/* Acervo */
+.lib-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.lib-head h2 { font-size: 15px; }
+.doclist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.doclist li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 8px; align-items: center;
+  padding: 9px 10px; border-radius: 8px; border: 1px solid transparent; }
+.doclist li.sel { background: var(--surface); border-color: var(--line); }
+.doclist .nm { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: none; border: 0; padding: 0; text-align: left; }
+.doclist .nm:disabled { cursor: default; }
+.doclist .sub { grid-column: 1 / -1; display: flex; gap: 8px; align-items: center; font-size: 12px; color: var(--muted); }
+.role { font-size: 11px; padding: 1px 7px; border-radius: 99px; border: 1px solid var(--line); }
+.role.trabalho { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+.addform { display: grid; gap: 8px; padding: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; margin-bottom: 12px; }
+.addform textarea { min-height: 140px; resize: vertical; font-family: var(--font-doc); }
+.addform .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.addform label { font-size: 12px; color: var(--muted); display: grid; gap: 4px; }
+.status { font-size: 12px; color: var(--muted); min-height: 1em; white-space: pre-line; }
+.status.err { color: var(--band-max); }
+.addform .drop { display: grid; gap: 2px; justify-items: center; text-align: center; padding: 16px 10px; border: 1.5px dashed var(--line); border-radius: 8px; cursor: pointer; color: var(--ink); font-size: 13px; }
+.addform .drop b { color: var(--accent); }
+.addform .drop small { color: var(--muted); font-size: 11px; }
+.addform .drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.addform .drop:focus-within, .addform .drop.over, body.dragging .addform .drop { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.libnote { font-size: 12px; color: var(--muted); margin-top: 14px; display: grid; gap: 8px; justify-items: start; }
+
+/* Visualizador */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 16px; overflow-x: auto; }
+.tabs button { background: none; border: 0; padding: 8px 12px; color: var(--muted); font-weight: 500; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.doc-head { display: grid; gap: 4px; margin-bottom: 12px; }
+.doc-head h1 { font-family: var(--font-doc); font-size: 24px; font-weight: 600; line-height: 1.25; }
+.meta { color: var(--muted); font-size: 13px; font-family: var(--font-data); }
+.filterbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 12px; border: 1px dashed var(--line); border-radius: 8px; margin-bottom: 12px; font-size: 13px; }
+.paper { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: clamp(18px, 4vw, 48px) clamp(16px, 5vw, 64px);
+  font-family: var(--font-doc); font-size: 17px; line-height: 1.75; white-space: pre-wrap; overflow-wrap: anywhere; max-width: 78ch; margin: 0 auto;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent); }
+.paper mark { color: inherit; border-radius: 2px; padding: 0.05em 0; cursor: pointer; -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  background: color-mix(in srgb, var(--c) var(--hl), transparent); border-bottom: 2px solid var(--c); }
+.paper mark sup { font-family: var(--font-data); font-size: 10px; font-weight: 500; color: var(--surface); background: var(--c); border-radius: 3px; padding: 0 3px; margin-right: 3px; vertical-align: 0.35em; }
+.paper mark.active { outline: 2px solid var(--c); outline-offset: 1px; }
+.paper .quote { color: var(--muted); text-decoration: underline dotted; text-underline-offset: 3px; }
+.paper .bib { color: var(--muted); opacity: 0.75; }
+.empty { color: var(--muted); padding: 32px; text-align: center; border: 1px dashed var(--line); border-radius: 8px; }
+
+.matrix-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table.matrix { border-collapse: collapse; font-size: 13px; min-width: 100%; }
+.matrix th, .matrix td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+.matrix th:first-child, .matrix td:first-child { text-align: left; position: sticky; left: 0; background: var(--surface); }
+.matrix thead th { font-weight: 600; font-size: 12px; color: var(--muted); vertical-align: bottom; }
+.matrix td.cell { font-family: var(--font-data); font-variant-numeric: tabular-nums; background: color-mix(in srgb, var(--band-max) var(--p), transparent); }
+.matrix td.self { color: var(--muted); background: none; }
+.matrix-note { color: var(--muted); font-size: 13px; margin: 10px 0 0; max-width: 70ch; }
+
+/* Relatório */
+.report { display: grid; gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+.score { display: grid; gap: 10px; }
+.score-top { display: flex; align-items: baseline; gap: 12px; }
+.score-num { font-family: var(--font-data); font-size: 52px; font-weight: 500; line-height: 1; color: var(--band); font-variant-numeric: tabular-nums; }
+.score-num small { font-size: 24px; }
+.score-label { font-weight: 600; }
+.score-band { font-size: 12px; color: var(--muted); }
+.meter { height: 8px; border-radius: 99px; background: var(--line); overflow: hidden; display: flex; }
+.meter span { height: 100%; background: var(--c); }
+.breakdown { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; margin: 0; font-size: 13px; }
+.breakdown dt { color: var(--muted); }
+.breakdown dd { margin: 0; font-family: var(--font-data); font-variant-numeric: tabular-nums; text-align: right; }
+.srclist { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.srclist button { width: 100%; display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 2px 10px; align-items: center;
+  text-align: left; background: none; border: 1px solid transparent; border-radius: 8px; padding: 8px; }
+.srclist button:hover { border-color: var(--line); }
+.srclist button[aria-pressed="true"] { border-color: var(--c); background: color-mix(in srgb, var(--c) 10%, transparent); }
+.srclist .rank { width: 24px; height: 24px; border-radius: 5px; background: var(--c); color: var(--surface); font-family: var(--font-data); font-size: 12px; font-weight: 500; display: grid; place-items: center; grid-row: span 2; }
+.srclist .sn { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.srclist .pct { font-family: var(--font-data); font-weight: 500; font-variant-numeric: tabular-nums; color: var(--c); }
+.srclist .sd { grid-column: 2 / -1; font-size: 12px; color: var(--muted); }
+.compare { display: grid; gap: 10px; border-color: var(--c); }
+.compare-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.excerpt { font-family: var(--font-doc); font-size: 14px; line-height: 1.6; padding: 10px 12px; border-radius: 6px; background: var(--paper); overflow-wrap: anywhere; }
+.excerpt .ctx { color: var(--muted); }
+.excerpt mark { color: inherit; background: color-mix(in srgb, var(--c) var(--hl), transparent); }
+.excerpt mark.diff { background: none; color: var(--ink); text-decoration: underline wavy var(--band-max); }
+.settings summary { cursor: pointer; font-weight: 600; }
+.settings .opts { display: grid; gap: 10px; margin-top: 12px; }
+.settings label { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; }
+.settings .range { display: grid; gap: 4px; }
+.settings .range span { font-family: var(--font-data); }
+.method { font-size: 12px; color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) { .meter span { transition: width .4s ease; } }
+</style>
+
+<header class="top">
+  <div class="brand"><b>Origin<i>alis</i></b><span>verificação de originalidade de trabalhos</span></div>
+  <div class="docsel"><label for="selDoc">Trabalho em análise</label><select id="selDoc"></select></div>
+</header>
+
+<main class="layout">
+  <aside class="lib" aria-label="Acervo de documentos">
+    <div class="lib-head"><h2>Acervo</h2><button class="btn small" id="btnAdd" type="button">Adicionar documento</button></div>
+    <form class="addform" id="addForm" hidden>
+      <label>Nome<input type="text" id="addName" placeholder="Ex.: Trabalho — Carla Dias"></label>
+      <label>Tipo
+        <select id="addRole"><option value="trabalho">Trabalho de aluno</option><option value="fonte">Fonte de referência</option></select>
+      </label>
+      <label class="drop" id="dropZone">
+        <input type="file" id="addFile" multiple accept=".docx,.pdf,.odt,.rtf,.txt,.md,.html,.htm,.doc,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.oasis.opendocument.text,application/rtf,text/plain,text/html">
+        <b>Escolher arquivos</b> ou arraste para cá
+        <small>Word (.docx), PDF, LibreOffice (.odt), .rtf, .txt, .html. Vários de uma vez.</small>
+      </label>
+      <label>Ou cole o texto<textarea id="addText" placeholder="Cole aqui o texto completo"></textarea></label>
+      <div class="status" id="addStatus" aria-live="polite"></div>
+      <div class="row"><button class="btn primary" type="submit">Salvar no acervo</button><button class="btn" type="button" id="btnCancel">Cancelar</button></div>
+    </form>
+    <ul class="doclist" id="docList"></ul>
+    <div class="libnote">
+      <span>Os documentos de exemplo são fictícios. O acervo fica salvo só neste navegador.</span>
+      <button class="btn small" type="button" id="btnReset">Restaurar exemplos</button>
+    </div>
+  </aside>
+
+  <section class="viewer">
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" id="tabBtnDoc" aria-selected="true" aria-controls="tabDoc">Documento</button>
+      <button type="button" role="tab" id="tabBtnMatrix" aria-selected="false" aria-controls="tabMatrix">Comparação da turma</button>
+    </div>
+    <div id="tabDoc" role="tabpanel">
+      <div class="doc-head"><span class="eyebrow">Trabalho analisado</span><h1 id="docTitle"></h1><div class="meta" id="docMeta"></div></div>
+      <div class="filterbar" id="filterBar" hidden></div>
+      <article class="paper" id="docBody"></article>
+    </div>
+    <div id="tabMatrix" role="tabpanel" hidden>
+      <div class="matrix-wrap"><table class="matrix" id="matrix"></table></div>
+      <p class="matrix-note">Cada célula mostra quanto do trabalho da linha coincide com o documento da coluna. A leitura é assimétrica: um texto curto pode estar inteiro dentro de um longo sem que o contrário aconteça.</p>
+    </div>
+  </section>
+
+  <aside class="report" aria-label="Relatório de similaridade">
+    <div class="card score" id="scoreCard"></div>
+    <div class="card compare" id="comparePanel" hidden></div>
+    <div class="card">
+      <div class="eyebrow" style="margin-bottom:8px">Fontes encontradas</div>
+      <ol class="srclist" id="srcList"></ol>
+    </div>
+    <details class="card settings" open>
+      <summary>Filtros do relatório</summary>
+      <div class="opts">
+        <label><input type="checkbox" id="optQuotes" checked> Ignorar trechos entre aspas</label>
+        <label><input type="checkbox" id="optBib" checked> Ignorar seção de referências</label>
+        <label><input type="checkbox" id="optWorks" checked> Comparar também com outros trabalhos de alunos</label>
+        <div class="range"><label for="optMin" style="display:block">Tamanho mínimo do trecho: <span id="optMinVal">8</span> palavras</label>
+          <input type="range" id="optMin" min="4" max="20" step="1" value="8"></div>
+        <p class="method">Trechos são comparados por sequências de palavras, sem acentos nem pontuação. A coluna “vocabulário” mede a semelhança de termos (TF‑IDF) e ajuda a perceber paráfrases que não aparecem como cópia literal.</p>
+      </div>
+    </details>
+  </aside>
+</main>
+
+<script>
+(() => {
+"use strict";
+
+const SAMPLES = [
+  { id: "ex-ana", role: "trabalho", name: "Trabalho — Ana Souza (exemplo)", text:
+`Memória e aprendizagem: por que esquecemos o que estudamos
+
+Todo estudante já passou pela experiência de estudar para uma prova e, poucos dias depois, perceber que lembra muito pouco do conteúdo. Neste trabalho, discuto como a psicologia cognitiva explica esse fenômeno e quais estratégias podem reduzir a perda de informação.
+
+A memória humana não funciona como um arquivo fixo, mas como um processo reconstrutivo. Cada vez que uma lembrança é evocada, ela é reorganizada a partir de fragmentos armazenados em diferentes regiões do cérebro. O modelo multiarmazém proposto por Atkinson e Shiffrin em 1968 descreve três sistemas: a memória sensorial, a memória de curto prazo e a memória de longo prazo.
+
+Na minha experiência como monitora, percebi que os colegas que mais esquecem são os que estudam tudo na véspera. Isso faz sentido quando lembramos que, segundo Ebbinghaus, "a maior parte do conteúdo aprendido se perde nas primeiras horas após o estudo".
+
+Revisar o conteúdo em intervalos crescentes é uma das estratégias mais eficazes para combater o esquecimento. A chamada repetição espaçada consiste em retomar o material um dia depois da aula, depois de uma semana e novamente após um mês. Além disso, testar a si mesmo com flashcards costuma funcionar melhor do que apenas sublinhar o livro.
+
+Concluo que esquecer é parte natural do aprendizado, mas que o modo como organizamos o estudo pode mudar bastante o quanto retemos.
+
+Referências
+ATKINSON, R. C.; SHIFFRIN, R. M. Human memory: a proposed system and its control processes. 1968.
+EBBINGHAUS, H. Memory: a contribution to experimental psychology. 1885.` },
+  { id: "ex-bruno", role: "trabalho", name: "Trabalho — Bruno Lima (exemplo)", text:
+`O esquecimento na vida acadêmica
+
+Na minha experiência como monitor, percebi que os colegas que mais esquecem são os que estudam tudo na véspera. Estudar de última hora parece produtivo, mas o conteúdo não chega a ser consolidado.
+
+Pesquisas posteriores mostraram que a interferência entre informações semelhantes é uma das principais causas da perda de lembranças. Por isso, estudar matérias parecidas em sequência pode atrapalhar. Uma alternativa é intercalar disciplinas diferentes e dormir bem, já que durante o sono o cérebro consolida as memórias formadas ao longo do dia.
+
+Também vale lembrar que a ansiedade antes da prova prejudica a recuperação do que foi aprendido, e por isso técnicas simples de respiração podem ajudar no dia do exame.` },
+  { id: "ex-apostila", role: "fonte", name: "Apostila de Psicologia Cognitiva, cap. 3 (exemplo)", text:
+`A memória humana não funciona como um arquivo fixo, mas como um processo reconstrutivo. Cada vez que uma lembrança é evocada, ela é reorganizada a partir de fragmentos armazenados em diferentes regiões do cérebro. O modelo multiarmazém proposto por Atkinson e Shiffrin em 1968 descreve três sistemas: a memória sensorial, a memória de curto prazo e a memória de longo prazo. A memória sensorial retém estímulos por frações de segundo, enquanto a memória de curto prazo mantém cerca de sete itens por um intervalo de quinze a trinta segundos. Para que uma informação chegue à memória de longo prazo, é necessário que ela seja codificada de forma significativa, o que depende da atenção, da repetição e da associação com conhecimentos prévios.
+
+O esquecimento, por sua vez, não deve ser entendido apenas como falha. Hermann Ebbinghaus demonstrou, no final do século XIX, que a maior parte do conteúdo aprendido se perde nas primeiras horas após o estudo, fenômeno conhecido como curva do esquecimento. Pesquisas posteriores mostraram que a interferência entre informações semelhantes é uma das principais causas da perda de lembranças, sendo dividida em interferência proativa e interferência retroativa.` },
+  { id: "ex-blog", role: "fonte", name: "Blog Estudar com Método — “Como não esquecer” (exemplo)", text:
+`Revisar o conteúdo em intervalos crescentes é uma das estratégias mais eficazes para combater o esquecimento. A chamada repetição espaçada consiste em retomar o material um dia depois da aula, depois de uma semana e novamente após um mês. Outra técnica poderosa é a recuperação ativa: em vez de reler o caderno, o estudante tenta lembrar o conteúdo sem consulta e só depois confere as respostas. Dormir bem também faz diferença, já que durante o sono o cérebro consolida as memórias formadas ao longo do dia.` },
+  { id: "ex-agua", role: "fonte", name: "Texto didático — O ciclo da água (exemplo)", text:
+`O ciclo hidrológico descreve o movimento contínuo da água entre a superfície terrestre e a atmosfera. A energia solar provoca a evaporação de oceanos, rios e lagos, e o vapor se condensa em nuvens que, ao atingir certo peso, retornam ao solo na forma de precipitação. Parte dessa água infiltra-se no subsolo e alimenta os lençóis freáticos.` }
+];
+
+const STOP = new Set(("a o e de da do das dos em no na nos nas um uma uns umas que para por com sem se ao aos as os " +
+  "e ser foi sao como mais mas ou nao ja ela ele eles elas isso esse essa este esta seu sua seus suas pelo pela pelos pelas " +
+  "the of and to in is it that for on with as be by are was this from").split(" "));
+
+const KEY = "originalis.v1";
+const fmt = new Intl.NumberFormat("pt-BR");
+const pctFmt = (x) => (x * 100).toLocaleString("pt-BR", { maximumFractionDigits: x > 0 && x < 0.01 ? 1 : 0 }) + "%";
+
+const state = {
+  docs: [], selectedId: null, focus: null, active: null, tab: "doc",
+  opts: { quotes: true, bib: true, works: true, minWords: 8 }
+};
+
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) { const d = JSON.parse(raw); if (Array.isArray(d.docs) && d.docs.length) { state.docs = d.docs; state.opts = { ...state.opts, ...(d.opts || {}) }; return; } }
+  } catch (e) { /* armazenamento indisponível */ }
+  state.docs = SAMPLES.map((d) => ({ ...d }));
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify({ docs: state.docs, opts: state.opts })); } catch (e) { /* ignora */ }
+}
+
+/* ---------- Texto ---------- */
+const norm = (w) => w.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
+
+function findBibliography(text) {
+  const re = /^[ \t]*(refer[êe]ncias(?: bibliogr[áa]ficas)?|bibliografia|references|works cited)[ \t]*:?[ \t]*$/gimu;
+  let m, last = -1;
+  while ((m = re.exec(text))) last = m.index;
+  return last >= text.length * 0.3 ? last : -1;
+}
+function findQuotes(text) {
+  const re = /“[^”]{1,2000}”|"[^"\n]{1,2000}"|«[^»]{1,2000}»/g;
+  const out = []; let m;
+  while ((m = re.exec(text))) out.push([m.index, m.index + m[0].length]);
+  return out;
+}
+
+function prepare(doc, isSubmission) {
+  const text = doc.text;
+  const bibStart = state.opts.bib ? findBibliography(text) : -1;
+  const quotes = isSubmission && state.opts.quotes ? findQuotes(text) : [];
+  const tokens = [];
+  for (const m of text.matchAll(/[\p{L}\p{N}]+/gu)) {
+    const s = m.index, e = s + m[0].length;
+    const bib = bibStart >= 0 && s >= bibStart;
+    const quote = quotes.some(([a, b]) => s >= a && e <= b);
+    tokens.push({ w: norm(m[0]), s, e, bib, quote, key: bib || quote ? null : norm(m[0]) });
+  }
+  const counted = tokens.filter((t) => !t.bib).length;
+  const quoted = tokens.filter((t) => t.quote && !t.bib).length;
+  return { doc, text, tokens, counted, quoted, bibStart, quotes };
+}
+
+/* Alinhamento por "tiling" guloso: índice de k-gramas da fonte, extensão máxima a partir de cada posição do trabalho. */
+function matchPair(sub, src, minWords) {
+  const k = Math.max(2, Math.min(4, minWords));
+  const A = sub.tokens, B = src.tokens, n = A.length, m = B.length;
+  const index = new Map();
+  for (let j = 0; j + k <= m; j++) {
+    let ok = true; const parts = [];
+    for (let q = 0; q < k; q++) { const t = B[j + q].key; if (t === null) { ok = false; break; } parts.push(t); }
+    if (!ok) continue;
+    const key = parts.join(" ");
+    const list = index.get(key); if (list) list.push(j); else index.set(key, [j]);
+  }
+  const spans = [];
+  let i = 0;
+  while (i + k <= n) {
+    const parts = []; let ok = true;
+    for (let q = 0; q < k; q++) { const t = A[i + q].key; if (t === null) { ok = false; break; } parts.push(t); }
+    const cands = ok ? index.get(parts.join(" ")) : null;
+    if (!cands) { i++; continue; }
+    let best = 0, bj = -1;
+    for (const j of cands) {
+      let len = k;
+      while (i + len < n && j + len < m && A[i + len].key !== null && A[i + len].key === B[j + len].key) len++;
+      if (len > best) { best = len; bj = j; }
+    }
+    if (best >= minWords) { spans.push({ a: i, b: i + best, sa: bj, sb: bj + best }); i += best; } else i++;
+  }
+  const words = spans.reduce((acc, s) => acc + (s.b - s.a), 0);
+  return { spans, words };
+}
+
+/* TF-IDF com cosseno, sobre todo o acervo */
+function tfidfVectors(preps) {
+  const df = new Map();
+  const tfs = preps.map((p) => {
+    const tf = new Map();
+    for (const t of p.tokens) { if (t.bib || STOP.has(t.w) || t.w.length < 3) continue; tf.set(t.w, (tf.get(t.w) || 0) + 1); }
+    for (const w of tf.keys()) df.set(w, (df.get(w) || 0) + 1);
+    return tf;
+  });
+  const N = preps.length;
+  return tfs.map((tf) => {
+    const v = new Map(); let norm2 = 0;
+    for (const [w, c] of tf) { const x = (1 + Math.log(c)) * Math.log((1 + N) / (1 + df.get(w))) + 0; v.set(w, x); norm2 += x * x; }
+    return { v, n: Math.sqrt(norm2) || 1 };
+  });
+}
+function cosine(x, y) {
+  let dot = 0; const [a, b] = x.v.size < y.v.size ? [x, y] : [y, x];
+  for (const [w, val] of a.v) { const o = b.v.get(w); if (o) dot += val * o; }
+  return dot / (x.n * y.n);
+}
+
+function analyze(subDoc) {
+  const sub = prepare(subDoc, true);
+  const others = state.docs.filter((d) => d.id !== subDoc.id && (state.opts.works || d.role === "fonte"));
+  const srcPreps = others.map((d) => prepare(d, false));
+  const vecs = tfidfVectors([sub, ...srcPreps]);
+  let results = srcPreps.map((src, idx) => ({ src, ...matchPair(sub, src, state.opts.minWords), vocab: cosine(vecs[0], vecs[idx + 1]) }));
+  results.sort((x, y) => y.words - x.words || y.vocab - x.vocab);
+
+  const owner = new Array(sub.tokens.length).fill(-1), spanOf = new Array(sub.tokens.length).fill(-1);
+  results.forEach((r, ri) => r.spans.forEach((sp, si) => { for (let t = sp.a; t < sp.b; t++) if (owner[t] < 0) { owner[t] = ri; spanOf[t] = si; } }));
+  results.forEach((r) => (r.owned = 0));
+  owner.forEach((o) => { if (o >= 0) results[o].owned++; });
+  const matched = owner.filter((o) => o >= 0).length;
+  const total = sub.counted || 1;
+
+  // Ranking final por palavras atribuídas; cores seguem o ranking.
+  const order = results.map((r, i) => i).sort((x, y) => results[y].owned - results[x].owned || results[y].vocab - results[x].vocab);
+  const rankOf = new Array(results.length); order.forEach((ri, pos) => (rankOf[ri] = pos));
+  let runs = 0;
+  for (let t = 0; t < owner.length; t++) if (owner[t] >= 0 && (t === 0 || owner[t - 1] !== owner[t] || spanOf[t - 1] !== spanOf[t])) runs++;
+  return { sub, results, order, rankOf, owner, spanOf, matched, total, score: matched / total, runs };
+}
+
+/* ---------- Leitura de arquivos ----------
+   O formato é identificado pelo conteúdo (assinatura do arquivo), não só pela extensão. */
+const MAX_FILE = 30 * 1024 * 1024;
+const tidy = (s) => s.replace(/ /g, " ").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+
+// Leitor ZIP próprio (DOCX e ODT são ZIP), com descompressão nativa do navegador.
+function openZip(buf) {
+  const dv = new DataView(buf);
+  let eocd = -1;
+  for (let i = buf.byteLength - 22; i >= Math.max(0, buf.byteLength - 65557); i--) if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+  if (eocd < 0) throw new Error("O arquivo compactado está corrompido.");
+  const entries = new Map(), td = new TextDecoder();
+  let p = dv.getUint32(eocd + 16, true);
+  for (let e = 0, n = dv.getUint16(eocd + 10, true); e < n && dv.getUint32(p, true) === 0x02014b50; e++) {
+    const nl = dv.getUint16(p + 28, true);
+    entries.set(td.decode(new Uint8Array(buf, p + 46, nl)), { method: dv.getUint16(p + 10, true), size: dv.getUint32(p + 20, true), local: dv.getUint32(p + 42, true) });
+    p += 46 + nl + dv.getUint16(p + 30, true) + dv.getUint16(p + 32, true);
+  }
+  return {
+    has: (name) => entries.has(name),
+    async text(name) {
+      const en = entries.get(name);
+      if (!en) return null;
+      const start = en.local + 30 + dv.getUint16(en.local + 26, true) + dv.getUint16(en.local + 28, true);
+      const data = new Uint8Array(buf, start, en.size);
+      if (en.method === 0) return td.decode(data);
+      if (en.method !== 8) throw new Error("Compressão não suportada dentro do arquivo.");
+      if (typeof DecompressionStream === "function") {
+        const stream = new Blob([data]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+        return td.decode(await new Response(stream).arrayBuffer());
+      }
+      if (window.JSZip) return (await JSZip.loadAsync(buf)).file(name).async("string");
+      throw new Error("Este navegador não consegue abrir arquivos compactados. Atualize o navegador ou cole o texto.");
+    },
+  };
+}
+
+function parseXml(xml) {
+  const doc = new DOMParser().parseFromString(xml, "application/xml");
+  if (doc.getElementsByTagName("parsererror").length) throw new Error("O conteúdo interno do documento está corrompido.");
+  return doc;
+}
+
+// Word: parágrafos <w:p>, texto em <w:t>; ignora a versão alternativa (mc:Fallback) para não duplicar caixas de texto.
+function wordXmlText(xml) {
+  const out = []; let cur = "";
+  const walk = (node) => {
+    for (const c of node.childNodes) {
+      if (c.nodeType !== 1) continue;
+      const ln = c.localName;
+      if (ln === "Fallback" || ln === "instrText" || ln === "delText") continue;
+      if (ln === "t") cur += c.textContent;
+      else if (ln === "tab") cur += "\t";
+      else if (ln === "br" || ln === "cr") cur += "\n";
+      else if (ln === "noBreakHyphen") cur += "-";
+      else if (ln === "p") { walk(c); out.push(cur); cur = ""; }
+      else walk(c);
+    }
+  };
+  walk(parseXml(xml).documentElement);
+  if (cur) out.push(cur);
+  return out.join("\n\n");
+}
+
+// LibreOffice/ODT: parágrafos <text:p>/<text:h>, espaços <text:s text:c="n">.
+function odtXmlText(xml) {
+  const doc = parseXml(xml);
+  const body = doc.getElementsByTagNameNS("urn:oasis:names:tc:opendocument:xmlns:office:1.0", "body")[0] || doc.documentElement;
+  const out = []; let cur = "";
+  const walk = (node) => {
+    for (const c of node.childNodes) {
+      if (c.nodeType === 3) { cur += c.nodeValue; continue; }
+      if (c.nodeType !== 1) continue;
+      const ln = c.localName;
+      if (ln === "s") cur += " ".repeat(+(c.getAttribute("text:c") || 1));
+      else if (ln === "tab") cur += "\t";
+      else if (ln === "line-break") cur += "\n";
+      else if (ln === "note" || ln === "annotation" || ln === "tracked-changes") continue;
+      else if (ln === "p" || ln === "h") { walk(c); out.push(cur); cur = ""; }
+      else walk(c);
+    }
+  };
+  walk(body);
+  if (cur) out.push(cur);
+  return out.join("\n\n");
+}
+
+// RTF: interpreta grupos, caracteres \'hh (Windows-1252) e \uN, e descarta tabelas de fontes, imagens etc.
+function rtfToText(src) {
+  const cp = new TextDecoder("windows-1252");
+  const DEST = new Set(["fonttbl", "colortbl", "stylesheet", "info", "pict", "header", "footer", "headerl", "headerr", "headerf", "footerl", "footerr", "footerf",
+    "object", "themedata", "colorschememapping", "latentstyles", "datastore", "xmlnstbl", "listtable", "listoverridetable", "rsidtbl", "generator", "fldinst", "filetbl", "revtbl"]);
+  const SYM = { par: "\n", line: "\n", sect: "\n", page: "\n", row: "\n", cell: "\t", tab: "\t", emdash: "—", endash: "–", lquote: "‘", rquote: "’", ldblquote: "“", rdblquote: "”", bullet: "•" };
+  let out = "", i = 0, ignore = false, uc = 1, skip = 0;
+  const stack = [];
+  const emit = (s) => { if (skip > 0) { skip--; return; } if (!ignore) out += s; };
+  while (i < src.length) {
+    const ch = src[i];
+    if (ch === "{") { stack.push({ ignore, uc }); i++; continue; }
+    if (ch === "}") { ({ ignore, uc } = stack.pop() || { ignore: false, uc: 1 }); skip = 0; i++; continue; }
+    if (ch === "\r" || ch === "\n") { i++; continue; }
+    if (ch !== "\\") { emit(ch); i++; continue; }
+    const nx = src[i + 1];
+    if (nx === "'") { emit(cp.decode(new Uint8Array([parseInt(src.substr(i + 2, 2), 16) || 32]))); i += 4; continue; }
+    if (nx === "*") { ignore = true; i += 2; continue; }
+    if (nx === "{" || nx === "}" || nx === "\\") { emit(nx); i += 2; continue; }
+    if (nx === "~") { emit(" "); i += 2; continue; }
+    if (nx === "\n" || nx === "\r") { if (!ignore) out += "\n"; i += 2; continue; }
+    const m = /^([a-zA-Z]+)(-?\d+)? ?/.exec(src.slice(i + 1, i + 48));
+    if (!m) { i += 2; continue; }
+    i += 1 + m[0].length;
+    const word = m[1], arg = m[2] !== undefined ? +m[2] : null;
+    if (DEST.has(word)) { ignore = true; continue; }
+    if (ignore) continue;
+    if (word === "uc") uc = arg ?? 1;
+    else if (word === "u") { out += String.fromCharCode(arg < 0 ? arg + 65536 : arg); skip = uc; }
+    else if (SYM[word]) out += SYM[word];
+  }
+  return out;
+}
+
+function htmlToText(html) {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  doc.querySelectorAll("script,style,noscript,template").forEach((n) => n.remove());
+  doc.querySelectorAll("br").forEach((n) => n.replaceWith("\n"));
+  doc.querySelectorAll("p,div,li,h1,h2,h3,h4,h5,h6,tr,blockquote,section,article,pre").forEach((n) => n.append("\n\n"));
+  return (doc.body || doc.documentElement).textContent;
+}
+
+async function pdfToText(buf) {
+  if (!window.pdfjsLib) throw new Error("O leitor de PDF não carregou. Verifique a conexão com a internet e recarregue a página.");
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  let pdf;
+  try { pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buf), isEvalSupported: false }).promise; }
+  catch (e) {
+    if (e && e.name === "PasswordException") throw new Error("O PDF está protegido por senha. Remova a proteção e envie de novo.");
+    throw new Error("Não consegui abrir esse PDF. Ele pode estar corrompido.");
+  }
+  const pages = [];
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const c = await (await pdf.getPage(p)).getTextContent();
+    pages.push(c.items.map((it) => it.str + (it.hasEOL ? "\n" : "")).join("").replace(/([^\n])\n(?=[a-zà-ú])/g, "$1 "));
+  }
+  const out = tidy(pages.join("\n\n").replace(/(\p{L})-\n(\p{Ll})/gu, "$1$2"));
+  if (countWords(out) < 5) throw new Error("O PDF parece ser uma imagem escaneada, sem texto selecionável. Use um PDF com texto ou passe por OCR.");
+  return out;
+}
+
+const countWords = (s) => (s.match(/[\p{L}\p{N}]+/gu) || []).length;
+
+function decodePlain(bytes) {
+  if (bytes[0] === 0xff && bytes[1] === 0xfe) return new TextDecoder("utf-16le").decode(bytes);
+  if (bytes[0] === 0xfe && bytes[1] === 0xff) return new TextDecoder("utf-16be").decode(bytes);
+  const sample = bytes.subarray(0, 4096);
+  if (sample.filter((b) => b === 0).length > sample.length / 20) throw new Error("Esse arquivo não é de texto. Envie .docx, .pdf, .odt, .rtf ou .txt.");
+  const utf8 = new TextDecoder("utf-8").decode(bytes);
+  return [...utf8].filter((c) => c.charCodeAt(0) === 0xfffd).length > 3 ? new TextDecoder("windows-1252").decode(bytes) : (utf8.charCodeAt(0) === 0xfeff ? utf8.slice(1) : utf8);
+}
+
+async function readFile(file) {
+  if (file.size > MAX_FILE) throw new Error("Arquivo maior que 30 MB.");
+  const buf = await file.arrayBuffer(), b = new Uint8Array(buf);
+  const ext = file.name.toLowerCase().split(".").pop();
+  const sig = (...xs) => xs.every((x, i) => b[i] === x);
+  let text;
+  if (sig(0x50, 0x4b, 0x03, 0x04)) {
+    const zip = openZip(buf);
+    if (zip.has("word/document.xml")) {
+      const parts = [await zip.text("word/document.xml")];
+      for (const extra of ["word/footnotes.xml", "word/endnotes.xml"]) if (zip.has(extra)) parts.push(await zip.text(extra));
+      text = parts.map(wordXmlText).join("\n\n");
+    } else if (zip.has("content.xml")) text = odtXmlText(await zip.text("content.xml"));
+    else throw new Error("Esse arquivo compactado não é um documento de texto (.docx ou .odt).");
+  } else if (sig(0x25, 0x50, 0x44, 0x46)) text = await pdfToText(buf);
+  else if (sig(0xd0, 0xcf, 0x11, 0xe0)) throw new Error("Arquivo .doc antigo (Word 97–2003). Abra no Word e use Salvar como → .docx ou PDF.");
+  else {
+    const plain = decodePlain(b);
+    if (/^\s*\{\\rtf/.test(plain)) text = rtfToText(plain);
+    else if (["html", "htm"].includes(ext) || /^\s*(<!doctype html|<html)/i.test(plain)) text = htmlToText(plain);
+    else if (["pages", "key", "numbers", "xls", "xlsx", "ppt", "pptx", "jpg", "jpeg", "png", "zip"].includes(ext)) throw new Error(`Formato .${ext} não suportado. Envie .docx, .pdf, .odt, .rtf ou .txt.`);
+    else text = plain;
+  }
+  text = tidy(text);
+  if (!countWords(text)) throw new Error("Não encontrei texto nesse arquivo.");
+  return text;
+}
+
+/* ---------- Renderização ---------- */
+const $ = (id) => document.getElementById(id);
+const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const color = (rank) => `var(--s${(rank % 8) + 1})`;
+const band = (x) => x < 0.25 ? ["var(--band-low)", "Baixa similaridade"] : x < 0.5 ? ["var(--band-mid)", "Similaridade moderada"] : x < 0.75 ? ["var(--band-high)", "Similaridade alta"] : ["var(--band-max)", "Similaridade muito alta"];
+let current = null;
+
+function renderLibrary() {
+  const sel = $("selDoc");
+  const works = state.docs.filter((d) => d.role === "trabalho");
+  sel.innerHTML = works.map((d) => `<option value="${esc(d.id)}">${esc(d.name)}</option>`).join("") || `<option value="">Nenhum trabalho no acervo</option>`;
+  sel.value = state.selectedId || "";
+  $("docList").innerHTML = state.docs.map((d) => {
+    const words = (d.text.match(/[\p{L}\p{N}]+/gu) || []).length;
+    return `<li class="${d.id === state.selectedId ? "sel" : ""}">
+      <button class="nm" type="button" data-open="${esc(d.id)}" ${d.role !== "trabalho" ? "disabled" : ""} title="${esc(d.name)}">${esc(d.name)}</button>
+      <button class="btn small danger" type="button" data-del="${esc(d.id)}">Remover</button>
+      <div class="sub"><span class="role ${d.role}">${d.role === "trabalho" ? "Trabalho" : "Fonte"}</span><span>${fmt.format(words)} palavras</span></div>
+    </li>`;
+  }).join("");
+}
+
+function renderReport() {
+  const doc = state.docs.find((d) => d.id === state.selectedId);
+  if (!doc) {
+    current = null;
+    $("docTitle").textContent = "Nenhum trabalho selecionado";
+    $("docMeta").textContent = "";
+    $("docBody").innerHTML = `<div class="empty">Adicione um trabalho de aluno ao acervo para gerar o relatório.</div>`;
+    $("scoreCard").innerHTML = `<div class="score-label">Índice de similaridade</div><div class="score-band">Sem trabalho para analisar.</div>`;
+    $("srcList").innerHTML = ""; $("comparePanel").hidden = true; $("filterBar").hidden = true;
+    return;
+  }
+  const R = current = analyze(doc);
+  const [bandColor, bandName] = band(R.score);
+  $("docTitle").textContent = doc.name;
+  $("docMeta").textContent = `${fmt.format(R.sub.counted)} palavras · ${R.results.filter((r) => r.owned > 0).length} fontes com coincidência · ${fmt.format(R.runs)} trechos`;
+
+  const visible = R.order.filter((ri) => R.results[ri].owned > 0);
+  $("scoreCard").innerHTML = `
+    <div class="score-label">Índice de similaridade</div>
+    <div class="score-top"><div class="score-num" style="--band:${bandColor}">${Math.round(R.score * 100)}<small>%</small></div><div class="score-band">${bandName}</div></div>
+    <div class="meter" role="img" aria-label="Composição do índice por fonte">${visible.map((ri) => `<span style="--c:${color(R.rankOf[ri])};width:${(R.results[ri].owned / R.total) * 100}%"></span>`).join("")}</div>
+    <dl class="breakdown">
+      <dt>Palavras analisadas</dt><dd>${fmt.format(R.sub.counted)}</dd>
+      <dt>Palavras coincidentes</dt><dd>${fmt.format(R.matched)}</dd>
+      <dt>Trechos coincidentes</dt><dd>${fmt.format(R.runs)}</dd>
+      <dt>Palavras em citações ignoradas</dt><dd>${state.opts.quotes ? fmt.format(R.sub.quoted) : "—"}</dd>
+      <dt>Referências</dt><dd>${R.sub.bibStart >= 0 ? "ignoradas" : state.opts.bib ? "não encontradas" : "incluídas"}</dd>
+    </dl>`;
+
+  $("srcList").innerHTML = R.order.map((ri) => {
+    const r = R.results[ri], rank = R.rankOf[ri];
+    const kind = r.src.doc.role === "trabalho" ? "Trabalho de aluno" : "Fonte";
+    const pressed = state.focus === r.src.doc.id;
+    return `<li><button type="button" data-focus="${esc(r.src.doc.id)}" aria-pressed="${pressed}" style="--c:${r.owned ? color(rank) : "var(--muted)"}" ${r.owned ? "" : "disabled"}>
+      <span class="rank">${r.owned ? rank + 1 : "–"}</span>
+      <span class="sn" title="${esc(r.src.doc.name)}">${esc(r.src.doc.name)}</span>
+      <span class="pct">${r.owned ? pctFmt(r.owned / R.total) : "0%"}</span>
+      <span class="sd">${kind} · ${fmt.format(r.owned)} palavras · vocabulário ${r.vocab.toLocaleString("pt-BR", { maximumFractionDigits: 2, minimumFractionDigits: 2 })}</span>
+    </button></li>`;
+  }).join("") || `<li class="method">Não há outros documentos no acervo para comparar.</li>`;
+
+  const focusRes = state.focus ? R.results.findIndex((r) => r.src.doc.id === state.focus) : -1;
+  if (state.focus && focusRes < 0) state.focus = null;
+  $("filterBar").hidden = !state.focus;
+  if (state.focus) $("filterBar").innerHTML = `Mostrando só os trechos de <b>${esc(R.results[focusRes].src.doc.name)}</b> <button class="btn small" type="button" data-focus="${esc(state.focus)}">Mostrar todas as fontes</button>`;
+
+  // Regiões do texto: trechos coincidentes, citações e referências
+  const T = R.sub.tokens, regions = [];
+  for (let t = 0; t < T.length; t++) {
+    const o = R.owner[t];
+    if (o < 0 || (focusRes >= 0 && o !== focusRes)) continue;
+    let u = t; while (u + 1 < T.length && R.owner[u + 1] === o && R.spanOf[u + 1] === R.spanOf[t]) u++;
+    const first = t === 0 || R.owner[t - 1] !== o || R.spanOf[t - 1] !== R.spanOf[t];
+    regions.push({ s: T[t].s, e: T[u].e, kind: "mark", ri: o, si: R.spanOf[t], first });
+    t = u;
+  }
+  if (state.opts.quotes) for (const [a, b] of R.sub.quotes) regions.push({ s: a, e: b, kind: "quote" });
+  if (R.sub.bibStart >= 0) regions.push({ s: R.sub.bibStart, e: R.sub.text.length, kind: "bib" });
+  regions.sort((x, y) => x.s - y.s);
+  let html = "", pos = 0;
+  for (const g of regions) {
+    if (g.s < pos) continue;
+    html += esc(R.sub.text.slice(pos, g.s));
+    const inner = esc(R.sub.text.slice(g.s, g.e));
+    if (g.kind === "mark") {
+      const rank = R.rankOf[g.ri];
+      const isActive = state.active && state.active.ri === g.ri && state.active.si === g.si;
+      html += `<mark tabindex="0" role="button" class="${isActive ? "active" : ""}" data-ri="${g.ri}" data-si="${g.si}" style="--c:${color(rank)}" title="${esc(R.results[g.ri].src.doc.name)}">${g.first ? `<sup>${rank + 1}</sup>` : ""}${inner}</mark>`;
+    } else if (g.kind === "quote") html += `<span class="quote" title="Citação entre aspas (ignorada)">${inner}</span>`;
+    else html += `<span class="bib" title="Seção de referências (ignorada)">${inner}</span>`;
+    pos = g.e;
+  }
+  html += esc(R.sub.text.slice(pos));
+  $("docBody").innerHTML = html;
+  renderCompare();
+}
+
+function excerpt(prep, a, b, otherTokens, oa) {
+  const T = prep.tokens, ctx = 18;
+  const s0 = T[Math.max(0, a - ctx)].s, s1 = T[a].s, e1 = T[b - 1].e, e0 = T[Math.min(T.length - 1, b - 1 + ctx)].e;
+  return `<span class="ctx">${a - ctx > 0 ? "… " : ""}${esc(prep.text.slice(s0, s1))}</span><mark>${esc(prep.text.slice(s1, e1))}</mark><span class="ctx">${esc(prep.text.slice(e1, e0))}${b - 1 + ctx < T.length - 1 ? " …" : ""}</span>`;
+}
+
+function renderCompare() {
+  const P = $("comparePanel");
+  if (!current || !state.active || !current.results[state.active.ri]) { P.hidden = true; return; }
+  const r = current.results[state.active.ri], sp = r.spans[state.active.si];
+  if (!sp) { P.hidden = true; return; }
+  const rank = current.rankOf[state.active.ri];
+  P.style.setProperty("--c", color(rank));
+  P.hidden = false;
+  P.innerHTML = `
+    <div class="compare-head"><span class="eyebrow">Trecho coincidente · ${fmt.format(sp.b - sp.a)} palavras</span><button class="btn small" type="button" id="btnCloseCmp">Fechar</button></div>
+    <div><div class="eyebrow" style="margin-bottom:4px">No trabalho</div><div class="excerpt">${excerpt(current.sub, sp.a, sp.b)}</div></div>
+    <div><div class="eyebrow" style="margin-bottom:4px">Em ${rank + 1}. ${esc(r.src.doc.name)}</div><div class="excerpt">${excerpt(r.src, sp.sa, sp.sb)}</div></div>`;
+}
+
+function renderMatrix() {
+  const works = state.docs.filter((d) => d.role === "trabalho");
+  const cols = state.docs;
+  if (!works.length) { $("matrix").innerHTML = `<tbody><tr><td>Nenhum trabalho no acervo.</td></tr></tbody>`; return; }
+  const preps = new Map(cols.map((d) => [d.id, prepare(d, false)]));
+  const subs = new Map(works.map((d) => [d.id, prepare(d, true)]));
+  const short = (s) => s.replace(/\s*\(exemplo\)\s*$/i, "").replace(/^Trabalho — /, "").slice(0, 26);
+  let h = `<thead><tr><th>Trabalho ↓ / comparado com →</th>${cols.map((c) => `<th title="${esc(c.name)}">${esc(short(c.name))}</th>`).join("")}</tr></thead><tbody>`;
+  for (const w of works) {
+    const sp = subs.get(w.id);
+    h += `<tr><td title="${esc(w.name)}">${esc(short(w.name))}</td>`;
+    for (const c of cols) {
+      if (c.id === w.id) { h += `<td class="cell self">—</td>`; continue; }
+      const m = matchPair(sp, preps.get(c.id), state.opts.minWords);
+      const p = m.words / (sp.counted || 1);
+      h += `<td class="cell" style="--p:${Math.round(Math.min(1, p) * 60)}%">${pctFmt(p)}</td>`;
+    }
+    h += `</tr>`;
+  }
+  $("matrix").innerHTML = h + "</tbody>";
+}
+
+function renderAll() {
+  if (!state.docs.some((d) => d.id === state.selectedId)) state.selectedId = (state.docs.find((d) => d.role === "trabalho") || {}).id || null;
+  renderLibrary();
+  renderReport();
+  if (state.tab === "matrix") renderMatrix();
+  $("optQuotes").checked = state.opts.quotes; $("optBib").checked = state.opts.bib; $("optWorks").checked = state.opts.works;
+  $("optMin").value = state.opts.minWords; $("optMinVal").textContent = state.opts.minWords;
+}
+
+/* ---------- Eventos ---------- */
+$("selDoc").addEventListener("change", (e) => { state.selectedId = e.target.value; state.focus = null; state.active = null; renderAll(); });
+$("docList").addEventListener("click", (e) => {
+  const open = e.target.closest("[data-open]"), del = e.target.closest("[data-del]");
+  if (open) { state.selectedId = open.dataset.open; state.focus = null; state.active = null; renderAll(); }
+  if (del) {
+    if (del.dataset.armed) {
+      state.docs = state.docs.filter((d) => d.id !== del.dataset.del);
+      if (state.focus === del.dataset.del) state.focus = null;
+      state.active = null; save(); renderAll();
+    } else {
+      del.dataset.armed = "1"; del.textContent = "Confirmar";
+      setTimeout(() => { if (del.isConnected) { delete del.dataset.armed; del.textContent = "Remover"; } }, 3000);
+    }
+  }
+});
+document.addEventListener("click", (e) => {
+  const f = e.target.closest("[data-focus]");
+  if (f) { state.focus = state.focus === f.dataset.focus ? null : f.dataset.focus; state.active = null; renderReport(); return; }
+  if (e.target.id === "btnCloseCmp") { state.active = null; renderReport(); return; }
+  const mk = e.target.closest("mark[data-ri]");
+  if (mk) { state.active = { ri: +mk.dataset.ri, si: +mk.dataset.si }; renderReport(); $("comparePanel").scrollIntoView({ block: "nearest", behavior: "smooth" }); }
+});
+$("docBody").addEventListener("keydown", (e) => { if ((e.key === "Enter" || e.key === " ") && e.target.matches("mark[data-ri]")) { e.preventDefault(); e.target.click(); } });
+
+for (const [id, key] of [["optQuotes", "quotes"], ["optBib", "bib"], ["optWorks", "works"]])
+  $(id).addEventListener("change", (e) => { state.opts[key] = e.target.checked; state.active = null; save(); renderAll(); });
+$("optMin").addEventListener("input", (e) => { state.opts.minWords = +e.target.value; $("optMinVal").textContent = e.target.value; state.active = null; save(); renderReport(); if (state.tab === "matrix") renderMatrix(); });
+
+function setTab(tab) {
+  state.tab = tab;
+  $("tabBtnDoc").setAttribute("aria-selected", tab === "doc"); $("tabBtnMatrix").setAttribute("aria-selected", tab === "matrix");
+  $("tabDoc").hidden = tab !== "doc"; $("tabMatrix").hidden = tab !== "matrix";
+  if (tab === "matrix") renderMatrix();
+}
+$("tabBtnDoc").addEventListener("click", () => setTab("doc"));
+$("tabBtnMatrix").addEventListener("click", () => setTab("matrix"));
+
+const form = $("addForm");
+$("btnAdd").addEventListener("click", () => { form.hidden = !form.hidden; if (!form.hidden) $("addName").focus(); });
+$("btnCancel").addEventListener("click", () => { form.reset(); $("addStatus").textContent = ""; form.hidden = true; });
+function setStatus(msg, isError = false) { const s = $("addStatus"); s.textContent = msg; s.classList.toggle("err", isError); }
+
+// Um arquivo: preenche o formulário para revisão. Vários: inclui todos direto no acervo.
+async function handleFiles(files) {
+  files = [...files];
+  if (!files.length) return;
+  form.hidden = false;
+  if (files.length === 1) {
+    const f = files[0];
+    setStatus(`Lendo ${f.name}…`);
+    try {
+      const text = await readFile(f);
+      $("addText").value = text;
+      if (!$("addName").value.trim()) $("addName").value = f.name.replace(/\.[^.]+$/, "");
+      setStatus(`${f.name}: ${fmt.format(countWords(text))} palavras extraídas. Confira e salve.`);
+    } catch (err) { setStatus(`${f.name}: ${err.message || "não consegui ler o arquivo."}`, true); }
+    return;
+  }
+  const role = $("addRole").value, ok = [], fail = [];
+  for (const [n, f] of files.entries()) {
+    setStatus(`Lendo ${n + 1} de ${files.length}: ${f.name}…`);
+    try {
+      const text = await readFile(f);
+      if (countWords(text) < 20) throw new Error("menos de 20 palavras.");
+      if (state.docs.some((d) => d.text === text)) throw new Error("já está no acervo.");
+      const doc = { id: "d" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), role, name: f.name.replace(/\.[^.]+$/, ""), text };
+      state.docs.push(doc); ok.push(doc);
+    } catch (err) { fail.push(`${f.name}: ${err.message}`); }
+  }
+  if (ok.length) {
+    if (role === "trabalho") { state.selectedId = ok[0].id; state.focus = null; state.active = null; }
+    save(); renderAll();
+  }
+  setStatus([`${ok.length} de ${files.length} arquivos incluídos no acervo.`, ...fail].join("\n"), fail.length > 0);
+}
+
+$("addFile").addEventListener("change", (e) => { handleFiles(e.target.files); e.target.value = ""; });
+
+// Arrastar e soltar em qualquer lugar da página.
+let dragDepth = 0;
+const hasFiles = (e) => [...(e.dataTransfer?.types || [])].includes("Files");
+document.addEventListener("dragenter", (e) => { if (!hasFiles(e)) return; e.preventDefault(); if (dragDepth++ === 0) { document.body.classList.add("dragging"); form.hidden = false; } });
+document.addEventListener("dragover", (e) => { if (hasFiles(e)) e.preventDefault(); });
+document.addEventListener("dragleave", (e) => { if (hasFiles(e) && --dragDepth <= 0) { dragDepth = 0; document.body.classList.remove("dragging"); } });
+document.addEventListener("drop", (e) => {
+  if (!hasFiles(e)) return;
+  e.preventDefault(); dragDepth = 0; document.body.classList.remove("dragging");
+  handleFiles(e.dataTransfer.files);
+});
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const name = $("addName").value.trim(), text = $("addText").value.trim(), role = $("addRole").value;
+  if (!text) { $("addStatus").textContent = "Envie um arquivo ou cole o texto antes de salvar."; return; }
+  if ((text.match(/[\p{L}\p{N}]+/gu) || []).length < 20) { $("addStatus").textContent = "O texto precisa ter pelo menos 20 palavras."; return; }
+  const doc = { id: "d" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), role, name: name || "Documento sem nome", text };
+  state.docs.push(doc);
+  if (role === "trabalho") { state.selectedId = doc.id; state.focus = null; state.active = null; }
+  save(); form.reset(); $("addStatus").textContent = ""; form.hidden = true; renderAll();
+});
+$("btnReset").addEventListener("click", () => {
+  const ids = new Set(SAMPLES.map((s) => s.id));
+  state.docs = [...SAMPLES.map((d) => ({ ...d })), ...state.docs.filter((d) => !ids.has(d.id))];
+  state.selectedId = "ex-ana"; state.focus = null; state.active = null; save(); renderAll();
+});
+
+load();
+renderAll();
+})();
+</script>
+
+</body></html>

@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulado · Anatomia Humana</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f6f3ec; --card:#fffdf8; --ink:#1d1b17; --ink2:#55524a; --muted:#8a867b;
+  --line:#e4dfd2; --accent:#b8473a; --accent-soft:#f7e4e0;
+  --good:#1e7a3c; --good-soft:#e2f2e7; --bad:#b3261e; --bad-soft:#fbe6e4;
+  --warn:#a06200; --warn-soft:#fbf0db; --grid:#ebe6da;
+}
+@media (prefers-color-scheme: dark){
+  :root:where(:not([data-theme="light"])){
+    color-scheme: dark;
+    --bg:#141412; --card:#1d1c1a; --ink:#f0efec; --ink2:#c3c2b7; --muted:#8e8c84;
+    --line:#2e2d29; --accent:#e0705f; --accent-soft:#3a201c;
+    --good:#4cbc6c; --good-soft:#18301f; --bad:#ef7a72; --bad-soft:#3a1d1b;
+    --warn:#e0a640; --warn-soft:#352812; --grid:#2a2926;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;font-size:16px;line-height:1.5}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 60px}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:700;margin:0;line-height:1.2}
+h1{font-size:1.75rem} h2{font-size:1.3rem} h3{font-size:1.05rem}
+.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:.72rem;color:var(--muted);font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:14px 0}
+.muted{color:var(--muted)} .ink2{color:var(--ink2)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 .95rem Inter,sans-serif;padding:12px 18px;border-radius:12px;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.danger{color:var(--bad)}
+.tabs{display:flex;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:5px;position:sticky;top:8px;z-index:5}
+.tabs button{flex:1;border:0;background:transparent;color:var(--ink2);font:600 .9rem Inter,sans-serif;padding:10px 6px;border-radius:10px;cursor:pointer}
+.tabs button.on{background:var(--accent-soft);color:var(--ink)}
+.progress{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin:10px 0 4px}
+.progress>i{display:block;height:100%;background:var(--accent);border-radius:6px;transition:width .3s}
+.qtopic{display:inline-block;font-size:.75rem;font-weight:600;color:var(--ink2);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.qtext{font-size:1.08rem;margin:14px 0 16px;white-space:pre-line}
+.qimg{display:block;max-width:100%;width:300px;border-radius:10px;border:1px solid var(--line);margin:0 0 14px}
+.opt{display:flex;gap:12px;align-items:stretch;width:100%;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:0;margin:8px 0;cursor:pointer;font:inherit;overflow:hidden}
+.opt .l{flex:0 0 44px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--ink2);background:var(--bg)}
+.opt .t{padding:12px 12px 12px 0}
+.opt.sel{border-color:var(--accent)} .opt.sel .l{background:var(--accent);color:#fff}
+.opt.ok{border-color:var(--good);background:var(--good-soft)} .opt.ok .l{background:var(--good);color:#fff}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)} .opt.no .l{background:var(--bad);color:#fff}
+.feedback{border-radius:12px;padding:12px 14px;margin-top:12px;font-size:.95rem}
+.feedback.ok{background:var(--good-soft)} .feedback.no{background:var(--bad-soft)}
+.oc{list-style:none;padding:0;margin:10px 0 0}
+.oc li{display:grid;grid-template-columns:24px 1fr;gap:4px 8px;padding:8px 0;border-top:1px solid var(--line);font-size:.9rem}
+.oc li:first-child{border-top:0}
+.oc .k{font-weight:700}
+.oc .k.ok{color:var(--good)} .oc .k.no{color:var(--bad)}
+.oc .ot{font-weight:600}
+.oc .cm{grid-column:2;color:var(--ink2)}
+.score{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.big{font-family:Fraunces,serif;font-size:4.2rem;font-weight:700;line-height:1}
+.badge{display:inline-flex;gap:6px;align-items:center;font-weight:700;font-size:.85rem;border-radius:999px;padding:5px 12px}
+.badge.ok{background:var(--good-soft);color:var(--good)} .badge.no{background:var(--bad-soft);color:var(--bad)}
+.scale{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;margin:16px 0 6px}
+.scale div{height:10px;border-radius:3px;background:var(--line)}
+.scale div.on{background:var(--accent)}
+.lvl{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;font-size:.9rem;align-items:baseline}
+.lvl .r{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600}
+.lvl .n{font-weight:600}
+.lvl .cur{color:var(--accent)}
+.lvl .s{font-size:.8rem;color:var(--muted)}
+.review-item{border-top:1px solid var(--line);padding:14px 0}
+.review-item:first-child{border-top:0}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+td.num{font-variant-numeric:tabular-nums;font-weight:600}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:.8rem;padding:6px 9px;border-radius:8px;white-space:nowrap;transform:translate(-50%,-110%);opacity:0;transition:opacity .12s}
+.legend{display:flex;gap:14px;font-size:.8rem;color:var(--ink2);margin-top:8px;flex-wrap:wrap}
+.legend i{display:inline-block;width:18px;height:0;border-top:2px solid var(--accent);vertical-align:middle;margin-right:6px}
+.legend i.dash{border-top:2px dashed var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--bg);border-radius:12px;padding:12px}
+.stat b{display:block;font-family:Fraunces,serif;font-size:1.6rem}
+.stat span{font-size:.78rem;color:var(--muted)}
+.report p{margin:.6em 0}
+.report h3{margin-top:18px}
+.report ul{padding-left:20px;margin:.4em 0}
+.report li{margin:.35em 0}
+.pill{font-size:.75rem;font-weight:700;border-radius:999px;padding:2px 8px;margin-left:6px}
+.pill.no{background:var(--bad-soft);color:var(--bad)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.ok{background:var(--good-soft);color:var(--good)}
+.note{font-size:.82rem;color:var(--muted)}
+.hide{display:none!important}
+.ai{white-space:pre-wrap}
+.sticky-actions{position:sticky;bottom:0;margin:14px -18px -18px;padding:12px 18px 14px;display:flex;gap:10px;background:var(--card);border-top:1px solid var(--line);border-radius:0 0 16px 16px}
+.sticky-actions .btn{flex:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header style="margin:6px 0 16px">
+    <div class="eyebrow">Psicologia · 1º semestre</div>
+    <h1>Simulado de Anatomia Humana</h1>
+    <p class="ink2" style="margin:.4em 0 0">Questões das TEAs da Uni Ítalo. Nota de 0 a 10, média para aprovação: <b>6,0</b>.</p>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button data-v="home" class="on">Início</button>
+    <button data-v="evo">Evolução</button>
+    <button data-v="rep">Relatório</button>
+  </nav>
+
+  <section id="v-home">
+    <div class="card">
+      <h2>Como funciona</h2>
+      <p class="ink2">Cada rodada traz 20 questões sorteadas de um banco de <span id="bankN"></span>: as <span id="origN"></span> das suas TEAs e <span id="varN"></span> variações montadas com o conteúdo dessas mesmas questões. Todo bloco aparece pelo menos uma vez. Depois de cada resposta você vê o comentário de todas as alternativas. A ordem das questões e das alternativas muda a cada rodada. No fim sai a nota, a faixa da escala e a correção completa. Tudo fica guardado para comparar tentativas.</p>
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary" id="startBtn">Começar simulado</button>
+        <label class="row ink2" style="gap:6px;font-size:.9rem"><input type="checkbox" id="instant" checked> Mostrar correção a cada questão</label>
+        <label class="row ink2" style="gap:6px;font-size:.9rem"><input type="checkbox" id="onlyOrig"> Só as <span id="origN2"></span> originais</label>
+        <label class="row ink2" style="gap:6px;font-size:.9rem"><input type="checkbox" id="enadeMode"> Modo Enade 2025 (8 questões)</label>
+      </div>
+      <p class="note" style="margin-top:10px">Modo Enade 2025: 8 questões novas no formato do Enade (situação-problema, afirmativas e asserção-razão), uma por bloco, alinhadas à <a href="https://abmes.org.br/legislacoes/detalhe/5146/portaria-inep-n-348" target="_blank" rel="noopener">Portaria Inep nº 348/2025</a>, que define a prova de Psicologia. Depois de responder, cada questão mostra o nível da Taxonomia de Bloom, a competência e o objeto de conhecimento avaliados. Fora desse modo, o simulado continua só com as questões das TEAs.</p>
+      <p class="note" id="storeNote" style="margin-top:12px">Conectando ao armazenamento…</p>
+    </div>
+    <div class="card">
+      <h2>Escala de desempenho</h2>
+      <p class="ink2" style="margin-top:.3em">Abaixo de 6,0 não atinge a média.</p>
+      <div class="lvl" id="scaleList"></div>
+    </div>
+    <div class="card" id="lastCard" style="display:none"></div>
+  </section>
+
+  <section id="v-quiz" class="hide">
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <span class="eyebrow" id="qCount"></span>
+        <span class="eyebrow" id="qTimer"></span>
+      </div>
+      <div class="progress"><i id="qBar"></i></div>
+      <div style="margin-top:14px"><span class="qtopic" id="qTopic"></span></div>
+      <div class="qtext" id="qText"></div>
+      <img class="qimg hide" id="qImg" alt="Peça anatômica de cabeça e pescoço em corte">
+      <div id="qOpts"></div>
+      <div id="qFb"></div>
+      <div class="sticky-actions">
+        <button class="btn ghost" id="quitBtn">Sair</button>
+        <button class="btn primary" id="nextBtn" disabled>Confirmar</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="v-result" class="hide"></section>
+  <section id="v-evo" class="hide"></section>
+  <section id="v-rep" class="hide"></section>
+</div>
+
+<script>
+/* ===================== BANCO DE QUESTÕES ===================== */
+const TOPICS = {
+  con:"Conceitos básicos",
+  teg:"Sistema tegumentar",
+  esq:"Sistema esquelético",
+  mus:"Sistema muscular",
+  art:"Articulações",
+  uri:"Sistema urinário",
+  dig:"Sistema digestório",
+  car:"Sistema cardiovascular"
+};
+const STUDY = {
+  con:"Fixe a posição anatômica (corpo ereto, olhar para o horizonte, membros superiores ao lado do corpo, palmas voltadas para a frente, pés juntos e apontados para a frente). Depois amarre cada plano ao que ele divide: sagital separa direita e esquerda, frontal (coronal) separa anterior e posterior, transversal separa superior e inferior. O eixo de cada plano é o que fica perpendicular a ele: sagital com eixo látero-lateral, frontal com eixo ântero-posterior, transversal com eixo longitudinal. Por fim, as cavidades: dorsal (encéfalo e medula) e ventral, com o diafragma separando tórax e abdome.",
+  teg:"Separe as camadas. Epiderme: avascular, com a camada basal (mitose) e os melanócitos (melanina). Derme: altamente vascularizada, onde ficam folículos, glândulas e o músculo eretor do pelo. Depois os anexos: glândula sebácea abre no folículo piloso; sudorípara produz o suor; ceruminosa produz o cerúmen. A função comum de pelos, unhas e glândulas ceruminosas é proteção.",
+  esq:"Funções dos ossos: sustentação, proteção, locomoção (como alavancas), armazenamento de íons (cálcio e fósforo) e produção de células do sangue. Contração é função do músculo. Esqueleto axial: crânio, coluna vertebral (atlas e áxis incluídas), costelas e esterno. Apendicular: membros e seus cíngulos.",
+  mus:"Três tipos: esquelético (estriado, voluntário), cardíaco (estriado, involuntário, único com discos intercalares) e liso (sem estrias, involuntário, lento, nas vísceras). Partes: ventre (contrai) e tendão (conjuntivo, prende ao osso). Papéis no movimento: agonista (principal), sinergista (auxilia o agonista), antagonista (faz o oposto) e fixador (estabiliza a origem do agonista).",
+  art:"Classifique pela mobilidade. Sinartrose: imóvel, fibrosa (suturas do crânio). Anfiartrose: pouca mobilidade, cartilagínea (sínfise púbica, discos intervertebrais). Diartrose: móvel, sinovial (joelho, ombro), com cápsula, membrana e líquido sinovial e cartilagem articular revestindo as extremidades.",
+  uri:"Rim produz, ureter conduz, bexiga armazena, uretra elimina. O néfron é a unidade funcional: filtração no glomérulo (córtex), urina terminando de se formar nas pirâmides (medula) e gotejando pela papila no cálice menor. Os rins são retroperitoneais e participam da homeostase (água, eletrólitos, pH, pressão).",
+  dig:"Siga o alimento. Boca: mastigação e início da digestão do amido pela amilase salivar (ptialina). Estômago: armazenamento temporário, ambiente mais ácido e início da digestão de proteínas. Duodeno: recebe bile e suco pancreático, por isso ali se digerem as gorduras e se continua a digestão das proteínas.",
+  car:"Pericárdio fibroso: saco externo que se fixa ao esterno (ligamentos esternopericárdicos) e ao diafragma. Valvas: as atrioventriculares (tricúspide à direita, bicúspide/mitral à esquerda) ficam entre átrios e ventrículos; as semilunares (pulmonar e aórtica) ficam entre os ventrículos e os grandes vasos."
+};
+/* o: alternativas (a correta primeiro; a ordem é embaralhada a cada rodada); c: comentário de cada alternativa, na mesma ordem */
+const Q = [
+ {t:"teg",src:"TEA 01",q:"Assinale abaixo a alternativa correta referente a camada dérmica da pele.",
+  o:["Camada altamente vascularizada.","Camada basal é onde ocorre a mitose.","Melanócito produz uma substância chamada melanina que produz pigmento da nossa pele.","Glândula sudorípara está localizada nessa camada e secreta sebo diretamente no folículo piloso.","Nenhuma das anteriores."],
+  c:["Correta. A derme é rica em vasos sanguíneos e nutre a epiderme, que é avascular.","Errada. A camada basal existe e ali ocorre mitose, mas ela pertence à epiderme, não à derme.","Errada. A frase sobre a melanina é verdadeira, mas os melanócitos ficam na epiderme (camada basal). Verdade sobre outra camada é a pegadinha.","Errada. Quem secreta sebo no folículo piloso é a glândula sebácea. A sudorípara produz suor.","Errada. A primeira alternativa está correta."],a:0},
+ {t:"teg",src:"TEA 01",q:"Sabemos que na derme existe um músculo associado a uma estrutura considerada anexo da pele. Assinale a alternativa que corresponde as características dessa estrutura.",
+  o:["Manutenção da temperatura corporal","Manipulação de pequenos objetos","Auxilia nos movimentos finos","Secreta e produz o suor.","Impede a evaporação de água pela pele."],
+  c:["Correta. O músculo é o eretor do pelo, e o anexo é o pelo. Ao se contrair (arrepio), o pelo se ergue e retém uma camada de ar que ajuda a conservar o calor.","Errada. Manipular pequenos objetos é função atribuída às unhas, que não têm músculo associado na derme.","Errada. Mesma armadilha: movimentos finos ligam-se às unhas e às pontas dos dedos, não ao pelo.","Errada. Produzir suor é da glândula sudorípara, que não tem músculo próprio associado.","Errada. Barreira contra perda de água é função da epiderme (camada córnea), não do pelo. Texto desta alternativa completado: o print cortou o final."],a:0},
+ {t:"esq",src:"TEA 02",q:"Citados abaixo estão as funções dos nossos ossos exceto:",
+  o:["Contração","Sustentação","Locomoção","Proteção","Armazenamento de íons"],
+  c:["Correta (é a exceção). Contração é função do tecido muscular. O osso é a alavanca que o músculo move.","Errada. Sustentação é função clássica do esqueleto.","Errada. Os ossos participam da locomoção como alavancas, movidas pelos músculos.","Errada. Os ossos protegem órgãos: crânio e encéfalo, costelas e coração e pulmões.","Errada. O osso é reservatório de íons, principalmente cálcio e fósforo."],a:0},
+ {t:"esq",src:"TEA 02",q:"As vertebras atlas e axis estão localizadas exatamente onde?",
+  o:["Esqueleto axial","Esqueleto apendicular","Cíngulos dos membros inferiores","Cíngulos dos membros superiores","Nenhuma das anteriores"],
+  c:["Correta. Atlas (C1) e áxis (C2) são as duas primeiras vértebras cervicais, e a coluna vertebral faz parte do esqueleto axial.","Errada. O apendicular reúne os membros e seus cíngulos, não a coluna.","Errada. O cíngulo dos membros inferiores é a pelve (ossos do quadril).","Errada. O cíngulo dos membros superiores é formado por clavícula e escápula.","Errada. A primeira alternativa está correta."],a:0},
+ {t:"dig",src:"TEA 06",q:"O primeiro lugar que os alimentos e líquidos entram em contato no nosso organismo, é a boca. Sobre o processo digestório que estão relacionadios apenas a boca, classifique as afirmações abaixo se são verdadeiras (V) ou falsas (F):\n\n( ) Começa a digestão do amido através de uma enzima específica.\n( ) Ocorre a digestão da gordura por enzimas localizadas na boca.\n( ) Ocorre a digestão de proteínas por enzimas localizadas na boca.",
+  o:["VFF","FVF","FVV","FFF","VVV"],
+  c:["Correta. Na boca a amilase salivar (ptialina) começa a quebrar o amido. Gorduras e proteínas não são digeridas ali, pelo modelo da aula.","Errada. Inverte tudo: marca como falsa a digestão do amido, que é a única verdadeira.","Errada. A digestão de proteínas começa no estômago (pepsina), não na boca.","Errada. A primeira afirmativa é verdadeira: a amilase salivar age na boca.","Errada. Gorduras são digeridas sobretudo no duodeno (bile e lipase pancreática) e proteínas a partir do estômago."],a:0},
+ {t:"dig",src:"TEA 06",q:"Sabemos que o duodeno, localizado no início do intestino delgado, exerce uma característica diferenciada das demais regiões do intestino delgado. Assinale a alternativa que reflete isso:",
+  o:["No duodeno ocorre a digestão das gorduras e das proteínas.","É no duodeno que fica localizada a região que contém mais ácido do sistema digestório pois a atividades desempenhadas nesse local precisa de um ambiente ácido.","É no duodeno que ocorre o armazenamento temporário do bolo alimentar para que a digestão ocorra.","Uma das poucas regiões do sistema digestório que ocorre a digestão mecânica.","Nenhuma das anteriores."],
+  c:["Correta. O duodeno recebe a bile (emulsiona gorduras) e o suco pancreático (lipase e enzimas que quebram proteínas).","Errada. O ambiente mais ácido é o estômago. No duodeno o bicarbonato pancreático neutraliza esse ácido.","Errada. O armazenamento temporário do alimento é função do estômago.","Errada. Digestão mecânica ocorre em várias regiões (mastigação na boca, movimentos do estômago e do intestino), não em 'poucas'.","Errada. A primeira alternativa está correta."],a:0},
+ {t:"car",src:"TEA 07",q:"Vimos na aula sobre o sistema cardiovascular que o pericárdio fibroso entra em contato com outras estruturas que ficam posicionadas redor do coração. São elas:",
+  o:["Osso esterno","Lobos dos pulmões","Esôfago","Fígado","Faringe"],
+  c:["Correta. O pericárdio fibroso se fixa à face posterior do esterno pelos ligamentos esternopericárdicos (e, embaixo, ao diafragma).","Errada. Lateralmente o pericárdio se relaciona com a pleura mediastinal, não se fixa aos lobos pulmonares.","Errada pelo gabarito. O esôfago passa atrás do coração, no mediastino posterior, mas não é a fixação do pericárdio fibroso que a aula descreveu.","Errada. O fígado fica no abdome, separado do coração pelo diafragma.","Errada. A faringe fica no pescoço, longe do coração."],a:0},
+ {t:"car",src:"TEA 07",q:"Sobre as valvas semilunares podemos afirmar que?",
+  o:["Ficam localizadas entre os ventrículos e os grandes vasos.","Existem 2 do lado direito do coração e 2 do lado esquerdo.","Ficam localizadas entre os átrios e ventrículos.","São formadas por cúspides (bicúspide e tricúspide).","Nenhuma das anteriores."],
+  c:["Correta. São duas: a pulmonar (ventrículo direito → tronco pulmonar) e a aórtica (ventrículo esquerdo → aorta).","Errada. São quatro valvas no total, uma de cada tipo por lado: uma semilunar e uma atrioventricular de cada lado. Semilunares são só duas.","Errada. Entre átrios e ventrículos ficam as valvas atrioventriculares.","Errada. Bicúspide (mitral) e tricúspide são as atrioventriculares, não as semilunares.","Errada. A primeira alternativa está correta."],a:0},
+ {t:"con",src:"TEA Conceitos básicos",img:"head",q:"Analise a figura de cabeça e pescoço abaixo e assinale o plano e eixo corretos:",
+  o:["Sagital - latero lateral","Sagital - ântero posterior","Frontal - ântero posterior","Frontal - latero lateral","Transversal - longitudinal"],
+  c:["Correta. A peça foi cortada no plano sagital mediano (separa direita e esquerda). O eixo do plano sagital é o perpendicular a ele, que atravessa o corpo de um lado ao outro: látero-lateral.","Errada. O plano está certo, mas o eixo ântero-posterior é o do plano frontal. O eixo de um plano é sempre o que fica perpendicular a ele.","Errada. O par está coerente (frontal com ântero-posterior), mas a figura não mostra um corte frontal, que separaria a parte da frente da de trás.","Errada. Plano errado e par incoerente: látero-lateral é eixo do sagital.","Errada. Transversal com longitudinal é um par coerente, mas o corte transversal separaria cima e baixo, e não é o que a figura mostra."],a:0},
+ {t:"con",src:"TEA Conceitos básicos",q:"Sobre as cavidades do corpo é correto afirmar que:",
+  o:["Todas as alternativas estão corretas.","O músculo diafragma é o limite inferior do tórax.","O músculo diafragma é o limite superior da cavidade abdominopélvico.","Na cavidade dorsal contém estruturas que comanda as funções do nosso corpo.","Nenhuma das alternativas está correta."],
+  c:["Correta. As três afirmativas anteriores são verdadeiras ao mesmo tempo.","Verdadeira, mas incompleta como resposta: há outras afirmativas também verdadeiras, então a melhor resposta é 'todas'.","Verdadeira, mas incompleta: o diafragma é ao mesmo tempo o piso do tórax e o teto da cavidade abdominopélvica.","Verdadeira, mas incompleta: a cavidade dorsal abriga encéfalo e medula espinal, que comandam o corpo.","Errada. As três afirmativas são verdadeiras. Texto desta alternativa reconstruído: ela não apareceu no print."],a:0},
+ {t:"teg",src:"TEA 09",q:"Assinale abaixo a glândula que está associada ao folículo piloso?",
+  o:["Glândulas sebáceas.","Glândulas mamárias.","Glândulas ceruminosas.","Glândula pineal.","Nenhuma das alternativas estão corretas."],
+  c:["Correta. A glândula sebácea despeja o sebo dentro do folículo piloso, lubrificando pelo e pele.","Errada. As mamárias são glândulas sudoríparas modificadas, independentes do folículo.","Errada. As ceruminosas ficam no meato acústico externo e produzem cerúmen.","Errada. A pineal é uma glândula endócrina do encéfalo, não um anexo da pele.","Errada. A primeira alternativa está correta."],a:0},
+ {t:"teg",src:"TEA 09",q:"Sobre as funções das glândulas ceruminosas, pelos e unhas, assinale a alternativa que consta uma função em comum entre essas 3 estruturas:",
+  o:["Proteção.","Produzem hormônios.","Manutenção de temperatura corporal.","Auxiliam nos movimentos finos.","Nenhuma das alternativas anteriores."],
+  c:["Correta. Cerúmen protege o conduto auditivo, pelos protegem contra partículas e raios solares, unhas protegem a ponta dos dedos.","Errada. Nenhuma das três é glândula endócrina.","Errada. Temperatura é função do pelo (e das sudoríparas), não das unhas nem das ceruminosas.","Errada. Movimentos finos ligam-se às unhas apenas.","Errada. A primeira alternativa está correta."],a:0},
+ {t:"con",src:"TEA Conceitos básicos da Anatomia",q:"Vimos nas aulas que a posição anatômica é de extrema importância no estudo da Anatomia Humana. Sobre a posição anatômica podemos falar que:",
+  o:["Joelhos esticados e palmas das mãos voltadas para frente.","Posição ereta e pés posicionados lateralmente.","Cabeça sempre para baixo.","Mãos posicionadas ao lado da cabeça.","Todas as respostas anteriores estão corretas."],
+  c:["Correta. Na posição anatômica o corpo está ereto, com joelhos estendidos, membros superiores ao lado do corpo e palmas voltadas para a frente.","Errada. A posição é ereta, mas os pés ficam juntos e apontados para a frente, não para os lados.","Errada. A cabeça fica erguida, com o olhar dirigido ao horizonte.","Errada. Os membros superiores ficam pendentes ao lado do corpo, não da cabeça.","Errada. Só a primeira está correta."],a:0},
+ {t:"con",src:"TEA Conceitos básicos da Anatomia",q:"Estudamos 3 tipos diferentes de planos anatômicos de secção, sobre o plano frontal, assinale a alternativa correta:",
+  o:["Divide o corpo em posterior e anterior.","Divide o corpo em direita e esquerda.","Divide o corpo em superior e inferior","Divide o corpo em proximal e distal","Nenhuma das anteriores."],
+  c:["Correta. O plano frontal (coronal) passa de um lado ao outro, paralelo à testa, separando a frente (anterior) de trás (posterior).","Errada. Direita e esquerda é o que o plano sagital separa.","Errada. Superior e inferior é o que o plano transversal separa.","Errada. Proximal e distal são termos de posição usados nos membros, não planos de secção.","Errada. A primeira alternativa está correta."],a:0},
+ {t:"mus",src:"TEA 03",q:"Assinale a resposta correta sobre os músculos:",
+  o:["Músculo cardíaco é o único que possui discos intercalares.","Os músculos vicerais (estomago por ex) possuem movimentos rápidos.","Músculo liso é o único que é estriado.","Ventre muscular pode ser chamado de tendão também.","O tecido conjuntivo é um componente raro e só está presente na fáscia muscular."],
+  c:["Correta. Os discos intercalares unem as células cardíacas e fazem o impulso passar de uma para outra, o que permite a contração em conjunto.","Errada. A musculatura visceral é lisa, de contração lenta e involuntária.","Errada. Inverte o conceito: o liso é justamente o que não tem estrias. Estriados são o esquelético e o cardíaco.","Errada. Ventre é a parte carnosa, que contrai. Tendão é a parte de tecido conjuntivo denso que prende o músculo ao osso.","Errada. O tecido conjuntivo envolve o músculo em vários níveis (epimísio, perimísio, endomísio) e forma os tendões. Não é raro."],a:0},
+ {t:"mus",src:"TEA 03",q:"Em um movimento de flexão do braço o músculo sinergista é aquele que:",
+  o:["É o músculo que auxilia o músculo agonista a realizar o movimento.","É o músculo principal do movimento.","É o músculo que está localizado ao lado contrário da articulação.","É o músculo que auxilia a estabilizar a origem do músculo antagonista.","Nenhuma das anteriores."],
+  c:["Correta. O sinergista ajuda o agonista, somando força ou neutralizando movimentos indesejados.","Errada. O músculo principal do movimento é o agonista.","Errada. O que fica do lado oposto e faz o movimento contrário é o antagonista.","Errada. Estabilizar a origem é o papel do fixador, e quem é estabilizado é o agonista, não o antagonista.","Errada. A primeira alternativa está correta."],a:0},
+ {t:"art",src:"TEA 04",q:"Sabemos que existem articulações móveis, imóveis e articulações com pouca mobilidade. Sobre as articulações denominadas sinartrose assinale a alternativa correta:",
+  o:["Articulações imóveis chamadas sinartrose localizadas no crânio.","Articulações móveis chamadas de sinoviais localizada na sínfise púbica.","Articulações com pouca mobilidade também chamada de anfiartrose.","Articulações imóveis chamadas sinartrose localizadas no joelho.","Articulações com pouca mobilidade chamadas sinoviais localizadas no joelho."],
+  c:["Correta. As suturas entre os ossos do crânio são o exemplo clássico de sinartrose: articulações fibrosas, sem movimento.","Errada. A sínfise púbica é cartilagínea e tem pouca mobilidade (anfiartrose), não é sinovial.","Errada. A definição de anfiartrose está certa, mas a questão pergunta sobre sinartrose.","Errada. O nome e a mobilidade estão certos, mas o joelho é articulação sinovial, a mais móvel.","Errada. O joelho é sinovial, mas sinovial é móvel (diartrose), não 'pouca mobilidade'."],a:0},
+ {t:"art",src:"TEA 04",q:"Sobre a articulação sinovial, assinale a alternativa correta:",
+  o:["São articulações móveis onde consta o líquido sinovial dentro da cavidade sinovial.","Estruturas que encontramos na articulação sinovial são vistas em todas as articulações.","As extremidades ósseas não precisam de nenhuma estrutura protetora já que o líquido sinovial é o suficiente para impedir atrito dessas estruturas.","Articulação é a articulação mais simples de todas pelo fato dela ter uma ampla mobilidade.","Nenhuma das anteriores."],
+  c:["Correta. A articulação sinovial tem cápsula, membrana sinovial e cavidade com líquido sinovial, que lubrifica e permite ampla mobilidade.","Errada. Cavidade, cápsula e líquido sinovial são exclusivos das sinoviais. Fibrosas e cartilagíneas não os têm.","Errada. As extremidades são revestidas por cartilagem articular. O líquido lubrifica, mas não substitui essa proteção.","Errada. É a mais complexa, não a mais simples. A ampla mobilidade vem justamente dessa estrutura elaborada.","Errada. A primeira alternativa está correta."],a:0},
+ {t:"uri",src:"TEA 05",q:"Sobre a função renal, assinale a alternativa correta:",
+  o:["É nos néfrons que ocorre a filtragem sanguínea.","Rins são responsáveis por armazenar a urina.","As papilas renais localizadas no ápice das pirâmides renais não são responsáveis por gotejar a urina no cálice menor.","Rins são constituídos por musculatura lisa.","Todas as alternativas anteriores estão corretas."],
+  c:["Correta. O néfron é a unidade funcional do rim, e a filtração começa no glomérulo, dentro dele.","Errada. Quem armazena a urina é a bexiga. O rim produz.","Errada pela negação: as papilas são exatamente o ponto por onde a urina goteja no cálice menor. A pegadinha é o 'não'.","Errada. O rim é formado por néfrons, vasos e tecido conjuntivo. Musculatura lisa existe nos ureteres e na bexiga.","Errada. Só a primeira está correta."],a:0},
+ {t:"uri",src:"TEA 05",q:"Sobre o sistema urinário podemos dizer que:",
+  o:["A filtragem do sangue e formação da urina começa no córtex renal e finaliza na pirâmide renal.","Apenas exerce o equilíbrio eletrolítico.","Os rins são órgãos considerados subperitoneais.","Não tem um papel importante na homeostase.","Nenhuma das alternativas."],
+  c:["Correta. Os glomérulos ficam no córtex; os túbulos e ductos coletores descem pelas pirâmides da medula, onde a urina termina de se formar e segue para a papila.","Errada. O 'apenas' derruba: além dos eletrólitos, o rim regula água, pressão arterial, pH e elimina resíduos.","Errada. O termo correto é retroperitoneais: os rins ficam atrás do peritônio, na parede posterior do abdome.","Errada. É o contrário: o sistema urinário é central na homeostase.","Errada. A primeira alternativa está correta."],a:0},
+ /* variações: montadas só com o conteúdo das próprias TEAs */
+ {t:"con",src:"Variação · Planos",v:1,q:"Qual plano anatômico divide o corpo em direita e esquerda?",
+  o:["Sagital","Frontal","Transversal","Coronal","Horizontal"],
+  c:["Correta. O plano sagital corre de frente para trás e separa os lados direito e esquerdo. Na TEA do plano frontal, essa frase aparece como distrator.","Errada. O frontal separa anterior e posterior.","Errada. O transversal separa superior e inferior.","Errada. Coronal é outro nome do plano frontal.","Errada. Horizontal é outro nome do plano transversal."],a:0},
+ {t:"con",src:"Variação · Planos",v:1,q:"O plano transversal divide o corpo em:",
+  o:["Superior e inferior","Anterior e posterior","Direita e esquerda","Proximal e distal","Medial e lateral"],
+  c:["Correta. O plano transversal (horizontal) corta o corpo de forma paralela ao chão, separando a parte de cima da de baixo.","Errada. Isso é o plano frontal.","Errada. Isso é o plano sagital.","Errada. Proximal e distal são termos de posição nos membros, não divisão por plano.","Errada. Medial e lateral são termos de posição em relação à linha mediana."],a:0},
+ {t:"car",src:"Variação · TEA 07",v:1,q:"Onde ficam as valvas atrioventriculares (tricúspide e bicúspide)?",
+  o:["Entre os átrios e os ventrículos","Entre os ventrículos e os grandes vasos","Na saída da aorta","Entre os dois átrios","No pericárdio fibroso"],
+  c:["Correta. A tricúspide fica entre átrio e ventrículo direitos; a bicúspide (mitral), entre átrio e ventrículo esquerdos. Na TEA, essa frase aparece como distrator das semilunares.","Errada. Entre ventrículos e grandes vasos ficam as semilunares.","Errada. Na saída da aorta fica a valva aórtica, que é semilunar.","Errada. Os átrios são separados pelo septo interatrial, sem valva entre eles.","Errada. O pericárdio é o envoltório do coração, não abriga valvas."],a:0},
+ {t:"teg",src:"Variação · TEA 01",v:1,q:"Qual anexo da pele secreta e produz o suor?",
+  o:["Glândula sudorípara","Glândula sebácea","Glândula ceruminosa","Melanócito","Músculo eretor do pelo"],
+  c:["Correta. A sudorípara produz o suor, que ajuda a regular a temperatura.","Errada. A sebácea produz sebo e abre no folículo piloso.","Errada. A ceruminosa produz cerúmen no conduto auditivo.","Errada. O melanócito produz melanina e é uma célula da epiderme, não um anexo.","Errada. O eretor do pelo é um músculo; não secreta nada."],a:0},
+ {t:"teg",src:"Variação · TEA 01",v:1,q:"A camada basal, onde ocorre a mitose, e os melanócitos pertencem a qual camada da pele?",
+  o:["Epiderme","Derme","Hipoderme","Periósteo","Pericárdio"],
+  c:["Correta. A camada basal é a mais profunda da epiderme e é ali que ficam os melanócitos.","Errada. A derme é a camada vascularizada abaixo da epiderme.","Errada. A hipoderme (tela subcutânea) fica abaixo da derme e é rica em gordura.","Errada. Periósteo é a membrana que reveste o osso.","Errada. Pericárdio é o envoltório do coração."],a:0},
+ {t:"dig",src:"Variação · TEA 06",v:1,q:"Qual enzima inicia, na boca, a digestão do amido?",
+  o:["Amilase salivar (ptialina)","Pepsina","Lipase pancreática","Bile","Tripsina"],
+  c:["Correta. É a 'enzima específica' da primeira afirmativa da TEA 06.","Errada. A pepsina age no estômago, sobre proteínas.","Errada. A lipase pancreática age no duodeno, sobre gorduras.","Errada. A bile não é enzima: ela emulsiona gorduras no duodeno.","Errada. A tripsina vem do pâncreas e age no duodeno, sobre proteínas."],a:0}
+,
+ {"t": "con", "src": "Enade 2025 · situação-problema", "q": "Um paciente é encaminhado para avaliação neuropsicológica com um laudo de ressonância magnética que diz: \"lesão no lobo frontal esquerdo, bem visualizada nos cortes coronais\". O estagiário de Psicologia precisa entender o laudo para discutir o caso com a equipe.\n\nAssinale a alternativa correta.", "o": ["Os cortes coronais são feitos no plano frontal, que divide o corpo em partes anterior e posterior; \"esquerdo\" refere-se ao lado do paciente, e não ao do observador.", "Os cortes coronais são feitos no plano transversal, que divide o corpo em partes superior e inferior.", "\"Esquerdo\" refere-se ao lado esquerdo de quem olha a imagem, por isso a lesão está no hemisfério direito do paciente.", "Os cortes coronais equivalem aos sagitais, que dividem o corpo em partes anterior e posterior.", "O lobo frontal é posterior ao lobo occipital na posição anatômica."], "c": ["Correta. Coronal é sinônimo de frontal, e os termos de lado se referem sempre ao paciente em posição anatômica. Nas imagens radiológicas, aliás, o lado esquerdo do paciente costuma aparecer à direita de quem olha, o que torna essa regra indispensável.", "Errada. Quem separa superior e inferior é o plano transversal (cortes axiais).", "Errada. Direita e esquerda são sempre do paciente. Confundir isso inverte a localização da lesão.", "Errada. O plano sagital divide o corpo em direita e esquerda, e não é sinônimo de coronal.", "Errada. O lobo frontal é anterior; o occipital fica na parte posterior do encéfalo."], "a": 0, "v": 1, "e": 1, "bl": "Aplicar — pede usar a terminologia anatômica para ler um documento clínico", "cp": "II.4 · Avaliação, diagnóstico e intervenção: atuação em equipe inter e multiprofissional", "ob": "VIII · Bases biológicas do comportamento"},
+ {"t": "teg", "src": "Enade 2025 · asserção-razão", "q": "Uma paciente com dermatite atópica relata piora das lesões em períodos de provas e é acompanhada em conjunto por dermatologista e psicóloga. Na primeira consulta, a psicóloga explica a ela a estrutura da pele.\n\nI. A pele é um órgão de interface entre o organismo e o ambiente, com receptores nervosos, concentrados sobretudo na derme, que participam do tato, da dor e da percepção de temperatura\n\nPORQUE\n\nII. a epiderme, por ser ricamente vascularizada, é a camada responsável pela termorregulação por meio da dilatação e da constrição dos vasos.\n\nA respeito dessas asserções, assinale a opção correta.", "o": ["A asserção I é uma proposição verdadeira, e a II é uma proposição falsa.", "As asserções I e II são proposições verdadeiras, e a II é uma justificativa correta da I.", "As asserções I e II são proposições verdadeiras, mas a II não é uma justificativa correta da I.", "A asserção I é uma proposição falsa, e a II é uma proposição verdadeira.", "As asserções I e II são proposições falsas."], "c": ["Correta. A I é verdadeira: a derme concentra terminações e receptores nervosos, e a pele faz a fronteira com o meio. A II é falsa: a epiderme é avascular; os vasos que participam da termorregulação estão na derme, com as glândulas sudoríparas. A I descreve corretamente a função sensorial da pele. A II erra a camada: quem tem vasos é a derme.", "Errada. A II é falsa.", "Errada. A II é falsa.", "Errada. A I é verdadeira; a II é falsa.", "Errada. A I é verdadeira."], "a": 0, "v": 1, "e": 1, "bl": "Analisar — pede julgar duas proposições sobre estrutura e função e a relação entre elas", "cp": "II.4 · Avaliação, diagnóstico e intervenção: atuação em equipe inter e multiprofissional", "ob": "VIII · Bases biológicas do comportamento; XIX · Atenção e promoção da saúde"},
+ {"t": "esq", "src": "Enade 2025 · situação-problema com afirmativas", "q": "Numa UBS, uma mulher de 72 anos com osteoporose conta à psicóloga que deixou de sair de casa depois de uma queda, por medo de \"quebrar o fêmur\". A equipe discute o caso em reunião.\n\nAvalie as afirmações a seguir.\n\nI. O tecido ósseo armazena cálcio e é remodelado continuamente; quando a reabsorção supera a formação, há perda de massa óssea.\n\nII. O colo do fêmur, osso do esqueleto apendicular, é local frequente de fratura em idosos após quedas.\n\nIII. O medo de cair que leva ao isolamento é uma questão exclusivamente ortopédica, sem papel para a Psicologia.\n\nÉ correto o que se afirma em", "o": ["I e II, apenas.", "I, apenas.", "III, apenas.", "II e III, apenas.", "I, II e III."], "c": ["Correta. I verdadeira: é o mecanismo de base da osteoporose; II verdadeira: a fratura do colo do fêmur é uma das mais associadas a quedas na velhice, e o fêmur pertence ao membro inferior; III falsa: o medo de cair produz restrição de atividades e isolamento, o que pede cuidado psicológico e trabalho em equipe. A questão junta a base biológica (remodelação óssea, esqueleto apendicular) e a consequência psicossocial (medo e isolamento).", "Errada. Deixa de fora a II, que é verdadeira.", "Errada. Deixa de fora a I, que é verdadeira; deixa de fora a II, que é verdadeira; inclui a III, que é falsa (o medo de cair produz restrição de atividades e isolamento, o que pede cuidado psicológico e trabalho em equipe).", "Errada. Deixa de fora a I, que é verdadeira; inclui a III, que é falsa (o medo de cair produz restrição de atividades e isolamento, o que pede cuidado psicológico e trabalho em equipe).", "Errada. Inclui a III, que é falsa (o medo de cair produz restrição de atividades e isolamento, o que pede cuidado psicológico e trabalho em equipe)."], "a": 0, "v": 1, "e": 1, "bl": "Analisar — relaciona estrutura óssea, risco clínico e consequência psicológica", "cp": "II.4 · Avaliação, diagnóstico e intervenção: atuação em equipe inter e multiprofissional; II.2 · Avaliação, diagnóstico e intervenção: prevenção e promoção da saúde", "ob": "VIII · Bases biológicas do comportamento; IX · Desenvolvimento humano; XIX · Atenção e promoção da saúde"},
+ {"t": "mus", "src": "Enade 2025 · situação-problema", "q": "No relaxamento muscular progressivo, técnica usada no manejo da ansiedade, a pessoa contrai e depois relaxa, em sequência, grupos musculares como os da mão, do braço e dos ombros. Um usuário pergunta por que a técnica trabalha com esses músculos e não pede para \"relaxar o coração\" ou \"relaxar o estômago\".\n\nA explicação correta é:", "o": ["A técnica atua sobre o músculo estriado esquelético, que está sob controle voluntário; o músculo cardíaco e o liso são involuntários e só se alteram indiretamente, pela redução da ativação do sistema nervoso autônomo.", "O músculo liso das vísceras é voluntário, mas leva mais tempo para responder, por isso fica para o fim da técnica.", "O músculo cardíaco é estriado e, por isso, pode ser contraído e relaxado à vontade, como o esquelético.", "A técnica age sobre os tendões, que são as partes do músculo que se contraem.", "A técnica contrai agonista e antagonista ao mesmo tempo para produzir movimento amplo."], "c": ["Correta. Só o esquelético obedece ao comando voluntário. O efeito sobre o coração e as vísceras vem depois, pela queda da ativação simpática.", "Errada. O músculo liso é involuntário.", "Errada. O cardíaco é estriado, mas involuntário; estriação não define controle voluntário.", "Errada. Quem contrai é o ventre muscular; o tendão é tecido conjuntivo que prende o músculo ao osso.", "Errada. Agonista e antagonista fazem movimentos opostos; contraí-los juntos estabiliza a articulação, não produz movimento amplo, e não é isso que a técnica pede."], "a": 0, "v": 1, "e": 1, "bl": "Aplicar — pede usar os tipos de músculo para explicar uma técnica de intervenção", "cp": "II.2 · Avaliação, diagnóstico e intervenção: prevenção e promoção da saúde", "ob": "VIII · Bases biológicas do comportamento; XIX · Atenção e promoção da saúde"},
+ {"t": "art", "src": "Enade 2025 · asserção-razão", "q": "Um paciente com bruxismo (apertar e ranger os dentes), associado por ele a períodos de estresse, é encaminhado pelo dentista à Psicologia. Ele se queixa de dor e estalos ao abrir a boca.\n\nI. A articulação temporomandibular é uma diartrose, ou seja, uma articulação de ampla mobilidade\n\nPORQUE\n\nII. ela é uma articulação sinovial, com cápsula, cavidade articular com líquido sinovial e um disco articular entre as superfícies ósseas.\n\nA respeito dessas asserções, assinale a opção correta.", "o": ["As asserções I e II são proposições verdadeiras, e a II é uma justificativa correta da I.", "As asserções I e II são proposições verdadeiras, mas a II não é uma justificativa correta da I.", "A asserção I é uma proposição verdadeira, e a II é uma proposição falsa.", "A asserção I é uma proposição falsa, e a II é uma proposição verdadeira.", "As asserções I e II são proposições falsas."], "c": ["Correta. A I é verdadeira: a ATM permite abrir, fechar e deslizar a mandíbula. A II é verdadeira: a presença de cavidade e líquido sinovial é o que caracteriza as diartroses. A II explica a I: é a estrutura sinovial que dá à ATM sua mobilidade. Não confunda com as suturas do crânio, que são fibrosas e imóveis.", "Errada. A II explica a I.", "Errada. A II é verdadeira.", "Errada. A I é verdadeira.", "Errada. A I é verdadeira; a II é verdadeira."], "a": 0, "v": 1, "e": 1, "bl": "Analisar — pede relacionar estrutura e mobilidade da articulação", "cp": "II.4 · Avaliação, diagnóstico e intervenção: atuação em equipe inter e multiprofissional", "ob": "VIII · Bases biológicas do comportamento"},
+ {"t": "uri", "src": "Enade 2025 · situação-problema com afirmativas", "q": "Uma menina de 7 anos, que já tinha controle urinário noturno, volta a molhar a cama depois do nascimento do irmão. Os pais procuram a psicóloga da unidade de saúde.\n\nAvalie as afirmações a seguir.\n\nI. Como a urina é produzida na bexiga, a perda noturna se explica apenas por uma bexiga de pequena capacidade.\n\nII. Antes de atribuir o sintoma a fatores emocionais, é preciso, com a equipe de saúde, descartar causas orgânicas, como infecção urinária.\n\nIII. O controle voluntário da micção depende do esfíncter externo da uretra, formado por músculo esquelético.\n\nÉ correto o que se afirma em", "o": ["II e III, apenas.", "I, apenas.", "II, apenas.", "I e III, apenas.", "I, II e III."], "c": ["Correta. I falsa: a urina é produzida nos rins; a bexiga apenas armazena; II verdadeira: infecções e outras alterações do trato urinário podem produzir o mesmo sintoma; III verdadeira: o esfíncter externo é estriado e voluntário, ao contrário do interno. A questão cobra a anatomia do trato urinário e a conduta de investigar o orgânico antes de concluir pelo emocional.", "Errada. Inclui a I, que é falsa (a urina é produzida nos rins; a bexiga apenas armazena); deixa de fora a II, que é verdadeira; deixa de fora a III, que é verdadeira.", "Errada. Deixa de fora a III, que é verdadeira.", "Errada. Inclui a I, que é falsa (a urina é produzida nos rins; a bexiga apenas armazena); deixa de fora a II, que é verdadeira.", "Errada. Inclui a I, que é falsa (a urina é produzida nos rins; a bexiga apenas armazena)."], "a": 0, "v": 1, "e": 1, "bl": "Analisar — relaciona anatomia, hipótese clínica e conduta", "cp": "II.4 · Avaliação, diagnóstico e intervenção: atuação em equipe inter e multiprofissional; II.3 · Avaliação, diagnóstico e intervenção: avaliação, psicodiagnóstico e intervenção clínica", "ob": "VIII · Bases biológicas do comportamento; IX · Desenvolvimento humano"},
+ {"t": "dig", "src": "Enade 2025 · situação-problema com afirmativas", "q": "Um bancário com gastrite, que relaciona as crises à pressão por metas, é atendido em conjunto pelo médico do trabalho e pela psicóloga da empresa. Ele quer entender o que acontece no seu sistema digestório.\n\nAvalie as afirmações a seguir.\n\nI. A digestão química das proteínas começa no estômago, em ambiente ácido.\n\nII. A digestão do amido começa na boca, pela ação da amilase salivar.\n\nIII. O estresse crônico pode agravar sintomas digestivos, por ação do sistema nervoso autônomo, sem que por isso seja a única causa da gastrite.\n\nÉ correto o que se afirma em", "o": ["I, II e III.", "I, apenas.", "II, apenas.", "I e II, apenas.", "II e III, apenas."], "c": ["Correta. I verdadeira: é no estômago que a pepsina inicia a digestão das proteínas; II verdadeira: a amilase salivar (ptialina) inicia a quebra do amido; III verdadeira: a gastrite tem causas orgânicas frequentes, como a bactéria H. pylori e o uso de anti-inflamatórios, e o estresse pode agravar o quadro. A III é a que exige mais cuidado: reconhecer a influência do estresse sem transformá-lo em causa única, o que dispensaria indevidamente a avaliação médica.", "Errada. Deixa de fora a II, que é verdadeira; deixa de fora a III, que é verdadeira.", "Errada. Deixa de fora a I, que é verdadeira; deixa de fora a III, que é verdadeira.", "Errada. Deixa de fora a III, que é verdadeira.", "Errada. Deixa de fora a I, que é verdadeira."], "a": 0, "v": 1, "e": 1, "bl": "Analisar — pede julgar afirmações que relacionam fisiologia digestiva e trabalho", "cp": "II.4 · Avaliação, diagnóstico e intervenção: atuação em equipe inter e multiprofissional", "ob": "VIII · Bases biológicas do comportamento; XVIII · Saúde do trabalhador"},
+ {"t": "car", "src": "Enade 2025 · asserção-razão", "q": "Uma jovem chega ao pronto-socorro com o coração disparado, falta de ar e medo de morrer, num quadro compatível com crise de pânico. A psicóloga do plantão é chamada depois que a equipe médica descarta causas cardíacas.\n\nI. Na crise de pânico, a taquicardia pode resultar da ativação do sistema nervoso simpático sobre o nó sinoatrial\n\nPORQUE\n\nII. o nó sinoatrial, localizado no ventrículo esquerdo, é acelerado pelo nervo vago.\n\nA respeito dessas asserções, assinale a opção correta.", "o": ["A asserção I é uma proposição verdadeira, e a II é uma proposição falsa.", "As asserções I e II são proposições verdadeiras, e a II é uma justificativa correta da I.", "As asserções I e II são proposições verdadeiras, mas a II não é uma justificativa correta da I.", "A asserção I é uma proposição falsa, e a II é uma proposição verdadeira.", "As asserções I e II são proposições falsas."], "c": ["Correta. A I é verdadeira: o simpático aumenta a frequência de disparo do nó sinoatrial, o marca-passo natural. A II é falsa: o nó sinoatrial fica no átrio direito, e o vago (parassimpático) desacelera, não acelera, o coração. Repare também na ordem do atendimento: a hipótese de pânico só entra depois que a equipe descarta causa cardíaca.", "Errada. A II é falsa.", "Errada. A II é falsa.", "Errada. A I é verdadeira; a II é falsa.", "Errada. A I é verdadeira."], "a": 0, "v": 1, "e": 1, "bl": "Analisar — pede julgar proposições sobre controle autonômico do coração", "cp": "II.4 · Avaliação, diagnóstico e intervenção: atuação em equipe inter e multiprofissional", "ob": "VIII · Bases biológicas do comportamento; XI · Processos psicopatológicos"}
+];
+const BANK = "anat-v1";
+
+/* ===================== ENADE 2025 ===================== */
+/* Questões no formato Enade, alinhadas à Portaria Inep nº 348/2025. e:1 marca a questão; bl = Taxonomia de Bloom revisada; cp = competência (art. 5º); ob = objeto de conhecimento (art. 6º) */
+function enadeMeta(q){
+  const d = document.createElement("div");
+  if(!q.bl) return d;
+  d.style.cssText = "margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px;font-size:.86rem;color:var(--ink2);line-height:1.45";
+  d.innerHTML = "<div><b>Bloom:</b> <span></span></div><div style=\"margin-top:4px\"><b>Competência avaliada (art. 5º):</b> <span></span></div><div style=\"margin-top:4px\"><b>Objeto de conhecimento (art. 6º):</b> <span></span></div>";
+  const s = d.querySelectorAll("span"); s[0].textContent = q.bl; s[1].textContent = q.cp; s[2].textContent = q.ob;
+  return d;
+}
+
+
+const IMGS = { head: "data:image/jpeg;base64,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" };
+const ORIG_N = Q.filter(q=>!q.v).length;
+document.getElementById("bankN").textContent = Q.filter(q=>!q.e).length;
+document.getElementById("origN").textContent = ORIG_N;
+document.getElementById("origN2").textContent = ORIG_N;
+document.getElementById("varN").textContent = Q.filter(q=>q.v&&!q.e).length;
+const ROUND = 20;
+
+/* ===================== ESCALA ===================== */
+const SCALE = [
+  {min:0,  max:2.9, n:"Peça por dissecar", s:"Tudo ainda coberto. Comece pelos conceitos básicos: posição anatômica e planos."},
+  {min:3,  max:4.4, n:"Atlas sem áxis", s:"A cabeça está no lugar, mas ainda não gira. Faltam conexões entre os sistemas."},
+  {min:4.5,max:5.9, n:"Valva entreaberta", s:"Quase fecha. Mais uma revisão e o fluxo segue no sentido certo."},
+  {min:6,  max:6.9, n:"Posição anatômica", s:"Na média. Você já tem a referência de onde tudo parte."},
+  {min:7,  max:7.9, n:"Derme vascularizada", s:"Bem irrigado: o conteúdo está circulando."},
+  {min:8,  max:8.9, n:"Esqueleto axial", s:"Eixo firme. Domínio sólido da matéria."},
+  {min:9,  max:9.9, n:"Néfron em plena filtração", s:"Quase nada passa sem ser reconhecido."},
+  {min:10, max:10,  n:"Vesalius", s:"Nota máxima. Digno do autor do De humani corporis fabrica (1543)."}
+];
+const PASS = 6;
+const level = g => SCALE.find(s => g >= s.min && g <= s.max + 0.0001) || SCALE[0];
+const fmt = n => n.toFixed(1).replace(".", ",");
+
+/* ===================== ARMAZENAMENTO ===================== */
+let attempts = [];
+let store = "local";
+let db = null, uid = null, sample = null;
+const LS_KEY = "simulado-anatomia-v1";
+
+function lsLoad(){ try{ return JSON.parse(localStorage.getItem(LS_KEY) || "[]").filter(r => r.bank === BANK); }catch(e){ return []; } }
+function lsSave(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(attempts)); }catch(e){} }
+
+async function initStore(){
+  attempts = lsLoad();
+  setStoreNote(); renderHome();
+  try{
+    const c = window.claude;
+    if(!c || !c.use){ setStoreNote(); return; }
+    const [d, u, s] = await Promise.all([c.use("db"), c.use("user"), c.use("sample")]);
+    sample = s || null;
+    if(d && u){
+      const id = await u.id();
+      if(id){
+        db = d; uid = id;
+        const col = db.collection("data/users/" + uid);
+        let done = false;
+        const timer = setTimeout(() => { if(!done){ setStoreNote("Não foi possível alcançar o armazenamento agora; usando a cópia deste aparelho."); } }, 10000);
+        try{
+          const snap = await col.get();
+          done = true; clearTimeout(timer);
+          const remote = snap.docs.filter(x => x.exists).map(x => x.data()).filter(r => r.bank === BANK);
+          const ids = new Set(remote.map(r => r.id));
+          const pending = attempts.filter(a => !ids.has(a.id));
+          for(const p of pending){ try{ await col.doc(p.id).set(p); remote.push(p); }catch(e){} }
+          attempts = remote.sort((a,b) => a.ts - b.ts);
+          store = "db"; lsSave();
+        }catch(e){ done = true; clearTimeout(timer); }
+      }
+    }
+  }catch(e){}
+  setStoreNote(); renderHome(); refreshCurrent();
+}
+async function saveAttempt(a){
+  attempts.push(a); lsSave();
+  if(store === "db" && db){
+    try{ await db.collection("data/users/" + uid).doc(a.id).set(a); }
+    catch(e){ setStoreNote("A tentativa ficou salva neste aparelho, mas não subiu para a nuvem. Ela será enviada na próxima abertura."); }
+  }
+}
+async function clearAll(){
+  if(store === "db" && db){
+    const col = db.collection("data/users/" + uid);
+    for(const a of attempts){ try{ await col.doc(a.id).delete(); }catch(e){} }
+  }
+  attempts = []; lsSave();
+}
+function setStoreNote(msg){
+  const el = document.getElementById("storeNote");
+  if(msg){ el.textContent = msg; return; }
+  el.textContent = store === "db"
+    ? `Resultados guardados na sua conta (${attempts.length} tentativa${attempts.length===1?"":"s"}). Ficam disponíveis em qualquer aparelho.`
+    : `Resultados guardados neste aparelho (${attempts.length} tentativa${attempts.length===1?"":"s"}).`;
+}
+
+/* ===================== NAVEGAÇÃO ===================== */
+const views = ["home","quiz","result","evo","rep"];
+let current = "home";
+function show(v){
+  current = v;
+  views.forEach(x => document.getElementById("v-"+x).classList.toggle("hide", x !== v));
+  document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.v === v));
+  document.getElementById("tabs").classList.toggle("hide", v === "quiz");
+  if(v === "evo") renderEvo();
+  if(v === "rep") renderReport();
+  if(v === "home") renderHome();
+  window.scrollTo(0,0);
+}
+function refreshCurrent(){ if(current === "evo") renderEvo(); if(current === "rep") renderReport(); }
+document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => show(b.dataset.v));
+
+/* ===================== HOME ===================== */
+function renderHome(){
+  const last = attempts[attempts.length-1];
+  const sl = document.getElementById("scaleList");
+  sl.innerHTML = SCALE.slice().reverse().map(s => {
+    const cur = last && level(last.grade) === s;
+    const rng = s.min === s.max ? "10,0" : `${fmt(s.min)}–${fmt(s.max)}`;
+    return `<span class="r">${rng}</span><span class="n ${cur?"cur":""}">${s.n}${cur?" ← última":""}</span><span class="${s.min>=PASS?"badge ok":"badge no"}" style="padding:1px 8px;font-size:.72rem">${s.min>=PASS?"aprovado":"abaixo"}</span>
+      <span></span><span class="s" style="grid-column:2 / 4">${s.s}</span>`;
+  }).join("");
+  const lc = document.getElementById("lastCard");
+  if(last){
+    const best = Math.max(...attempts.map(a=>a.grade));
+    const avg = attempts.reduce((s,a)=>s+a.grade,0)/attempts.length;
+    lc.style.display = "";
+    lc.innerHTML = `<h2>Seu histórico</h2>
+      <div class="stats" style="margin-top:12px">
+        <div class="stat"><b>${fmt(last.grade)}</b><span>Última nota</span></div>
+        <div class="stat"><b>${fmt(best)}</b><span>Melhor nota</span></div>
+        <div class="stat"><b>${fmt(avg)}</b><span>Média (${attempts.length})</span></div>
+      </div>
+      <div class="row" style="margin-top:12px"><button class="btn" onclick="show('evo')">Ver evolução</button><button class="btn" onclick="show('rep')">Relatório do professor</button></div>`;
+  } else lc.style.display = "none";
+}
+
+/* ===================== QUIZ ===================== */
+let run = null, tick = null;
+const shuffle = arr => { const a = arr.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+
+function buildRound(){
+  const only = document.getElementById("onlyOrig").checked;
+  const en = document.getElementById("enadeMode").checked;
+  const pool = shuffle(Q.map((q,i)=>i).filter(i => en ? Q[i].e : (!Q[i].e && (!only || !Q[i].v))));
+  if(pool.length <= ROUND) return pool;
+  const pick = [], used = new Set();
+  Object.keys(TOPICS).forEach(t => { const i = pool.find(x => Q[x].t === t); if(i !== undefined){ pick.push(i); used.add(i); } });
+  for(const i of pool){ if(pick.length >= ROUND) break; if(!used.has(i)){ pick.push(i); used.add(i); } }
+  return shuffle(pick);
+}
+document.getElementById("startBtn").onclick = () => {
+  const ids = buildRound();
+  run = { ids, i:0, start:Date.now(), instant:document.getElementById("instant").checked,
+          answers: ids.map(id => ({ qid:id, order: shuffle([0,1,2,3,4]), pick:null })), confirmed:false };
+  clearInterval(tick);
+  tick = setInterval(()=>{ const s = Math.floor((Date.now()-run.start)/1000); document.getElementById("qTimer").textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`; }, 1000);
+  show("quiz"); renderQ();
+};
+let quitArmed = false;
+document.getElementById("quitBtn").onclick = (e) => {
+  if(!quitArmed){ quitArmed = true; e.target.textContent = "Sair sem salvar?"; setTimeout(()=>{ quitArmed=false; e.target.textContent="Sair"; }, 3000); return; }
+  quitArmed = false; e.target.textContent = "Sair"; clearInterval(tick); run = null; show("home");
+};
+function commentList(q, order, pick){
+  const ul = document.createElement("ul"); ul.className = "oc";
+  order.forEach((oi, k) => {
+    const li = document.createElement("li");
+    const ok = oi === q.a;
+    li.innerHTML = `<span class="k ${ok?"ok":"no"}">${"ABCDE"[k]}</span><span class="ot"></span><span class="cm"></span>`;
+    li.querySelector(".ot").textContent = (ok ? "✓ " : "✗ ") + q.o[oi] + (oi === pick && !ok ? "  (sua resposta)" : "");
+    li.querySelector(".cm").textContent = q.c[oi];
+    ul.appendChild(li);
+  });
+  return ul;
+}
+function renderQ(){
+  const a = run.answers[run.i], q = Q[a.qid];
+  run.confirmed = false;
+  document.getElementById("qCount").textContent = `Questão ${run.i+1} de ${run.ids.length}`;
+  document.getElementById("qBar").style.width = `${(run.i)/run.ids.length*100}%`;
+  document.getElementById("qTopic").textContent = TOPICS[q.t] + " · " + q.src;
+  document.getElementById("qText").textContent = q.q;
+  const im = document.getElementById("qImg");
+  if(q.img){ im.src = IMGS[q.img]; im.classList.remove("hide"); } else im.classList.add("hide");
+  document.getElementById("qFb").innerHTML = "";
+  const box = document.getElementById("qOpts"); box.innerHTML = "";
+  const nb = document.getElementById("nextBtn");
+  a.order.forEach((oi, k) => {
+    const b = document.createElement("button");
+    b.className = "opt"; b.dataset.oi = oi;
+    b.innerHTML = `<span class="l">${"ABCDE"[k]}</span><span class="t"></span>`;
+    b.querySelector(".t").textContent = q.o[oi];
+    b.onclick = () => { if(run.confirmed) return; a.pick = oi; box.querySelectorAll(".opt").forEach(x => x.classList.toggle("sel", +x.dataset.oi === oi)); nb.disabled = false; };
+    box.appendChild(b);
+  });
+  nb.disabled = true; nb.textContent = run.instant ? "Confirmar" : (run.i === run.ids.length-1 ? "Finalizar" : "Próxima");
+}
+document.getElementById("nextBtn").onclick = () => {
+  const a = run.answers[run.i], q = Q[a.qid];
+  const nb = document.getElementById("nextBtn");
+  if(run.instant && !run.confirmed){
+    run.confirmed = true;
+    const ok = a.pick === q.a;
+    document.querySelectorAll("#qOpts .opt").forEach(x => {
+      const oi = +x.dataset.oi; x.classList.remove("sel");
+      if(oi === q.a) x.classList.add("ok"); else if(oi === a.pick) x.classList.add("no");
+    });
+    const fb = document.getElementById("qFb");
+    fb.innerHTML = `<div class="feedback ${ok?"ok":"no"}"><b>${ok?"Correto.":"Não foi dessa vez."}</b> Comentário de cada alternativa:</div>`;
+    fb.firstChild.appendChild(commentList(q, a.order, a.pick));
+    fb.firstChild.appendChild(enadeMeta(q));
+    nb.textContent = run.i === run.ids.length-1 ? "Ver resultado" : "Próxima";
+    return;
+  }
+  if(run.i < run.ids.length-1){ run.i++; renderQ(); window.scrollTo(0,0); }
+  else finish();
+};
+async function finish(){
+  clearInterval(tick);
+  const items = run.answers.map(a => ({ qid:a.qid, t:Q[a.qid].t, ok: a.pick === Q[a.qid].a, pick:a.pick }));
+  const correct = items.filter(x=>x.ok).length;
+  const N = items.length;
+  const att = { id: "t" + Date.now(), ts: Date.now(), bank: BANK, grade: Math.round(correct/N*100)/10, correct, total:N,
+                secs: Math.round((Date.now()-run.start)/1000), items, mode: document.getElementById("enadeMode").checked ? "enade" : "tea" };
+  const answers = run.answers; run = null;
+  await saveAttempt(att);
+  setStoreNote();
+  renderResult(att, answers);
+  show("result");
+}
+
+/* ===================== RESULTADO ===================== */
+function renderResult(att, answers){
+  const lv = level(att.grade), pass = att.grade >= PASS;
+  const prev = attempts.length > 1 ? attempts[attempts.length-2] : null;
+  const delta = prev ? att.grade - prev.grade : null;
+  const segs = SCALE.map(s => `<div class="${s===lv?"on":""}" title="${s.n}"></div>`).join("");
+  const byT = {}; att.items.forEach(it => { (byT[it.t] ||= {ok:0,n:0}); byT[it.t].n++; if(it.ok) byT[it.t].ok++; });
+  const weak = Object.entries(byT).filter(([t,v]) => v.ok/v.n < 0.6).map(([t]) => TOPICS[t]);
+  const el = document.getElementById("v-result");
+  el.innerHTML = `
+  <div class="card">
+    <div class="eyebrow">Resultado · ${new Date(att.ts).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"})}</div>
+    <div class="score" style="margin-top:10px">
+      <div class="big">${fmt(att.grade)}</div>
+      <div>
+        <div class="badge ${pass?"ok":"no"}">${pass?"✓ Aprovado":"✕ Abaixo da média"}</div>
+        <h2 style="margin-top:8px">${lv.n}</h2>
+        <div class="ink2">${lv.s}</div>
+      </div>
+    </div>
+    <div class="scale">${segs}</div>
+    <div class="row muted" style="justify-content:space-between;font-size:.75rem"><span>0</span><span>média 6,0</span><span>10</span></div>
+    <div class="stats" style="margin-top:14px">
+      <div class="stat"><b>${att.correct}/${att.total}</b><span>Acertos</span></div>
+      <div class="stat"><b>${Math.floor(att.secs/60)}:${String(att.secs%60).padStart(2,"0")}</b><span>Tempo</span></div>
+      <div class="stat"><b>${delta===null?"—":(delta>=0?"+":"")+fmt(delta)}</b><span>vs. anterior</span></div>
+    </div>
+    ${weak.length ? `<p class="ink2" style="margin-top:14px"><b>Blocos abaixo de 60% nesta tentativa:</b> ${weak.join("; ")}.</p>` : `<p class="ink2" style="margin-top:14px">Nenhum bloco ficou abaixo de 60% nesta tentativa.</p>`}
+    <div class="row" style="margin-top:12px">
+      <button class="btn primary" onclick="document.getElementById('startBtn').click()">Nova tentativa</button>
+      <button class="btn" onclick="show('rep')">Relatório do professor</button>
+      <button class="btn" onclick="show('evo')">Evolução</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Correção</h2>
+    <div id="reviewList" style="margin-top:8px"></div>
+  </div>`;
+  const rl = el.querySelector("#reviewList");
+  answers.forEach((a, i) => {
+    const q = Q[a.qid], ok = a.pick === q.a;
+    const d = document.createElement("div"); d.className = "review-item";
+    d.innerHTML = `<div class="row" style="justify-content:space-between"><span class="eyebrow">${i+1}. ${TOPICS[q.t]} · ${q.src}</span><span class="badge ${ok?"ok":"no"}" style="font-size:.72rem;padding:2px 9px">${ok?"acertou":"errou"}</span></div>
+      <p style="margin:.4em 0;font-weight:600;white-space:pre-line"></p>${q.img?`<img class="qimg" style="width:180px" src="${IMGS[q.img]}" alt="">`:""}`;
+    d.querySelector("p").textContent = q.q;
+    d.appendChild(commentList(q, a.order, a.pick));
+    d.appendChild(enadeMeta(q));
+    rl.appendChild(d);
+  });
+}
+
+/* ===================== ANÁLISE ===================== */
+function topicStats(list){
+  const r = {}; Object.keys(TOPICS).forEach(t => r[t] = {ok:0,n:0});
+  list.forEach(a => a.items.forEach(it => { if(r[it.t]){ r[it.t].n++; if(it.ok) r[it.t].ok++; } }));
+  return r;
+}
+function slope(ys){
+  const n = ys.length; if(n < 2) return 0;
+  const xm = (n-1)/2, ym = ys.reduce((s,y)=>s+y,0)/n;
+  let num=0, den=0; ys.forEach((y,i)=>{ num += (i-xm)*(y-ym); den += (i-xm)**2; });
+  return num/den;
+}
+
+/* ===================== EVOLUÇÃO ===================== */
+function svgEl(tag, attrs){ const e = document.createElementNS("http://www.w3.org/2000/svg", tag); for(const k in attrs) e.setAttribute(k, attrs[k]); return e; }
+function renderEvo(){
+  const el = document.getElementById("v-evo");
+  if(!attempts.length){ el.innerHTML = `<div class="card"><h2>Evolução</h2><p class="ink2">Faça a primeira tentativa para ver o gráfico.</p></div>`; return; }
+  const grades = attempts.map(a=>a.grade);
+  const avg = grades.reduce((s,g)=>s+g,0)/grades.length;
+  const passN = grades.filter(g=>g>=PASS).length;
+  el.innerHTML = `
+  <div class="card">
+    <h2>Notas por tentativa</h2>
+    <div class="stats" style="margin:12px 0">
+      <div class="stat"><b>${attempts.length}</b><span>Tentativas</span></div>
+      <div class="stat"><b>${fmt(avg)}</b><span>Média geral</span></div>
+      <div class="stat"><b>${passN}/${attempts.length}</b><span>Acima da média</span></div>
+    </div>
+    <div class="chart" id="lineChart"><div class="tip" id="lineTip"></div></div>
+    <div class="legend"><span><i></i>Nota</span><span><i class="dash"></i>Média de aprovação (6,0)</span></div>
+  </div>
+  <div class="card">
+    <h2>Acerto por bloco</h2>
+    <p class="note" style="margin:.3em 0 10px">Todas as tentativas somadas. A linha tracejada marca 60%, o equivalente à média.</p>
+    <div class="chart" id="barChart"><div class="tip" id="barTip"></div></div>
+  </div>
+  <div class="card">
+    <h2>Histórico</h2>
+    <div style="overflow-x:auto"><table><thead><tr><th>#</th><th>Data</th><th>Nota</th><th>Faixa</th><th>Tempo</th></tr></thead><tbody id="histBody"></tbody></table></div>
+    <div class="row" style="margin-top:14px"><button class="btn danger" id="clearBtn">Apagar histórico</button></div>
+  </div>`;
+  drawLine(document.getElementById("lineChart"), grades);
+  drawBars(document.getElementById("barChart"), topicStats(attempts));
+  document.getElementById("histBody").innerHTML = attempts.map((a,i) => `<tr><td>${i+1}</td><td>${new Date(a.ts).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})} ${new Date(a.ts).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}</td><td class="num" style="color:${a.grade>=PASS?"var(--good)":"var(--bad)"}">${fmt(a.grade)}</td><td>${level(a.grade).n}</td><td>${Math.floor(a.secs/60)}min</td></tr>`).reverse().join("");
+  let armed = false;
+  document.getElementById("clearBtn").onclick = async (e) => {
+    if(!armed){ armed = true; e.target.textContent = "Toque de novo para apagar tudo"; setTimeout(()=>{armed=false; e.target.textContent="Apagar histórico";},4000); return; }
+    e.target.disabled = true; e.target.textContent = "Apagando…";
+    await clearAll(); setStoreNote(); renderEvo(); renderHome();
+  };
+}
+function drawLine(host, ys){
+  const W = Math.max(300, Math.round(host.clientWidth || 600)), H = 230, L = 30, R = 16, T = 22, B = 28;
+  const svg = svgEl("svg", {viewBox:`0 0 ${W} ${H}`, role:"img", "aria-label":"Notas por tentativa"});
+  const x = i => ys.length === 1 ? L + (W-L-R)/2 : L + i*(W-L-R)/(ys.length-1);
+  const y = v => T + (10 - v)*(H-T-B)/10;
+  for(let g=0; g<=10; g+=2){
+    svg.appendChild(svgEl("line",{x1:L,x2:W-R,y1:y(g),y2:y(g),stroke:"var(--grid)","stroke-width":1}));
+    const tx = svgEl("text",{x:L-8,y:y(g)+4,"text-anchor":"end","font-size":11,fill:"var(--muted)"}); tx.textContent = g; svg.appendChild(tx);
+  }
+  svg.appendChild(svgEl("line",{x1:L,x2:W-R,y1:y(PASS),y2:y(PASS),stroke:"var(--muted)","stroke-width":1.5,"stroke-dasharray":"5 4"}));
+  const step = Math.max(1, Math.ceil(ys.length/10));
+  ys.forEach((v,i) => { if(i % step === 0 || i === ys.length-1){ const tx = svgEl("text",{x:x(i),y:H-8,"text-anchor":"middle","font-size":11,fill:"var(--muted)"}); tx.textContent = i+1; svg.appendChild(tx); } });
+  if(ys.length > 1) svg.appendChild(svgEl("polyline",{points:ys.map((v,i)=>`${x(i)},${y(v)}`).join(" "),fill:"none",stroke:"var(--accent)","stroke-width":2,"stroke-linejoin":"round","stroke-linecap":"round"}));
+  ys.forEach((v,i) => svg.appendChild(svgEl("circle",{cx:x(i),cy:y(v),r:4.5,fill:"var(--accent)",stroke:"var(--card)","stroke-width":2})));
+  const last = ys.length-1;
+  const lab = svgEl("text",{x:x(last),y:y(ys[last])-12,"text-anchor":"middle","font-size":12,"font-weight":700,fill:"var(--ink)"}); lab.textContent = fmt(ys[last]); svg.appendChild(lab);
+  const cross = svgEl("line",{y1:T,y2:H-B,stroke:"var(--muted)","stroke-width":1,opacity:0}); svg.appendChild(cross);
+  const hit = svgEl("rect",{x:L,y:T,width:W-L-R,height:H-T-B,fill:"transparent"}); svg.appendChild(hit);
+  host.insertBefore(svg, host.firstChild);
+  const tip = host.querySelector(".tip");
+  const move = ev => {
+    const p = ev.touches ? ev.touches[0] : ev; const r = svg.getBoundingClientRect();
+    const px = (p.clientX - r.left) * W / r.width;
+    let i = ys.length === 1 ? 0 : Math.round((px - L) / ((W-L-R)/(ys.length-1))); i = Math.max(0, Math.min(ys.length-1, i));
+    cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("opacity", .6);
+    tip.textContent = `Tentativa ${i+1} · ${fmt(ys[i])} · ${level(ys[i]).n}`;
+    tip.style.left = (x(i)*r.width/W) + "px"; tip.style.top = (y(ys[i])*r.height/H) + "px"; tip.style.opacity = 1;
+  };
+  const out = () => { tip.style.opacity = 0; cross.setAttribute("opacity",0); };
+  hit.addEventListener("mousemove", move); hit.addEventListener("touchstart", move, {passive:true}); hit.addEventListener("touchmove", move, {passive:true});
+  hit.addEventListener("mouseleave", out); hit.addEventListener("touchend", () => setTimeout(out, 1500));
+}
+function drawBars(host, st){
+  const keys = Object.keys(TOPICS);
+  const wrap = document.createElement("div");
+  wrap.innerHTML = keys.map(k => {
+    const v = st[k].n ? st[k].ok/st[k].n : null;
+    const pct = v===null ? 0 : Math.round(v*100);
+    return `<div class="brow" data-k="${k}" style="padding:7px 0;cursor:default">
+      <div class="row" style="justify-content:space-between;font-size:.86rem"><span class="ink2">${TOPICS[k]}</span><b style="color:${v===null?"var(--muted)":(v<0.6?"var(--bad)":"var(--ink)")};font-variant-numeric:tabular-nums">${v===null?"—":pct+"%"}</b></div>
+      <div style="position:relative;height:12px;background:var(--grid);border-radius:4px;margin-top:5px">
+        ${v ? `<div style="height:100%;width:${Math.max(2,pct)}%;background:var(--accent);border-radius:4px"></div>` : ""}
+        <div style="position:absolute;left:60%;top:-3px;bottom:-3px;border-left:1.5px dashed var(--muted)"></div>
+      </div>
+      <div class="note bdet" style="display:none;margin-top:3px">${v===null?"Sem questões ainda":`${st[k].ok} acertos em ${st[k].n} questões`}</div>
+    </div>`;
+  }).join("");
+  wrap.querySelectorAll(".brow").forEach(r => {
+    const on = () => wrap.querySelectorAll(".bdet").forEach(d => d.style.display = d.parentNode === r ? "block" : "none");
+    r.addEventListener("mouseenter", on); r.addEventListener("click", on);
+  });
+  host.insertBefore(wrap, host.firstChild);
+}
+/* ===================== RELATÓRIO DO PROFESSOR ===================== */
+function buildReport(){
+  const n = attempts.length, grades = attempts.map(a=>a.grade);
+  const last = attempts[n-1], first = attempts[0];
+  const avg = grades.reduce((s,g)=>s+g,0)/n;
+  const sl = slope(grades);
+  const recent = attempts.slice(-3);
+  const stAll = topicStats(attempts), stRecent = topicStats(recent);
+  const rows = Object.keys(TOPICS).map(t => ({ t, all: stAll[t].n ? stAll[t].ok/stAll[t].n : null, rec: stRecent[t].n ? stRecent[t].ok/stRecent[t].n : null, n: stAll[t].n }))
+    .filter(r => r.all !== null).sort((a,b) => a.all - b.all);
+  const miss = {}; attempts.forEach(a => a.items.forEach(it => { if(!it.ok) miss[it.qid] = (miss[it.qid]||0) + 1; }));
+  const seen = {}; attempts.forEach(a => a.items.forEach(it => seen[it.qid] = (seen[it.qid]||0)+1));
+  const chronic = Object.entries(miss).filter(([q,c]) => c >= 2 && Q[+q]).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([q,c]) => ({q:+q, c, s:seen[q]}));
+  const sd = Math.sqrt(grades.reduce((s,g)=>s+(g-avg)**2,0)/n);
+  return {n, grades, last, first, avg, sl, sd, rows, chronic};
+}
+function renderReport(){
+  const el = document.getElementById("v-rep");
+  if(!attempts.length){ el.innerHTML = `<div class="card"><h2>Relatório do professor</h2><p class="ink2">O relatório aparece depois da primeira tentativa.</p></div>`; return; }
+  const R = buildReport();
+  const weak = R.rows.filter(r => r.all < 0.6), mid = R.rows.filter(r => r.all >= 0.6 && r.all < 0.8), strong = R.rows.filter(r => r.all >= 0.8);
+  let diag;
+  if(R.n === 1) diag = `Há só uma tentativa, com nota ${fmt(R.last.grade)} (${level(R.last.grade).n}). Ela serve de linha de base. As comparações ganham peso a partir da terceira tentativa.`;
+  else {
+    const tr = R.sl > 0.25 ? "em alta" : R.sl < -0.25 ? "em queda" : "estável";
+    diag = `Em ${R.n} tentativas, a média é ${fmt(R.avg)} e a tendência está ${tr} (cerca de ${R.sl>=0?"+":""}${fmt(R.sl)} ponto por tentativa). Da primeira (${fmt(R.first.grade)}) para a última (${fmt(R.last.grade)}) a variação foi de ${R.last.grade-R.first.grade>=0?"+":""}${fmt(R.last.grade-R.first.grade)}. `;
+    diag += R.sd > 1.5 ? `As notas oscilam bastante (desvio de ${fmt(R.sd)}). Isso costuma indicar conhecimento ainda dependente de quais questões caem, e não domínio consolidado.` : `As notas oscilam pouco (desvio de ${fmt(R.sd)}), o que sugere um patamar real de conhecimento, e não sorte no sorteio.`;
+  }
+  const verdict = R.last.grade >= PASS
+    ? (weak.length ? `A última nota está acima da média, mas ainda há ${weak.length===1?"um bloco abaixo":"blocos abaixo"} de 60%. Numa prova real, com outras questões, isso pode custar a aprovação.` : `A última nota está acima da média e nenhum bloco ficou abaixo de 60%. O trabalho agora é consolidar, não remediar.`)
+    : `A última nota ficou abaixo da média. A prioridade não é refazer o simulado várias vezes, e sim estudar os blocos marcados abaixo antes da próxima tentativa.`;
+  const pill = v => v < 0.6 ? `<span class="pill no">${Math.round(v*100)}%</span>` : v < 0.8 ? `<span class="pill warn">${Math.round(v*100)}%</span>` : `<span class="pill ok">${Math.round(v*100)}%</span>`;
+  const trendTxt = r => (r.rec === null || R.n < 3) ? "" : (r.rec - r.all > 0.1 ? " · melhorando nas últimas tentativas" : r.all - r.rec > 0.1 ? " · piorou nas últimas tentativas" : "");
+  el.innerHTML = `
+  <div class="card report">
+    <div class="eyebrow">Parecer · ${new Date().toLocaleDateString("pt-BR")}</div>
+    <h2 style="margin-top:4px">Relatório do professor</h2>
+    <h3>Diagnóstico geral</h3>
+    <p>${diag}</p>
+    <p><b>${verdict}</b></p>
+    <h3>O que precisa melhorar</h3>
+    ${weak.length ? `<ul>${weak.map(r => `<li><b>${TOPICS[r.t]}</b>${pill(r.all)}<span class="note">${trendTxt(r)}</span><br><span class="ink2">${STUDY[r.t]}</span></li>`).join("")}</ul>` : `<p class="ink2">Nenhum bloco abaixo de 60%. Veja os pontos de atenção.</p>`}
+    ${mid.length ? `<h3>Pontos de atenção (60 a 79%)</h3><ul>${mid.map(r => `<li><b>${TOPICS[r.t]}</b>${pill(r.all)}<span class="note">${trendTxt(r)}</span><br><span class="ink2">${STUDY[r.t]}</span></li>`).join("")}</ul>` : ""}
+    ${strong.length ? `<h3>Pontos fortes</h3><p>${strong.map(r => `${TOPICS[r.t]}${pill(r.all)}`).join(" · ")}</p>` : ""}
+    ${R.chronic.length ? `<h3>Erros recorrentes</h3><p class="ink2">Questões que você errou mais de uma vez. Aqui o problema é uma ideia fixada de forma errada, não esquecimento.</p><ul>${R.chronic.map(c => `<li>${escapeHtml(Q[c.q].q)}<br><span class="note">Errou ${c.c} de ${c.s} vezes · Resposta: <b>${escapeHtml(Q[c.q].o[Q[c.q].a])}</b></span></li>`).join("")}</ul>` : ""}
+    <h3>Plano para a próxima tentativa</h3>
+    <ul>
+      ${weak.length ? `<li>Estude primeiro ${weak.slice(0,2).map(r=>TOPICS[r.t]).join(" e ")}, de preferência pelo material da aula e não pelo simulado.</li>` : `<li>Mantenha uma tentativa por semana para não perder o que já consolidou.</li>`}
+      <li>Desconfie das alternativas que trazem uma frase verdadeira sobre outra estrutura: camada basal (epiderme) numa questão sobre a derme, valvas atrioventriculares no lugar das semilunares, anfiartrose numa questão sobre sinartrose. É a pegadinha mais frequente nessas TEAs.</li>
+      <li>Leia devagar as alternativas com "não", "apenas" e "único": várias questões viram falsas por uma palavra só.</li>
+      <li>Em plano e eixo, lembre a regra: o eixo é sempre perpendicular ao plano (sagital com látero-lateral, frontal com ântero-posterior, transversal com longitudinal).</li>
+      <li>Espere pelo menos um dia entre tentativas. Repetir na sequência mede memória de curto prazo, não aprendizagem.</li>
+    </ul>
+  </div>
+  <div class="card" id="aiCard">
+    <h2>Parecer por extenso</h2>
+    <p class="ink2" style="margin-top:.3em">Gera um parecer escrito com base nos seus dados, no tom de um professor de Anatomia Humana.</p>
+    <button class="btn primary" id="aiBtn">Gerar parecer</button>
+    <div id="aiOut" class="ai" style="margin-top:14px"></div>
+  </div>`;
+  const aiCard = document.getElementById("aiCard");
+  if(!sample){ aiCard.classList.add("hide"); return; }
+  document.getElementById("aiBtn").onclick = async (e) => {
+    const out = document.getElementById("aiOut"); e.target.disabled = true; out.textContent = "Escrevendo…";
+    const data = {
+      tentativas: R.n, notas: R.grades, media_aprovacao: PASS, media_geral: +R.avg.toFixed(2), tendencia_por_tentativa: +R.sl.toFixed(2),
+      blocos: R.rows.map(r => ({bloco: TOPICS[r.t], acerto_total: Math.round(r.all*100), acerto_ultimas3: r.rec===null?null:Math.round(r.rec*100), questoes_vistas: r.n})),
+      erros_recorrentes: R.chronic.map(c => ({questao: Q[c.q].q, resposta_correta: Q[c.q].o[Q[c.q].a], erros: c.c, vezes: c.s}))
+    };
+    const prompt = `Você é um professor experiente de Anatomia Humana num curso de graduação em Psicologia no Brasil. O simulado usa questões das TEAs (atividades) da disciplina. Escreva um parecer em português do Brasil, em prosa, com 3 a 5 parágrafos curtos, dirigido ao aluno (Fernando, adulto, estudante do 1º semestre). Comente: (1) o desempenho e a tendência, comparando com a média 6; (2) os blocos mais fracos, explicando qual confusão conceitual provavelmente está por trás deles, com base nos erros recorrentes; (3) um plano concreto de estudo para a próxima semana. Seja direto e específico. Não use listas com marcadores nem títulos, não elogie em excesso e não invente dados que não estão abaixo.\n\nDADOS:\n${JSON.stringify(data)}`;
+    try{
+      const r = await sample(prompt, { onText: ({text}) => { out.textContent = text; } });
+      out.textContent = r.text;
+    }catch(err){
+      if(err && err.code === "not_granted"){ aiCard.classList.add("hide"); }
+      else out.textContent = err && err.code === "rate_limited" ? "Limite de uso atingido. Tente de novo em alguns minutos." : "Não foi possível gerar o parecer agora.";
+    }
+    e.target.disabled = false; e.target.textContent = "Gerar de novo";
+  };
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+initStore();
+</script>
+</body>
+</html>

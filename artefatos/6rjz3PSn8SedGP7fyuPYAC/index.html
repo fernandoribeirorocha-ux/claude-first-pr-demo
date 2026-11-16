@@ -1,0 +1,265 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Psi Clinical Copilot</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: coluna única de leitura (máx. 920px), blocos de escopo lado a lado, tabela de riscos com rolagem própria. */
+:root {
+  --bg: #f4f7f7;
+  --surface: #ffffff;
+  --fg: #14201f;
+  --muted: #4d5f5e;
+  --line: #d3dedd;
+  --accent: #0b6560;
+  --accent-soft: #dcefed;
+  --ok: #1f6b3a;
+  --ok-soft: #dff1e5;
+  --no: #8a2d2d;
+  --no-soft: #f6e1e0;
+  --warn: #7a5200;
+  --warn-soft: #f7ecd2;
+  --font-display: "Newsreader", Georgia, serif;
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1615; --surface: #152221; --fg: #e4eeec; --muted: #9db2af; --line: #2a3e3c;
+    --accent: #5cc4bb; --accent-soft: #17403d;
+    --ok: #7fd49a; --ok-soft: #173a25; --no: #f09a96; --no-soft: #3e1d1c;
+    --warn: #e6bf6a; --warn-soft: #3a2e12; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1615; --surface: #152221; --fg: #e4eeec; --muted: #9db2af; --line: #2a3e3c;
+  --accent: #5cc4bb; --accent-soft: #17403d;
+  --ok: #7fd49a; --ok-soft: #173a25; --no: #f09a96; --no-soft: #3e1d1c;
+  --warn: #e6bf6a; --warn-soft: #3a2e12; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 400 16px/1.6 var(--font-body);
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+main { max-width: 920px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.2; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(2rem, 5vw, 2.9rem); letter-spacing: -0.01em; }
+h2 { font-size: 1.6rem; }
+h3 { font-size: 1.15rem; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font: 500 0.75rem/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.lede { font-size: 1.1rem; color: var(--muted); }
+header { display: flex; flex-direction: column; gap: 16px; padding-bottom: 32px; border-bottom: 1px solid var(--line); }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 12px; margin-top: 4px; }
+.fact { font: 500 0.82rem/1 var(--font-mono); padding: 8px 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); }
+.fact b { color: var(--accent); font-weight: 500; }
+section { display: flex; flex-direction: column; gap: 18px; }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.panel ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.panel li { display: grid; grid-template-columns: 1.4em 1fr; gap: 6px; font-size: 0.95rem; }
+.in li::before { content: "✓"; color: var(--ok); font-weight: 600; }
+.out li::before { content: "✕"; color: var(--no); font-weight: 600; }
+.in h3 { color: var(--ok); }
+.out h3 { color: var(--no); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 0.82rem; padding: 4px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--fg); border: 1px solid var(--line); }
+.vocab { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.count { font: 500 0.78rem/1 var(--font-mono); color: var(--muted); }
+/* validador */
+.tester { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.tester input { font: 500 1.05rem var(--font-mono); padding: 10px 12px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--fg); width: 11ch; min-width: 0; text-transform: uppercase; }
+button { font: 500 0.9rem var(--font-body); padding: 10px 14px; border-radius: 4px; border: 1px solid var(--accent); background: var(--accent); color: var(--bg); cursor: pointer; }
+button.ghost { background: transparent; color: var(--accent); }
+button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.verdict { font: 500 0.9rem var(--font-body); padding: 6px 10px; border-radius: 4px; }
+.verdict.ok { background: var(--ok-soft); color: var(--ok); }
+.verdict.bad { background: var(--no-soft); color: var(--no); }
+.examples { font-size: 0.88rem; color: var(--muted); }
+.examples code, code { font-family: var(--font-mono); font-size: 0.88em; }
+/* roadmap */
+.road { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+.road li { display: grid; grid-template-columns: 2rem 1fr auto; gap: 12px; padding: 14px 18px; align-items: baseline; border-top: 1px solid var(--line); }
+.road li:first-child { border-top: 0; }
+.road .n { font: 500 0.85rem var(--font-mono); color: var(--muted); }
+.tag { font: 500 0.72rem/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; padding: 5px 8px; border-radius: 3px; white-space: nowrap; }
+.tag.done { background: var(--ok-soft); color: var(--ok); }
+.tag.next { background: var(--accent-soft); color: var(--accent); }
+.tag.later { background: var(--warn-soft); color: var(--warn); }
+.tag.gate { background: var(--no-soft); color: var(--no); }
+@media (max-width: 520px) { .road li { grid-template-columns: 2rem 1fr; } .road .tag { grid-column: 2; justify-self: start; } }
+/* tabelas */
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 0.9rem; }
+th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-top: 1px solid var(--line); }
+thead th { border-top: 0; font: 500 0.72rem/1.2 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: var(--bg); }
+td.id { font-family: var(--font-mono); color: var(--muted); white-space: nowrap; }
+.lvl { font: 500 0.72rem/1 var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; padding: 4px 7px; border-radius: 3px; white-space: nowrap; display: inline-block; }
+.lvl.high { background: var(--no-soft); color: var(--no); }
+.lvl.low { background: var(--ok-soft); color: var(--ok); }
+.lvl.mid { background: var(--warn-soft); color: var(--warn); }
+/* comandos */
+.cmd { display: flex; align-items: stretch; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); min-width: 0; }
+.cmd pre { margin: 0; padding: 14px 16px; font: 400 0.85rem/1.6 var(--font-mono); overflow-x: auto; flex: 1; min-width: 0; }
+.cmd button { border: 0; border-left: 1px solid var(--line); border-radius: 0 6px 6px 0; background: transparent; color: var(--accent); }
+.note { font-size: 0.9rem; color: var(--muted); }
+.callout { border-left: 3px solid var(--warn); background: var(--warn-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; max-width: 72ch; font-size: 0.95rem; }
+footer { font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 20px; }
+@media (prefers-reduced-motion: no-preference) { button { transition: background 0.15s, color 0.15s; } }
+</style>
+
+<main>
+  <header>
+    <span class="eyebrow">Projeto · MVP com dados fictícios</span>
+    <h1>Psi Clinical Copilot</h1>
+    <p class="lede">Assistente administrativo e reflexivo para psicólogos. Organiza preparo de sessão, pendências pós-sessão e pauta de supervisão. Não atende pacientes e não decide nada clinicamente: o julgamento permanece humano.</p>
+    <div class="facts" role="list" aria-label="Resumo do projeto">
+      <span class="fact" role="listitem"><b>30</b> testes aprovados</span>
+      <span class="fact" role="listitem"><b>0</b> chamadas de rede</span>
+      <span class="fact" role="listitem"><b>0</b> campos de texto livre</span>
+      <span class="fact" role="listitem">IA <b>desativada</b></span>
+      <span class="fact" role="listitem">Python · Streamlit · SQLite</span>
+    </div>
+  </header>
+
+  <section aria-labelledby="escopo">
+    <h2 id="escopo">O que o sistema faz e o que não faz</h2>
+    <div class="cols">
+      <div class="panel in">
+        <h3>Faz</h3>
+        <ul>
+          <li>Cadastra casos só por código pseudônimo, sem nome ou contato</li>
+          <li>Estrutura o preparo da sessão com itens fixos</li>
+          <li>Mantém checklist administrativo pós-sessão e lista pendências</li>
+          <li>Registra qual instrumento foi usado e quando, sem escore</li>
+          <li>Monta pauta de supervisão com contagens, pendências e temas em categorias</li>
+          <li>Grava trilha de auditoria local, só de acréscimo</li>
+          <li>Exporta CSV com neutralização de fórmulas</li>
+        </ul>
+      </div>
+      <div class="panel out">
+        <h3>Não faz</h3>
+        <ul>
+          <li>Diagnóstico, triagem ou hipótese diagnóstica</li>
+          <li>Interpretação de testes psicológicos</li>
+          <li>Recomendação de intervenção ou conduta</li>
+          <li>Predição ou classificação de risco</li>
+          <li>Gravação ou transcrição de sessões</li>
+          <li>Respostas ou mensagens para pacientes</li>
+          <li>Substituição do prontuário ou guarda de narrativa clínica</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="codigo">
+    <h2 id="codigo">Código pseudônimo</h2>
+    <p>Três consoantes, hífen e quatro dígitos. Sem vogais, o código não forma nome nem iniciais pronunciáveis, e não se confunde com CPF, telefone ou e-mail. A regra abaixo é a mesma usada em <code>src/validation.py</code>.</p>
+    <div class="panel">
+      <div class="tester">
+        <label for="code-in" class="count">Testar código</label>
+        <input id="code-in" type="text" value="KTM-4821" maxlength="12" autocomplete="off" spellcheck="false" aria-describedby="code-out">
+        <button type="button" id="gen">Gerar</button>
+        <span id="code-out" class="verdict ok" role="status">Válido</span>
+      </div>
+      <p class="examples">Recusados: <code>ANA-1234</code> · <code>Maria</code> · <code>123.456.789-09</code> · <code>a@b.com</code> · <code>KT-4821</code></p>
+    </div>
+  </section>
+
+  <section aria-labelledby="vocab">
+    <h2 id="vocab">Vocabulário fechado</h2>
+    <p>Tudo que o profissional registra vem destas listas. Valor fora delas é recusado e há teste para isso. O catálogo de instrumentos é de exemplo; confira cada parecer no SATEPSI antes de usar.</p>
+    <div class="vocab">
+      <div class="panel"><h3>Preparo da sessão</h3><span class="count">7 itens</span>
+        <div class="chips"><span class="chip">Revisar registro anterior</span><span class="chip">Confirmar enquadre</span><span class="chip">Pendências documentais</span><span class="chip">Separar instrumento</span><span class="chip">Preparar ambiente</span><span class="chip">Verificar agenda</span><span class="chip">Revisar última pauta</span></div></div>
+      <div class="panel"><h3>Pós-sessão</h3><span class="count">7 itens</span>
+        <div class="chips"><span class="chip">Registro concluído</span><span class="chip">Presença registrada</span><span class="chip">Próxima sessão agendada</span><span class="chip">Documento emitido</span><span class="chip">Pendência resolvida</span><span class="chip">Material guardado</span><span class="chip">Tema de supervisão sinalizado</span></div></div>
+      <div class="panel"><h3>Temas de supervisão</h3><span class="count">8 categorias</span>
+        <div class="chips"><span class="chip">Enquadre e contrato</span><span class="chip">Ética e sigilo</span><span class="chip">Documentação</span><span class="chip">Rede e encaminhamento</span><span class="chip">Faltas e agenda</span><span class="chip">Uso de instrumentos</span><span class="chip">Reflexão sobre a prática</span><span class="chip">Limites de competência</span></div></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="roteiro">
+    <h2 id="roteiro">Roteiro de evolução</h2>
+    <p>A ordem importa: a IA só entra depois da camada de proteção e da avaliação normativa e jurídica.</p>
+    <ol class="road">
+      <li><span class="n">1</span><span>MVP com dados fictícios</span><span class="tag done">Entregue</span></li>
+      <li><span class="n">2</span><span>Autenticação local e isolamento entre usuários</span><span class="tag next">Próximo</span></li>
+      <li><span class="n">3</span><span>Painel de carga administrativa</span><span class="tag later">Pendente</span></li>
+      <li><span class="n">4</span><span>Pauta de supervisão exportável</span><span class="tag later">Pendente</span></li>
+      <li><span class="n">5</span><span>Criptografia, backup e controle de retenção</span><span class="tag later">Pendente</span></li>
+      <li><span class="n">6</span><span>Avaliação normativa, jurídica e de segurança (LGPD, CFP)</span><span class="tag gate">Portão</span></li>
+      <li><span class="n">7</span><span>Protótipo controlado de IA, só depois do passo 6</span><span class="tag later">Pendente</span></li>
+      <li><span class="n">8</span><span>Revisão humana obrigatória para todo conteúdo gerado</span><span class="tag later">Pendente</span></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="riscos">
+    <h2 id="riscos">Riscos e controles</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>#</th><th>Risco</th><th>Controle</th><th>Residual</th></tr></thead>
+        <tbody>
+          <tr><td class="id">R1</td><td>Dado identificável digitado como código</td><td>Regex restritiva; geração automática</td><td><span class="lvl mid">Médio</span></td></tr>
+          <tr><td class="id">R2</td><td>Texto clínico livre no banco</td><td>Sem campos livres; chaves validadas</td><td><span class="lvl low">Baixo</span></td></tr>
+          <tr><td class="id">R3</td><td>Pauta lida como parecer clínico</td><td>Só contagens e rótulos; rodapé explícito</td><td><span class="lvl mid">Médio</span></td></tr>
+          <tr><td class="id">R5</td><td>Adulteração da auditoria</td><td>Triggers bloqueiam UPDATE e DELETE</td><td><span class="lvl mid">Médio</span></td></tr>
+          <tr><td class="id">R6</td><td>Injeção de fórmula no CSV</td><td>Neutralização de células</td><td><span class="lvl low">Baixo</span></td></tr>
+          <tr><td class="id">R8</td><td>Vazamento por acesso ao arquivo</td><td>Permissão 0600; sem criptografia ainda</td><td><span class="lvl high">Alto</span></td></tr>
+          <tr><td class="id">R10</td><td>Uso futuro de IA para decidir</td><td>CLAUDE.md; IA condicionada ao passo 6</td><td><span class="lvl mid">Médio</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout"><strong>R8 é o motivo de usar só dados fictícios.</strong> A "exportação protegida" significa tabelas em lista permitida, células neutralizadas, evento de auditoria e arquivo 0600. O CSV não é cifrado.</div>
+  </section>
+
+  <section aria-labelledby="exec">
+    <h2 id="exec">Executar</h2>
+    <div class="cmd"><pre id="c1">python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+streamlit run app.py</pre><button type="button" class="ghost" data-copy="c1">Copiar</button></div>
+    <div class="cmd"><pre id="c2">python -m pytest</pre><button type="button" class="ghost" data-copy="c2">Copiar</button></div>
+    <p class="note">Estrutura: <code>app.py</code>, <code>src/storage.py</code>, <code>src/validation.py</code>, <code>tests/</code>, <code>docs/PRD.md</code>, <code>docs/DATA_GOVERNANCE.md</code>, <code>docs/SAFETY_CASE.md</code>, <code>CLAUDE.md</code>, <code>PROMPTS_CLAUDE_CODE.md</code>. Questões jurídicas (enquadramento do pseudônimo na LGPD e normas vigentes do CFP) estão em aberto no PRD e exigem parecer.</p>
+  </section>
+
+  <footer>Código reconstruído a partir da descrição do projeto e testado em ambiente isolado: 30 testes aprovados e teste de fumaça da interface sem exceções.</footer>
+</main>
+
+<script>
+(function () {
+  var RE = /^[BCDFGHJKLMNPQRSTVWXZ]{3}-\d{4}$/;
+  var C = "BCDFGHJKLMNPQRSTVWXZ";
+  var input = document.getElementById("code-in");
+  var out = document.getElementById("code-out");
+  function check() {
+    var ok = RE.test(input.value.trim().toUpperCase());
+    out.textContent = ok ? "Válido" : "Inválido";
+    out.className = "verdict " + (ok ? "ok" : "bad");
+  }
+  input.addEventListener("input", check);
+  document.getElementById("gen").addEventListener("click", function () {
+    var r = new Uint32Array(4); crypto.getRandomValues(r);
+    var s = ""; for (var i = 0; i < 3; i++) s += C[r[i] % C.length];
+    input.value = s + "-" + String(r[3] % 10000).padStart(4, "0");
+    check();
+  });
+  document.querySelectorAll("[data-copy]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var el = document.getElementById(b.getAttribute("data-copy"));
+      var done = function () { b.textContent = "Copiado"; setTimeout(function () { b.textContent = "Copiar"; }, 1500); };
+      var fallback = function () {
+        var rg = document.createRange(); rg.selectNodeContents(el);
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(rg);
+      };
+      try { navigator.clipboard.writeText(el.textContent).then(done, fallback); } catch (e) { fallback(); }
+    });
+  });
+  check();
+})();
+</script>
+
+</body></html>

@@ -1,0 +1,339 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>lnagent Infor LN</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600&display=swap">
+<style>
+/* Layout: faixa de situação fixa no topo (ticket, estado, nível), abas por etapa do protocolo, painel único de trabalho e diário de ações ao pé. */
+:root{
+  --bg:#f3f5f8;--surface:#ffffff;--ink:#18212d;--muted:#5a6778;--line:#d5dbe4;--chip:#e8ecf2;
+  --accent:#0b5c7a;--accent-ink:#ffffff;
+  --ok:#1d7a4c;--ok-bg:#e3f3ea;--warn:#8a5a00;--warn-bg:#fbefd2;--bad:#a8322d;--bad-bg:#fbe6e4;
+  --sans:"IBM Plex Sans",system-ui,"Segoe UI",sans-serif;
+  --cond:"IBM Plex Sans Condensed","IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11161d;--surface:#1a212b;--ink:#e6ebf2;--muted:#9aa7b8;--line:#2e3846;--chip:#252e3a;
+  --accent:#58b6d6;--accent-ink:#08222c;
+  --ok:#6fd09c;--ok-bg:#173326;--warn:#e9be62;--warn-bg:#3a2e12;--bad:#f08d86;--bad-bg:#3d1c1a;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11161d;--surface:#1a212b;--ink:#e6ebf2;--muted:#9aa7b8;--line:#2e3846;--chip:#252e3a;
+  --accent:#58b6d6;--accent-ink:#08222c;
+  --ok:#6fd09c;--ok-bg:#173326;--warn:#e9be62;--warn-bg:#3a2e12;--bad:#f08d86;--bad-bg:#3d1c1a;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans)}
+.wrap{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+h1{font:600 26px/1.15 var(--cond);margin:0;text-wrap:balance}
+h2{font:600 18px/1.2 var(--cond);margin:0;text-wrap:balance}
+h3{font:600 12px/1.2 var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0}
+p{margin:0}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono);font-size:13px}
+header.top{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between}
+header.top p{max-width:62ch}
+.acoes{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.faixa{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px;display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+.faixa .item{display:flex;flex-direction:column;gap:2px;min-width:0}
+.faixa .valor{font:500 15px var(--mono);overflow-wrap:anywhere}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;font:500 13px var(--mono);background:var(--chip);color:var(--ink)}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}.pill.warn{background:var(--warn-bg);color:var(--warn)}.pill.bad{background:var(--bad-bg);color:var(--bad)}
+.faltas{flex-basis:100%;margin:0;padding-left:18px;color:var(--muted);font-size:13px}
+nav.abas{display:flex;flex-wrap:wrap;gap:6px}
+button{font:500 14px var(--sans);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:7px 12px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.perigo{color:var(--bad);border-color:var(--bad)}
+nav.abas button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+nav.abas .n{font-family:var(--mono);opacity:.75;margin-left:4px}
+.painel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.aviso{border-radius:6px;padding:10px 14px;border:1px solid var(--line);background:var(--surface)}
+.aviso.ok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok)}
+.aviso.bad{background:var(--bad-bg);color:var(--bad);border-color:var(--bad)}
+.aviso ul{margin:4px 0 0;padding-left:18px}
+form.grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px 14px}
+form.grade .largo{grid-column:1/-1}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);min-width:0}
+input,select,textarea{font:15px var(--sans);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:7px 9px;width:100%;min-width:0}
+textarea{min-height:64px;resize:vertical}
+.rolagem{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{font:600 12px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere;min-width:90px}
+td.id{font-family:var(--mono);white-space:nowrap;min-width:0}
+.estados{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px}
+.estados button{text-align:left;font-family:var(--mono);font-size:13px}
+.estados button[aria-current="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+pre{font:13px/1.55 var(--mono);background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:14px;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.diario{font:13px/1.5 var(--mono);display:flex;flex-direction:column;gap:4px;max-height:220px;overflow-y:auto}
+.diario .recusado{color:var(--bad)}
+.linha{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.vazio{color:var(--muted);font-style:italic}
+@media (prefers-reduced-motion:no-preference){button{transition:border-color .12s}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>lnagent · casos Infor LN</h1>
+      <p class="muted">Conduz um bug pelo protocolo mestre e recusa o que ele proíbe. Os dados ficam só neste navegador; não digite segredos nem dados de cliente além do necessário.</p>
+    </div>
+    <div class="acoes" id="acoes-topo"></div>
+  </header>
+  <section class="faixa" id="faixa" aria-label="Situação do caso"></section>
+  <div id="aviso" role="status" aria-live="polite"></div>
+  <nav class="abas" id="abas" role="tablist" aria-label="Etapas"></nav>
+  <main class="painel" id="painel"></main>
+  <section class="painel">
+    <h3>Diário de ações e recusas</h3>
+    <div class="diario" id="diario"></div>
+  </section>
+</div>
+
+<script>
+"use strict";
+const ESTADOS=["TRIAGEM","INVESTIGANDO","CAUSA CONFIRMADA","CORREÇÃO PREPARADA","VALIDADA EM DEV","PRONTA PARA REVISÃO","AGUARDANDO APROVAÇÃO","AGUARDANDO VALIDAÇÃO FUNCIONAL","BLOQUEADA","IMPLANTADA — AGUARDANDO CONFIRMAÇÃO","RESOLVIDA"];
+const CLASSIF=["AVALIAR","HIPÓTESE FORTE","CONFIRMADO","DESCARTADO"];
+const STATUS_TESTE=["NÃO EXECUTADO","PASSOU","FALHOU"];
+const CONFIANCA=["BAIXA","MÉDIA","ALTA"];
+const AMBIENTES=["Desconhecido","DEV","TEST","QA","UAT","ACC","PRE-PROD","PROD"];
+// [chave, rótulo, opções, largo]
+const ABERTURA=[["ticket","Ticket"],["projeto","Projeto/Cliente"],["ambiente","Ambiente",AMBIENTES],["prova_ambiente","Método de comprovação do ambiente"],["produto","Produto/CloudSuite"],["release","LN Release"],["tools","Enterprise Server/Tools"],["pc_vrc","Package Combination / Package / VRC"],["modulo","Módulo"],["sessao","Sessão/Job/API/BOD"],["branch","Branch dedicada"],["estado_inicial","Estado inicial registrado (baseline)"],["rollback","Rollback viável"],["observado","Comportamento observado",null,1],["esperado","Comportamento esperado",null,1],["erro","Erro completo",null,1],["aceite","Critério de aceite",null,1]];
+const TIPOS={
+ evidencia:{lista:"evidencias",pre:"E",nome:"Evidências",campos:[["fonte","Fonte"],["identificador","Título ou identificador"],["versao","Versão/ambiente"],["local","Localização"],["confianca","Nível de confiança",CONFIANCA],["oficial","Fonte oficial?",["NÃO","SIM"]],["fato","Fato sustentado",null,1]],colunas:["identificador","fonte","versao","fato","confianca"]},
+ hipotese:{lista:"hipoteses",pre:"H",nome:"Hipóteses",campos:[["hipotese","Hipótese",null,1],["a_favor","Evidência a favor"],["contra","Evidência contra"],["teste","Teste discriminante de menor custo"],["resultado","Resultado do teste"],["classificacao","Classificação",CLASSIF],["cadeia","Cadeia causal: defeito → condição → efeito técnico → sintoma",null,1]],colunas:["hipotese","teste","resultado","classificacao"]},
+ alteracao:{lista:"alteracoes",pre:"A",nome:"Alterações",campos:[["objeto","Objeto alterado"],["justificativa","Justificativa"],["diff","Diff resumido",null,1]],colunas:["objeto","justificativa","diff"]},
+ teste:{lista:"testes",pre:"T",nome:"Testes",campos:[["passos","Passos",null,1],["precondicao","Pré-condição"],["dados","Dados"],["esperado","Resultado esperado"],["obtido","Resultado obtido"],["status","Status",STATUS_TESTE],["evidencia","Evidência"],["motivo_risco","Motivo e risco residual (se não executado)",null,1]],colunas:["passos","esperado","obtido","status","evidencia"]}
+};
+const APROVACAO=[["acao","1. Ação exata"],["ambiente","2. Ambiente"],["motivo","3. Motivo"],["comandos","4. Comandos, sessões ou componentes"],["impacto","5. Impacto"],["risco","6. Risco"],["rollback","7. Backup e rollback"],["validacao","8. Validação proposta"],["aprovador","9. Aprovador necessário"]];
+const GATES={versionada:"Correção versionada",revisao:"Revisão concluída",implantada:"Implantada no ambiente-alvo autorizado",aceite:"Critério de aceite confirmado"};
+const ABAS=[["abertura","Abertura"],["evidencia","Evidências"],["hipotese","Hipóteses"],["alteracao","Alterações"],["teste","Testes"],["estado","Estado"],["aprovacao","Aprovação NÍVEL 2"],["relatorio","Relatório"]];
+const CHAVE="lnagent-caso-v1";
+
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const agora=()=>new Date().toLocaleString("pt-BR");
+const av=v=>v?v:"AVALIAR";
+const SEGREDO=/\b(senha|password|passwd|pwd|token|secret|segredo|api[_-]?key|authorization|cookie|connection\s*string)\b(\s*[:=]\s*)(\S+)/gi;
+const limpar=v=>String(v??"").replace(SEGREDO,"$1$2[REMOVIDO]").replace(/\bbearer\s+[\w\-.~+\/=]+/gi,"Bearer [REMOVIDO]").trim();
+
+function exemplo(){
+  return {exemplo:true,inicio:agora(),estado:"INVESTIGANDO",
+    abertura:{ticket:"DEMO-001",projeto:"Caso de exemplo (fictício)",ambiente:"Desconhecido",modulo:"Purchase",observado:"Exemplo fictício: erro ao aprovar pedido de compra",esperado:"Pedido aprovado sem erro",aceite:"Pedido aprovado sem erro no ambiente-alvo"},
+    evidencias:[{id:"E01",fonte:"Fórum público",identificador:"Relato semelhante",versao:"",local:"",fato:"Pista: sintoma parecido em outro release",confianca:"BAIXA",oficial:"NÃO"}],
+    hipoteses:[{id:"H01",hipotese:"Exemplo fictício: parametrização divergente entre ambientes",a_favor:"",contra:"",teste:"Comparar a configuração do DEV com a do ambiente com falha",resultado:"",classificacao:"AVALIAR",cadeia:""}],
+    alteracoes:[],testes:[],gates:{},aprovacoes:[],
+    historico:[{estado:"TRIAGEM",data:agora(),motivo:"abertura"},{estado:"INVESTIGANDO",data:agora(),motivo:""}],diario:[]};
+}
+function vazio(){
+  const d=new Date(),p=n=>String(n).padStart(2,"0");
+  const t=`TMP-${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
+  return {inicio:agora(),estado:"TRIAGEM",abertura:{ticket:t,ambiente:"Desconhecido"},evidencias:[],hipoteses:[],alteracoes:[],testes:[],gates:{},aprovacoes:[],historico:[{estado:"TRIAGEM",data:agora(),motivo:"abertura"}],diario:[]};
+}
+let caso;
+try{caso=JSON.parse(localStorage.getItem(CHAVE))}catch(e){caso=null}
+if(!caso||!caso.abertura)caso=exemplo();
+let aba="abertura",editando=null,confirmandoNovo=false,aviso=null;
+function salvar(){try{localStorage.setItem(CHAVE,JSON.stringify(caso))}catch(e){}}
+
+// ---------- regras do protocolo ----------
+function nivel(c){
+  const a=c.abertura,f=[];
+  if(a.ambiente!=="DEV")f.push(`Ambiente “${av(a.ambiente)}” não é DEV: sem prova de DEV/TEST, tratar como PROD (somente leitura)`);
+  [["prova_ambiente","método de comprovação do ambiente"],["branch","branch dedicada"],["estado_inicial","estado inicial registrado"],["rollback","rollback viável"]].forEach(([k,r])=>{if(!a[k])f.push("Falta "+r)});
+  return {n:f.length?0:1,faltas:f};
+}
+function validar(tipo,r){
+  const f=[];
+  if(tipo==="hipotese"&&r.classificacao==="CONFIRMADO"){
+    if(!r.cadeia)f.push("Causa raiz CONFIRMADA exige a cadeia defeito → condição → efeito técnico → sintoma");
+    if(!r.resultado)f.push("CONFIRMADO exige o resultado do teste discriminante");
+  }
+  if(tipo==="hipotese"&&!r.hipotese)f.push("Descreva a hipótese");
+  if(tipo==="teste"){
+    if(!r.passos)f.push("Descreva os passos do teste");
+    if(r.status==="NÃO EXECUTADO"&&!r.motivo_risco)f.push("Teste NÃO EXECUTADO exige motivo e risco residual");
+    if(r.status!=="NÃO EXECUTADO"&&!(r.obtido&&r.evidencia))f.push("Teste executado exige resultado obtido e evidência");
+  }
+  if(tipo==="evidencia"&&!(r.fonte&&r.fato))f.push("Evidência exige fonte e fato sustentado");
+  if(tipo==="alteracao"&&!(r.objeto&&r.justificativa))f.push("Alteração exige objeto e justificativa");
+  return f;
+}
+function preRequisitos(c,novo){
+  const f=[],causa=c.hipoteses.some(h=>h.classificacao==="CONFIRMADO");
+  const passou=c.testes.filter(t=>t.status==="PASSOU").length,falhou=c.testes.filter(t=>t.status==="FALHOU").map(t=>t.id);
+  const posCausa=["CAUSA CONFIRMADA","CORREÇÃO PREPARADA","VALIDADA EM DEV","PRONTA PARA REVISÃO","AGUARDANDO APROVAÇÃO","AGUARDANDO VALIDAÇÃO FUNCIONAL","IMPLANTADA — AGUARDANDO CONFIRMAÇÃO","RESOLVIDA"];
+  if(posCausa.includes(novo)&&!causa)f.push("Nenhuma hipótese CONFIRMADO no ledger (causa raiz não demonstrada)");
+  if(["CORREÇÃO PREPARADA","VALIDADA EM DEV","PRONTA PARA REVISÃO","RESOLVIDA"].includes(novo)&&!c.alteracoes.length)f.push("Nenhuma alteração registrada");
+  if(["VALIDADA EM DEV","PRONTA PARA REVISÃO","RESOLVIDA"].includes(novo)&&!(passou&&!falhou.length))f.push(`Testes não sustentam a conclusão (aprovados: ${passou}; falharam: ${falhou.join(", ")||"nenhum"})`);
+  if(novo==="VALIDADA EM DEV"&&nivel(c).n===0)f.push("Ambiente DEV não comprovado: não é possível declarar validação em DEV");
+  if(novo==="RESOLVIDA")Object.entries(GATES).forEach(([g,r])=>{if(!c.gates[g])f.push("Falta confirmar: "+r.toLowerCase())});
+  return f;
+}
+function registrar(acao,resultado,detalhe){caso.diario.unshift({h:agora(),acao,resultado,detalhe:detalhe||""});salvar()}
+function ok(msg){registrar(msg,"ok");aviso={tipo:"ok",titulo:msg,itens:[]}}
+function recusar(acao,faltas){registrar(acao,"recusado",faltas.join("; "));aviso={tipo:"bad",titulo:"Recusado: "+acao,itens:faltas}}
+
+// ---------- relatório ----------
+function tabela(cab,linhas){
+  if(!linhas.length)return "_Nenhum registro._";
+  const c=v=>String(v||"—").replace(/\|/g,"\\|").replace(/\n/g," ");
+  return ["| "+cab.join(" | ")+" |","|"+"---|".repeat(cab.length),...linhas.map(l=>"| "+l.map(c).join(" | ")+" |")].join("\n");
+}
+function relatorio(c){
+  const a=c.abertura,conf=c.hipoteses.filter(h=>h.classificacao==="CONFIRMADO");
+  const l=[`TÍTULO: ${av(a.ticket)} | ${av(a.modulo)} | ${av(a.observado).slice(0,80)}`,`STATUS: ${c.estado}`,"",
+   "ESCOPO E AMBIENTE",`${av(a.produto)} · release ${av(a.release)} · Tools ${av(a.tools)} · PC/VRC ${av(a.pc_vrc)} · ambiente ${av(a.ambiente)} (comprovação: ${av(a.prova_ambiente)}) · NÍVEL ${nivel(c).n}`,"",
+   "EVIDÊNCIAS",tabela(["ID","Evidência","Fonte","Versão/ambiente","O que comprova","Confiança"],c.evidencias.map(x=>[x.id,x.identificador,x.fonte+(x.oficial==="SIM"?"":" — NÃO OFICIAL — REQUER VALIDAÇÃO"),x.versao,x.fato,x.confianca])),"",
+   "CAUSA RAIZ"];
+  if(conf.length)conf.forEach(h=>l.push(`${h.id} — CONFIRMADO: ${h.hipotese}`,`  Cadeia causal: ${h.cadeia}`,`  Teste: ${av(h.teste)} → ${h.resultado}`));
+  else l.push("Causa raiz não confirmada.");
+  l.push("","LEDGER DE HIPÓTESES",tabela(["ID","Hipótese","A favor","Contra","Teste discriminante","Resultado","Classificação"],c.hipoteses.map(h=>[h.id,h.hipotese,h.a_favor,h.contra,h.teste,h.resultado,h.classificacao])),"",
+   "ALTERAÇÃO",tabela(["ID","Objeto","Justificativa","Diff resumido"],c.alteracoes.map(x=>[x.id,x.objeto,x.justificativa,x.diff])),"",
+   "COMPILAÇÃO E TESTES",tabela(["Teste","Esperado","Obtido","Status","Evidência"],c.testes.map(t=>[t.id+" "+t.passos,t.esperado,t.obtido||t.motivo_risco,t.status,t.evidencia])),"",
+   "ROLLBACK E IMPLANTAÇÃO",av(a.rollback),"");
+  const g=Object.entries(c.gates);
+  if(g.length)l.push("Confirmações registradas:",tabela(["Critério","Por","Evidência","Data"],g.map(([k,v])=>[GATES[k],v.por,v.evidencia,v.data])),"");
+  l.push("PENDÊNCIAS");
+  const pend=c.estado==="RESOLVIDA"?[]:preRequisitos(c,"RESOLVIDA");
+  l.push(...(pend.length?pend.map(p=>"- "+p):["Nenhuma."]));
+  return l.join("\n");
+}
+
+// ---------- telas ----------
+function campo(prefixo,[k,rot,ops,largo],valor){
+  const id=`${prefixo}-${k}`,v=valor??"";
+  let c;
+  if(ops)c=`<select id="${id}" name="${k}">${ops.map(o=>`<option${o===v?" selected":""}>${esc(o)}</option>`).join("")}</select>`;
+  else if(largo)c=`<textarea id="${id}" name="${k}">${esc(v)}</textarea>`;
+  else c=`<input id="${id}" name="${k}" value="${esc(v)}" autocomplete="off">`;
+  return `<label${largo?' class="largo"':""}>${esc(rot)}${c}</label>`;
+}
+function telaAbertura(){
+  return `<div><h2>Abertura e checkpoint</h2><p class="muted">Etapa 0. O que ficar vazio aparece como AVALIAR no relatório. O nível de permissão é recalculado a cada alteração.</p></div>
+  <form class="grade" id="form-abertura">${ABERTURA.map(c=>campo("ab",c,caso.abertura[c[0]])).join("")}</form>`;
+}
+function telaRegistros(tipo){
+  const T=TIPOS[tipo],lista=caso[T.lista],rot=Object.fromEntries(T.campos.map(c=>[c[0],c[1]]));
+  const reg=editando&&editando.tipo===tipo?lista.find(r=>r.id===editando.id):null;
+  const linhas=lista.map(r=>`<tr><td class="id">${r.id}</td>${T.colunas.map(k=>{
+    let v=esc(r[k]||"—");
+    if(k==="fonte"&&r.oficial!=="SIM")v+=' <span class="pill warn">NÃO OFICIAL — REQUER VALIDAÇÃO</span>';
+    if(k==="classificacao")v=`<span class="pill ${r[k]==="CONFIRMADO"?"ok":r[k]==="DESCARTADO"?"bad":""}">${v}</span>`;
+    if(k==="status")v=`<span class="pill ${r[k]==="PASSOU"?"ok":r[k]==="FALHOU"?"bad":"warn"}">${v}</span>`;
+    return `<td>${v}</td>`}).join("")}<td class="id"><button type="button" data-editar="${r.id}">Editar</button></td></tr>`).join("");
+  return `<h2>${T.nome}</h2>
+  ${lista.length?`<div class="rolagem"><table><thead><tr><th>ID</th>${T.colunas.map(k=>`<th>${esc(rot[k].split(":")[0].split("(")[0])}</th>`).join("")}<th></th></tr></thead><tbody>${linhas}</tbody></table></div>`:'<p class="vazio">Nenhum registro ainda.</p>'}
+  <h3>${reg?"Editar "+reg.id:"Novo registro"}</h3>
+  <form class="grade" id="form-registro" data-tipo="${tipo}">${T.campos.map(c=>campo("rg-"+tipo,c,reg?reg[c[0]]:"")).join("")}
+  <div class="linha largo"><button class="pri" type="submit">${reg?"Salvar "+reg.id:"Registrar"}</button>${reg?'<button type="button" id="cancelar-edicao">Cancelar</button>':""}</div></form>`;
+}
+function telaEstado(){
+  return `<div><h2>Estado do caso</h2><p class="muted">Só os estados permitidos. Cada mudança confere os pré-requisitos; RESOLVIDA exige causa confirmada, testes aprovados e as quatro confirmações abaixo.</p></div>
+  <div class="estados">${ESTADOS.map(e=>`<button type="button" data-estado="${esc(e)}" aria-current="${e===caso.estado}">${esc(e)}</button>`).join("")}</div>
+  <label>Motivo ou bloqueio (obrigatório para BLOQUEADA)<input id="estado-motivo" autocomplete="off"></label>
+  <h3>Confirmações humanas</h3>
+  <div class="rolagem"><table><thead><tr><th>Critério</th><th>Confirmado por</th><th>Evidência</th><th></th></tr></thead><tbody>
+  ${Object.entries(GATES).map(([g,r])=>{const v=caso.gates[g];return v?`<tr><td>${esc(r)}</td><td>${esc(v.por)}</td><td>${esc(v.evidencia)}</td><td><span class="pill ok">${esc(v.data)}</span></td></tr>`
+    :`<tr><td>${esc(r)}</td><td><input id="gate-${g}-por" aria-label="Confirmado por" autocomplete="off"></td><td><input id="gate-${g}-ev" aria-label="Evidência" autocomplete="off"></td><td class="id"><button type="button" data-gate="${g}">Confirmar</button></td></tr>`}).join("")}
+  </tbody></table></div>
+  <h3>Histórico</h3>
+  <div class="diario">${caso.historico.map(h=>`<div>${esc(h.data)} · ${esc(h.estado)}${h.motivo?" · "+esc(h.motivo):""}</div>`).join("")}</div>`;
+}
+function telaAprovacao(){
+  return `<div><h2>Pacote de aprovação NÍVEL 2</h2><p class="muted">Antes de gravar dados, aplicar patch, executar PMC, fazer commit definitivo, push, merge ou implantar fora de DEV. O pacote só é gerado com os nove itens; nenhuma ação é executada aqui.</p></div>
+  <form class="grade" id="form-aprovacao">${APROVACAO.map(c=>campo("ap",[c[0],c[1],null,c[0]==="comandos"],c[0]==="ambiente"?caso.abertura.ambiente:"")).join("")}
+  <div class="linha largo"><button class="pri" type="submit">Gerar pacote e parar</button></div></form>
+  ${caso.aprovacoes.map(p=>`<h3>${p.id} · ${esc(p.data)} · decisão PENDENTE</h3><pre>${esc(APROVACAO.map(([k,r])=>r+"\n"+p[k]).join("\n\n"))}</pre>`).join("")}`;
+}
+function telaRelatorio(){
+  return `<div class="linha" style="justify-content:space-between"><h2>Relatório de entrega</h2><button type="button" id="copiar">Copiar relatório</button></div>
+  <pre id="texto-relatorio">${esc(relatorio(caso))}</pre>`;
+}
+
+function desenhar(){
+  const n=nivel(caso),a=caso.abertura;
+  document.getElementById("faixa").innerHTML=
+   `<div class="item"><h3>Ticket</h3><span class="valor">${esc(av(a.ticket))}</span></div>
+    <div class="item"><h3>Estado</h3><span class="pill ${caso.estado==="RESOLVIDA"?"ok":caso.estado==="BLOQUEADA"?"bad":caso.estado.startsWith("AGUARDANDO")?"warn":""}">${esc(caso.estado)}</span></div>
+    <div class="item"><h3>Permissão</h3><span class="pill ${n.n?"ok":"warn"}">NÍVEL ${n.n} · ${n.n?"editar, compilar e testar em DEV":"somente leitura"}</span></div>
+    ${caso.exemplo?'<div class="item"><h3>Origem</h3><span class="pill">caso de exemplo fictício</span></div>':""}
+    ${n.faltas.length?`<ul class="faltas">${n.faltas.map(f=>`<li>${esc(f)}</li>`).join("")}</ul>`:""}`;
+  document.getElementById("acoes-topo").innerHTML=confirmandoNovo
+   ?`<span class="muted">Apagar o caso atual deste navegador?</span><button class="perigo" type="button" id="novo-sim">Apagar e começar</button><button type="button" id="novo-nao">Cancelar</button>`
+   :`<button type="button" id="novo">Novo caso</button><button type="button" id="carregar-exemplo">Carregar exemplo</button>`;
+  const cont={evidencia:caso.evidencias.length,hipotese:caso.hipoteses.length,alteracao:caso.alteracoes.length,teste:caso.testes.length,aprovacao:caso.aprovacoes.length};
+  document.getElementById("abas").innerHTML=ABAS.map(([k,r])=>`<button type="button" role="tab" data-aba="${k}" aria-selected="${k===aba}">${esc(r)}${k in cont?`<span class="n">${cont[k]}</span>`:""}</button>`).join("");
+  document.getElementById("aviso").innerHTML=aviso?`<div class="aviso ${aviso.tipo}"><strong>${esc(aviso.titulo)}</strong>${aviso.itens.length?`<ul>${aviso.itens.map(i=>`<li>${esc(i)}</li>`).join("")}</ul>`:""}</div>`:"";
+  const p=document.getElementById("painel");
+  p.innerHTML=aba==="abertura"?telaAbertura():aba==="estado"?telaEstado():aba==="aprovacao"?telaAprovacao():aba==="relatorio"?telaRelatorio():telaRegistros(aba);
+  document.getElementById("diario").innerHTML=caso.diario.length?caso.diario.map(d=>`<div class="${d.resultado==="recusado"?"recusado":""}">${esc(d.h)} · ${esc(d.resultado)} · ${esc(d.acao)}${d.detalhe?" · "+esc(d.detalhe):""}</div>`).join(""):'<span class="vazio">Nada registrado ainda.</span>';
+}
+const lerForm=f=>Object.fromEntries([...new FormData(f)].map(([k,v])=>[k,limpar(v)]));
+
+// ---------- eventos ----------
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.aba){aba=b.dataset.aba;editando=null;aviso=null}
+  else if(b.id==="novo"){confirmandoNovo=true}
+  else if(b.id==="novo-nao"){confirmandoNovo=false}
+  else if(b.id==="novo-sim"){caso=vazio();confirmandoNovo=false;aba="abertura";aviso=null;registrar("abertura do caso "+caso.abertura.ticket,"ok")}
+  else if(b.id==="carregar-exemplo"){confirmandoNovo=false;if(caso.exemplo){caso=exemplo();aviso={tipo:"ok",titulo:"Exemplo recarregado",itens:[]};salvar()}else{aviso={tipo:"bad",titulo:"Há um caso seu aberto. Use “Novo caso” para apagá-lo antes de carregar o exemplo.",itens:[]}}}
+  else if(b.dataset.editar){editando={tipo:aba,id:b.dataset.editar};aviso=null}
+  else if(b.id==="cancelar-edicao"){editando=null}
+  else if(b.dataset.estado){
+    const novo=b.dataset.estado,motivo=limpar(document.getElementById("estado-motivo").value);
+    if(novo===caso.estado)return;
+    const f=preRequisitos(caso,novo);
+    if(novo==="BLOQUEADA"&&!motivo)f.push("BLOQUEADA exige o bloqueio exato e o acesso mínimo necessário");
+    if(f.length)recusar("mudar estado para "+novo,f);
+    else{caso.estado=novo;caso.historico.push({estado:novo,data:agora(),motivo});ok("Estado alterado para "+novo)}
+  }
+  else if(b.dataset.gate){
+    const g=b.dataset.gate,por=limpar(document.getElementById(`gate-${g}-por`).value),ev=limpar(document.getElementById(`gate-${g}-ev`).value);
+    if(!por||!ev)recusar("confirmar: "+GATES[g].toLowerCase(),["Informe quem confirmou e a evidência"]);
+    else{caso.gates[g]={por,evidencia:ev,data:agora()};ok("Confirmado: "+GATES[g].toLowerCase()+" (por "+por+")")}
+  }
+  else if(b.id==="copiar"){
+    const t=relatorio(caso);
+    const marcar=()=>{const r=document.createRange();r.selectNodeContents(document.getElementById("texto-relatorio"));const s=getSelection();s.removeAllRanges();s.addRange(r)};
+    (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{b.textContent="Copiado"},()=>{marcar();b.textContent="Selecionado: use Ctrl+C"});
+    return;
+  }
+  else return;
+  salvar();desenhar();
+});
+document.addEventListener("change",e=>{
+  const f=e.target.closest("#form-abertura");if(!f)return;
+  const k=e.target.name;caso.abertura[k]=limpar(e.target.value);e.target.value=caso.abertura[k];
+  delete caso.exemplo;salvar();
+  const sel=e.target.id;desenhar();const el=document.getElementById(sel);if(el)el.focus();
+});
+document.addEventListener("submit",e=>{
+  e.preventDefault();const f=e.target;
+  if(f.id==="form-registro"){
+    const tipo=f.dataset.tipo,T=TIPOS[tipo],r=lerForm(f),faltas=validar(tipo,r);
+    if(faltas.length){recusar((editando?"alterar ":"registrar ")+tipo,faltas);desenharMantendo(f,r);return}
+    if(editando){Object.assign(caso[T.lista].find(x=>x.id===editando.id),r);ok(editando.id+" atualizado");editando=null}
+    else{const id=T.pre+String(caso[T.lista].length+1).padStart(2,"0");caso[T.lista].push({id,data:agora(),...r});ok(id+" registrado"+(tipo==="evidencia"&&r.oficial!=="SIM"?" — marcada como NÃO OFICIAL — REQUER VALIDAÇÃO":""))}
+    delete caso.exemplo;
+  }
+  if(f.id==="form-aprovacao"){
+    const r=lerForm(f),faltas=APROVACAO.filter(([k])=>!r[k]).map(([,rot])=>"Falta "+rot);
+    if(faltas.length){recusar("gerar pacote de aprovação NÍVEL 2",faltas);desenharMantendo(f,r);return}
+    const id="AP"+String(caso.aprovacoes.length+1).padStart(2,"0");
+    caso.aprovacoes.push({id,data:agora(),...r});
+    caso.historico.push({estado:"AGUARDANDO APROVAÇÃO",data:agora(),motivo:id+" (antes: "+caso.estado+")"});
+    caso.estado="AGUARDANDO APROVAÇÃO";ok("Pacote "+id+" gerado. Pare aqui até a aprovação explícita.");
+  }
+  salvar();desenhar();
+});
+// Redesenha depois de uma recusa sem perder o que a pessoa digitou.
+function desenharMantendo(f,valores){
+  const id=f.id;desenhar();
+  const novo=document.getElementById(id);
+  if(novo)Object.entries(valores).forEach(([k,v])=>{const el=novo.elements[k];if(el)el.value=v});
+}
+desenhar();
+</script>
+
+</body></html>

@@ -1,0 +1,401 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Parecer Civilização 3D</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Marcellus&display=swap">
+<style>
+/* Layout: documento de coluna única (máx. 980px); notas em hexágonos, como as casas do mapa do jogo; tabelas roláveis. */
+:root{
+  --bg:#f3f5f8;--surface:#ffffff;--ink:#17202b;--mu:#55637a;--line:#d5dbe4;
+  --accent:#1f5fbf;--accent-soft:#e3ecfa;--on-accent:#ffffff;
+  --hi:#b42318;--hi-soft:#fde7e4;--md:#8a5200;--md-soft:#fbefd6;--lo:#2f6a4a;--lo-soft:#e0f1e7;
+  --disp:'Marcellus','Palatino Linotype',Georgia,serif;--body:'Figtree','Segoe UI',system-ui,sans-serif;
+  --mono:ui-monospace,'Cascadia Mono',Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f141b;--surface:#171e28;--ink:#e6ebf2;--mu:#9aa8ba;--line:#2a3443;
+  --accent:#7fb0ff;--accent-soft:#1b2a41;--on-accent:#0b1422;
+  --hi:#ff9485;--hi-soft:#3a1c19;--md:#f2b859;--md-soft:#35280f;--lo:#7fd3a0;--lo-soft:#15301f;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f141b;--surface:#171e28;--ink:#e6ebf2;--mu:#9aa8ba;--line:#2a3443;
+  --accent:#7fb0ff;--accent-soft:#1b2a41;--on-accent:#0b1422;
+  --hi:#ff9485;--hi-soft:#3a1c19;--md:#f2b859;--md-soft:#35280f;--lo:#7fd3a0;--lo-soft:#15301f;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--body);-webkit-font-smoothing:antialiased}
+.wrap{max-width:980px;margin:0 auto;padding-block:36px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{font-family:var(--disp);font-weight:400;text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:clamp(30px,5vw,44px)}
+h2{font-size:28px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+h3{font-size:20px}
+p{margin:0;max-width:68ch}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+section{display:flex;flex-direction:column;gap:16px}
+.eyebrow{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);font-weight:600}
+.lead{font-size:18px;color:var(--ink)}
+.mu{color:var(--mu)}
+nav{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;font-weight:600}
+code,.id{font-family:var(--mono);font-size:.86em}
+.id{white-space:nowrap;font-weight:600}
+.scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.score{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px}
+.hex{flex:none;width:62px;height:70px;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-family:var(--disp);font-size:24px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);font-variant-numeric:tabular-nums}
+.score b{display:block;font-weight:600}
+.score span{font-size:13.5px;color:var(--mu);line-height:1.4;display:block}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.two>div{min-width:0;display:flex;flex-direction:column;gap:8px}
+ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:72ch}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;line-height:1.45}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mu);font-weight:600;white-space:nowrap}
+td:first-child{white-space:nowrap}
+.pill{display:inline-block;font-size:12px;font-weight:700;padding:1px 9px;border-radius:99px;white-space:nowrap}
+.hi{background:var(--hi-soft);color:var(--hi)}.md{background:var(--md-soft);color:var(--md)}.lo{background:var(--lo-soft);color:var(--lo)}
+details{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:10px 14px}
+details[open]{padding-bottom:14px}
+summary{cursor:pointer;font-weight:600}
+details ul{margin-top:10px;font-size:14.5px}
+.note{border-left:3px solid var(--accent);background:var(--accent-soft);padding:12px 16px;border-radius:0 8px 8px 0;font-size:15px}
+.note p{max-width:none}
+.sw{display:flex;flex-wrap:wrap;gap:8px}
+.sw span{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:5px 10px 5px 5px;font-family:var(--mono);font-size:13px}
+.sw i{width:26px;height:26px;border-radius:6px;border:1px solid var(--line)}
+ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;max-width:72ch}
+footer{font-size:14px;color:var(--mu);border-top:1px solid var(--line);padding-top:16px}
+</style>
+
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:14px">
+  <div class="eyebrow">Parecer do painel de especialistas · 10/11/2026</div>
+  <h1>Civilização 3D: parecer do sistema e das mudanças propostas</h1>
+  <p class="lead">O jogo é um protótipo bonito e que funciona de ponta a ponta. Ainda não é um jogo de estratégia profundo: faltam escolhas na economia, clareza no combate, uma IA que jogue bem e a possibilidade de salvar a partida.</p>
+  <p class="mu">Objeto analisado: a versão original do jogo (HTML único, 954 linhas, three.js r128). O veredito e os achados descrevem essa versão.</p>
+  <div class="note"><p><b>Atualização.</b> Depois do parecer, as quatro ondas de mudanças foram aplicadas ao jogo: 35 das 39 mudanças estão implementadas, 2 em parte e 2 foram adiadas; dos 44 achados, só 1 continua aberto. O detalhe está em <a href="#implementacao">Situação da implementação</a>.</p></div>
+  <nav>
+    <a href="#veredito">Veredito</a><a href="#achados">Achados</a><a href="#implementacao">Implementação</a><a href="#mudancas">Mudanças propostas</a><a href="#guia">Guia de design</a><a href="#paletas">Paletas</a><a href="#top">12 dicas</a>
+  </nav>
+</header>
+
+<section id="veredito">
+  <h2>Veredito</h2>
+  <div class="scores">
+    <div class="score"><div class="hex">5,0</div><div><b>Game design e IA</b><span>Loop completo, mas economia sem escolhas e IA ingênua.</span></div></div>
+    <div class="score"><div class="hex">6,5</div><div><b>UX, UI e acessibilidade</b><span>Visual coeso; falta preview, toque e leitura para daltônicos.</span></div></div>
+    <div class="score"><div class="hex">6,0</div><div><b>Arquitetura e dados</b><span>Base enxuta; sem save, sem seed e com vazamento de GPU.</span></div></div>
+  </div>
+  <p class="mu">Média simples das três frentes: 5,8 de 10. Cada frente foi avaliada por um grupo separado de especialistas, sem ver a nota das outras. As notas são da versão original; o painel não reavaliou o jogo depois das mudanças.</p>
+  <div class="two">
+    <div>
+      <h3>O que está bom</h3>
+      <ul>
+        <li>Apresentação muito acima de um protótipo: hexágonos instanciados, peças em estilo de miniatura, minimapa, rótulos e log.</li>
+        <li>O ciclo fundar, crescer, produzir, pesquisar, guerrear e vencer funciona.</li>
+        <li>Matemática hexagonal e busca de caminho corretas.</li>
+        <li>Terrenos se distinguem pela forma, não só pela cor.</li>
+        <li>Atalhos visíveis nos botões e contador de unidades à espera de ordens no botão de turno.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>O que segura o jogo</h3>
+      <ul>
+        <li>O jogador ataca sem saber a chance de vencer.</li>
+        <li>Os primeiros 30 a 45 turnos passam sem nenhuma tecnologia nova.</li>
+        <li>A IA enxerga o mapa inteiro, mas ataca uma unidade por vez.</li>
+        <li>Recarregar a página perde a partida.</li>
+        <li>No celular, os painéis se sobrepõem e não há pinça para zoom.</li>
+        <li>Vermelho e amarelo se confundem para quem tem deuteranopia.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note"><p><b>Onde os especialistas concordaram sem combinar.</b> Três problemas apareceram em mais de uma frente: a falta de preview de combate (GD-09 e UX-01), a mesma casa rendendo para duas cidades (GD-07 e ARQ-08) e a produção que acumula sem teto (GD-13 e ARQ-08). São os achados mais seguros do parecer.</p></div>
+</section>
+
+<section id="achados">
+  <h2>Achados de severidade alta</h2>
+  <p>São 44 achados no total: 17 de severidade alta, listados abaixo, e 27 de média ou baixa, resumidos em seguida. As linhas citadas referem-se ao arquivo analisado.</p>
+
+  <h3>Game design e IA</h3>
+  <div class="tw"><table>
+    <tr><th>ID</th><th>Problema</th><th>Evidência</th><th>Impacto</th></tr>
+    <tr><td><span class="id">GD-01</span></td><td>Começo sem decisões</td><td>Custos de tecnologia ×5 (l.189): 1.210 pontos no total, com cidades que rendem 1 a 4 por turno.</td><td>A primeira tecnologia só sai por volta do turno 30 a 45.</td></tr>
+    <tr><td><span class="id">GD-02</span></td><td>Vitória científica encurta a partida</td><td><code>checkEnd</code> (l.477) encerra na 7ª tecnologia.</td><td>O turno 150 e a pontuação quase nunca entram em jogo.</td></tr>
+    <tr><td><span class="id">GD-04</span></td><td>IA ataca em fila</td><td><code>aiUnit</code> (l.459): cada unidade marcha sozinha para a cidade mais próxima.</td><td>Um guerreiro fortificado numa colina com muralha vence tudo.</td></tr>
+    <tr><td><span class="id">GD-07</span></td><td>Casa rende em dobro</td><td><code>cityYield</code> (l.288) aceita casas já usadas por outra cidade sua.</td><td>Cidades coladas viram a estratégia dominante.</td></tr>
+    <tr><td><span class="id">GD-09</span></td><td>Combate opaco</td><td><code>attack</code> (l.369) vai até a morte; multiplicadores de defesa de até 3,75× ficam escondidos.</td><td>Perda de unidades sem explicação.</td></tr>
+    <tr><td><span class="id">GD-12</span></td><td>Inícios injustos</td><td><code>pickStarts</code> (l.237) reduz a distância mínima de 15 até 4 casas.</td><td>Partidas decididas no sorteio do mapa.</td></tr>
+  </table></div>
+
+  <h3>UX, UI e acessibilidade</h3>
+  <div class="tw"><table>
+    <tr><th>ID</th><th>Problema</th><th>Evidência</th><th>Impacto</th></tr>
+    <tr><td><span class="id">UX-01</span></td><td>Sem preview de movimento ou combate</td><td><code>order()</code> executa na hora.</td><td>Fere o princípio de feedback claro.</td></tr>
+    <tr><td><span class="id">UX-02</span></td><td>Clique esquerdo faz duas coisas</td><td>Com unidade selecionada, qualquer clique vira ordem; só Esc desmarca.</td><td>Movimentos acidentais, piores no toque.</td></tr>
+    <tr><td><span class="id">UX-03</span></td><td>Jogador identificado só pela cor</td><td>Na deuteranopia, vermelho e amarelo ficam com ΔE 35; a fronteira é uma tinta de 13%.</td><td>Não atende a WCAG 1.4.1.</td></tr>
+    <tr><td><span class="id">UX-04</span></td><td>Layout quebra entre 901 e 987 px</td><td>Painel de unidade com largura mínima de 520 px centrado.</td><td>Cobre o botão de turno e o minimapa.</td></tr>
+    <tr><td><span class="id">UX-05</span></td><td>Painel de unidade estoura no celular</td><td>Precisa de cerca de 524 px num telefone com 347 px úteis.</td><td>Botões fora da tela.</td></tr>
+    <tr><td><span class="id">UX-06</span></td><td>Não dá para jogar só com teclado</td><td>Sem cursor de hexágono; <code>ui()</code> refaz o HTML e perde o foco.</td><td>Não atende a WCAG 2.1.1 e 2.4.3.</td></tr>
+  </table></div>
+
+  <h3>Arquitetura, dados e performance</h3>
+  <div class="tw"><table>
+    <tr><th>ID</th><th>Problema</th><th>Evidência</th><th>Impacto</th></tr>
+    <tr><td><span class="id">ARQ-01</span></td><td>Acaso sem seed</td><td><code>Math.random</code> em mapa, combate e IA (l.202, 239, 369, 421, 431).</td><td>Não dá para repetir uma partida nem reproduzir um bug.</td></tr>
+    <tr><td><span class="id">ARQ-02</span></td><td>Sem persistência</td><td>Não existe salvar nem carregar.</td><td>Recarregar perde tudo.</td></tr>
+    <tr><td><span class="id">ARQ-03</span></td><td>Estado difícil de salvar</td><td>Referências diretas entre objetos e arrays tipados.</td><td>Um save ingênuo corrompe a partida.</td></tr>
+    <tr><td><span class="id">ARQ-04</span></td><td>Bug no "Novo jogo"</td><td><code>newGame</code> (l.247) reinicia os ids, mas os modelos 3D antigos continuam em cache.</td><td>Peças com tipo e cor errados na segunda partida.</td></tr>
+    <tr><td><span class="id">ARQ-05</span></td><td>Vazamento de memória de vídeo</td><td>Cada mudança numa cidade cria 30 a 60 geometrias novas sem descartar as antigas.</td><td>Risco de travar no celular em partidas longas.</td></tr>
+  </table></div>
+
+  <details>
+    <summary>Outros 27 achados (média e baixa)</summary>
+    <ul>
+      <li><span class="id">GD-03</span> IA vê o mapa inteiro. <span class="id">GD-05</span> IA só avalia casas vizinhas e não recua. <span class="id">GD-06</span> Colonos da IA sem escolta.</li>
+      <li><span class="id">GD-08</span> Jogador não escolhe as casas trabalhadas. <span class="id">GD-10</span> Arqueiro e cavaleiro sem papel próprio. <span class="id">GD-11</span> Cidade de população 1 é destruída ao ser tomada.</li>
+      <li><span class="id">GD-13</span> Produção acumula sem teto e unidades não têm manutenção. <span class="id">GD-14</span> Rota contorna inimigos ocultos. <span class="id">GD-15</span> Sem dificuldade, recursos ou placar dos rivais.</li>
+      <li><span class="id">UX-07</span> Primeira dica aparece no log, que some no celular. <span class="id">UX-08</span> Seis textos abaixo de 4,5:1 de contraste. <span class="id">UX-09</span> Dourado da interface colide com o jogador amarelo.</li>
+      <li><span class="id">UX-10</span> Vida indicada só por cor. <span class="id">UX-11</span> Sem pinça, rotação por toque ou tooltip no toque. <span class="id">UX-12</span> Movimento reduzido cobre só um botão.</li>
+      <li><span class="id">UX-13</span> Log sem <code>aria-live</code> e ajuda sem papel de diálogo. <span class="id">UX-14</span> Cores definidas em três lugares. <span class="id">UX-15</span> Rótulos de 10 px. <span class="id">UX-16</span> Ordens inválidas falham em silêncio.</li>
+      <li><span class="id">ARQ-06</span> Cada clique redesenha as 1.320 casas. <span class="id">ARQ-07</span> Turno da IA estimado em 100 a 300 ms no celular. <span class="id">ARQ-08</span> Mesma casa em duas cidades.</li>
+      <li><span class="id">ARQ-09</span> Sombras de 2048 e desfoques pesados no celular. <span class="id">ARQ-10</span> Falha ao sortear inícios trava a página. <span class="id">ARQ-11</span> three.js r128 usa recursos já removidos em versões novas.</li>
+      <li><span class="id">ARQ-12</span> Código morto de uma versão 2D. <span class="id">ARQ-13</span> Cidades fora de visão mostram dados atuais.</li>
+    </ul>
+  </details>
+</section>
+
+<section id="implementacao">
+  <h2>Situação da implementação</h2>
+  <p>As quatro ondas foram aplicadas ao jogo, uma de cada vez, com teste antes de cada publicação. Das 39 mudanças, 35 estão implementadas, 2 em parte e 2 foram adiadas, como o parecer recomendou.</p>
+  <p><a href="https://claude.ai/artifact/WUauUMX3Dyxzbf9bv41PRF">Abrir o Civilização 3D atualizado</a></p>
+  <div class="tw"><table>
+    <tr><th>Onda</th><th>O que entrou no jogo</th><th>Situação</th></tr>
+    <tr><td>1</td><td>Prévia de alcance, rota e combate; clique esquerdo seleciona e direito move; inícios justos; semente; correção de memória e do "Novo jogo"; contrastes e layout.</td><td><span class="pill lo">Completa</span></td></tr>
+    <tr><td>2</td><td>Salvamento automático e código da partida; paleta com uma forma por jogador; vida com número; tutorial; gestos de toque; capital protegida, manutenção de unidades e escolha de pesquisa.</td><td><span class="pill lo">Completa</span></td></tr>
+    <tr><td>3</td><td>IA com névoa, batedores, ataque em grupo e escolta; Observatório como vitória científica; curva de ciência; arqueiro a distância e cavaleiro que recua; desfazer; dificuldade; cursor de teclado; autoteste.</td><td><span class="pill md">1 em parte</span> <span class="id">MP-ARQ-02</span></td></tr>
+    <tr><td>4</td><td>Placar e objetivos; tamanho do texto e paleta para daltonismo; cores numa tabela só; rota que respeita a névoa; desempate explícito.</td><td><span class="pill md">1 em parte</span> <span class="id">MP-UX-13</span><br><span class="pill hi">2 adiadas</span></td></tr>
+  </table></div>
+
+  <h3>O que ficou em parte ou de fora</h3>
+  <ul>
+    <li><span class="id">MP-ARQ-02</span> Toda ação do jogador virou um comando gravado, e as regras já rodam sem tela. Regras e interface continuam no mesmo arquivo.</li>
+    <li><span class="id">MP-UX-13</span> Entraram o tamanho do texto e a paleta alternativa. Remapear teclas e descrever o mapa para leitor de tela ficaram de fora.</li>
+    <li><span class="id">MP-GD-12</span> Tribos, recursos, bárbaros e tipos de mapa: adiada.</li>
+    <li><span class="id">MP-ARQ-12</span> Troca do three.js por uma versão atual: adiada.</li>
+  </ul>
+
+  <h3>Situação dos 44 achados</h3>
+  <p>37 estão resolvidos, 6 em parte e 1 continua aberto.</p>
+  <ul>
+    <li><b>Aberto:</b> <span class="id">ARQ-11</span> (three.js r128, ligado à mudança adiada).</li>
+    <li><span class="id">ARQ-13</span> Não estava em nenhuma onda e foi corrigido depois delas: cidades e fronteiras fora de visão aparecem como foram vistas pela última vez.</li>
+    <li><span class="id">GD-08</span> As casas trabalhadas agora aparecem no mapa, mas o jogador ainda não as escolhe.</li>
+    <li><span class="id">GD-10</span> Arqueiro e cavaleiro ganharam papel próprio; faltam zona de controle e veterania.</li>
+    <li><span class="id">GD-15</span> Há dificuldade, placar e partida salva; faltam recursos, tribos e bárbaros.</li>
+    <li><span class="id">UX-13</span> Log e diálogos estão acessíveis; o mapa ainda não é descrito para leitor de tela.</li>
+    <li><span class="id">UX-15</span> Há escala de texto até 150%; em 100% os rótulos pequenos continuam com 10 px.</li>
+    <li><span class="id">ARQ-12</span> O código morto saiu; a interface ainda depende de funções globais.</li>
+  </ul>
+
+  <h3>Como foi verificado</h3>
+  <ul>
+    <li>Partidas completas só de IA, em seis a oito sementes por onda, sem erros e com as regras conferidas a cada turno.</li>
+    <li>Salvar e carregar no meio dessas partidas não mudou o resultado de nenhuma.</li>
+    <li>O replay de uma partida jogada, refeita a partir dos comandos gravados, chegou ao mesmo estado.</li>
+    <li>Layout conferido em 1.024 px e em 375 px, também com texto em 130%.</li>
+    <li><b>Não verificado:</b> gestos de toque em aparelho real, salvamento automático dentro do claude.ai e equilíbrio das regras novas com jogadores.</li>
+  </ul>
+</section>
+
+<section id="mudancas">
+  <h2>Parecer sobre as mudanças propostas</h2>
+  <p>Não havia uma lista anterior de mudanças para este jogo. As 39 propostas abaixo vêm do próprio painel. O parecer consolidado aprovou 31, aprovou 6 com ressalva e recomendou adiar 2. Esforço: P pequeno, M médio, G grande. As tabelas trazem o parecer original; o que foi feito de cada onda está na seção anterior.</p>
+
+  <h3>Onda 1: corrigir e tornar o jogo legível</h3>
+  <div class="tw"><table>
+    <tr><th>ID</th><th>Mudança</th><th>Esf.</th><th>Parecer</th></tr>
+    <tr><td><span class="id">MP-ARQ-07</span></td><td>Reaproveitar geometrias e materiais, descartar ao remover e limpar o cache no "Novo jogo".</td><td>P</td><td><span class="pill lo">Aprovada</span> Corrige ARQ-04 e ARQ-05.</td></tr>
+    <tr><td><span class="id">MP-ARQ-06</span></td><td>Redesenhar o mapa só quando ele muda.</td><td>P</td><td><span class="pill lo">Aprovada</span></td></tr>
+    <tr><td><span class="id">MP-ARQ-01</span></td><td>Gerador de acaso com seed guardada no estado.</td><td>P</td><td><span class="pill lo">Aprovada</span> Pré-requisito de save e de testes.</td></tr>
+    <tr><td><span class="id">MP-GD-06</span></td><td>Inícios a 8 casas ou mais, com terreno equilibrado, e saída segura se o sorteio falhar.</td><td>P</td><td><span class="pill lo">Aprovada</span></td></tr>
+    <tr><td><span class="id">MP-ARQ-11</span></td><td>Cada casa pertence a uma cidade; teto de produção igual ao custo do item.</td><td>P</td><td><span class="pill lo">Aprovada</span> Cobre a parte de regra da MP-GD-03.</td></tr>
+    <tr><td><span class="id">MP-GD-01</span><br><span class="id">MP-UX-01</span></td><td>Mostrar alcance, rota e um cartão com chance de vitória e multiplicadores antes de atacar.</td><td>M</td><td><span class="pill md">Com ressalva</span> Manter o combate com sorte por enquanto; dano fixo é outra decisão.</td></tr>
+    <tr><td><span class="id">MP-UX-02</span></td><td>Esquerdo seleciona, direito move; no toque, o segundo toque confirma.</td><td>P</td><td><span class="pill md">Com ressalva</span> Muda o que a ajuda ensina hoje; atualizar o texto junto.</td></tr>
+    <tr><td><span class="id">MP-UX-07</span></td><td>Corrigir os seis contrastes abaixo de 4,5:1.</td><td>P</td><td><span class="pill lo">Aprovada</span></td></tr>
+    <tr><td><span class="id">MP-UX-04</span></td><td>Painel de unidade que quebra linha, novo ponto de quebra em 1.100 px e cidade em folha inferior no celular.</td><td>M</td><td><span class="pill lo">Aprovada</span></td></tr>
+  </table></div>
+
+  <h3>Onda 2: salvar a partida e incluir mais jogadores</h3>
+  <div class="tw"><table>
+    <tr><th>ID</th><th>Mudança</th><th>Esf.</th><th>Parecer</th></tr>
+    <tr><td><span class="id">MP-ARQ-04</span></td><td>Índices por casa e por id.</td><td>P</td><td><span class="pill lo">Aprovada</span> Deixa o turno da IA mais leve.</td></tr>
+    <tr><td><span class="id">MP-ARQ-03</span></td><td>Salvar e carregar com versão de esquema, salvamento automático e exportar ou importar JSON.</td><td>M</td><td><span class="pill md">Com ressalva</span> O armazenamento do navegador pode falhar; a exportação em JSON é obrigatória.</td></tr>
+    <tr><td><span class="id">MP-ARQ-09</span></td><td>Recuperação de erros no fim de turno e na perda do contexto gráfico.</td><td>P</td><td><span class="pill lo">Aprovada</span></td></tr>
+    <tr><td><span class="id">MP-UX-03</span></td><td>Nova paleta de jogadores com forma própria por jogador e fronteira tracejada.</td><td>M</td><td><span class="pill lo">Aprovada</span> Os Vermelhos passam a Carmim.</td></tr>
+    <tr><td><span class="id">MP-UX-08</span></td><td>Seleção em branco; dourado só na marca e no botão de turno.</td><td>P</td><td><span class="pill lo">Aprovada</span></td></tr>
+    <tr><td><span class="id">MP-UX-09</span></td><td>Vida em barra segmentada com número.</td><td>P</td><td><span class="pill lo">Aprovada</span></td></tr>
+    <tr><td><span class="id">MP-UX-06</span></td><td>Tutorial em três passos dentro da primeira partida.</td><td>M</td><td><span class="pill lo">Aprovada</span></td></tr>
+    <tr><td><span class="id">MP-UX-10</span></td><td>Pinça para zoom, dois dedos para girar, toque longo para tooltip, alvos de 44 px.</td><td>M</td><td><span class="pill lo">Aprovada</span></td></tr>
+    <tr><td><span class="id">MP-UX-11</span><br><span class="id">MP-UX-12</span></td><td>Movimento reduzido de verdade; log anunciado e ajuda como diálogo.</td><td>P</td><td><span class="pill lo">Aprovada</span></td></tr>
+    <tr><td><span class="id">MP-ARQ-08</span></td><td>Qualidade gráfica menor no celular e sombra atualizada só quando algo muda.</td><td>P</td><td><span class="pill lo">Aprovada</span></td></tr>
+    <tr><td><span class="id">MP-GD-09</span></td><td>Capital nunca é destruída; captura perde metade dos edifícios.</td><td>P</td><td><span class="pill lo">Aprovada</span></td></tr>
+    <tr><td><span class="id">MP-GD-10</span></td><td>Manutenção de unidades e escolha de pesquisa a cada tecnologia concluída.</td><td>P</td><td><span class="pill md">Com ressalva</span> A manutenção exige rever os custos.</td></tr>
+  </table></div>
+
+  <h3>Onda 3: dar profundidade</h3>
+  <div class="tw"><table>
+    <tr><th>ID</th><th>Mudança</th><th>Esf.</th><th>Parecer</th></tr>
+    <tr><td><span class="id">MP-ARQ-02</span></td><td>Separar simulação, desenho e interface; toda ação vira um comando.</td><td>G</td><td><span class="pill lo">Aprovada</span> Fazer antes de conteúdo novo; habilita desfazer e replay.</td></tr>
+    <tr><td><span class="id">MP-ARQ-10</span></td><td>Autoteste de 150 turnos IA contra IA com seed fixa.</td><td>M</td><td><span class="pill lo">Aprovada</span></td></tr>
+    <tr><td><span class="id">MP-ARQ-05</span></td><td>Busca de caminho A* com rota guardada.</td><td>P</td><td><span class="pill lo">Aprovada</span></td></tr>
+    <tr><td><span class="id">MP-GD-02</span></td><td>Curva de custo de ciência, mais tecnologias e vitória por um projeto final.</td><td>M</td><td><span class="pill md">Com ressalva</span> Curva e projeto final primeiro; ampliar para 15 a 20 tecnologias só depois de medir a duração das partidas.</td></tr>
+    <tr><td><span class="id">MP-GD-03</span></td><td>Penalidade por número de cidades e rendimentos visíveis.</td><td>M</td><td><span class="pill lo">Aprovada</span></td></tr>
+    <tr><td><span class="id">MP-GD-04</span><br><span class="id">MP-GD-05</span></td><td>IA que agrupa, escolhe alvo, recua e escolta colonos; névoa também para a IA.</td><td>G</td><td><span class="pill lo">Aprovada</span> Fazer as duas juntas: só a névoa deixaria a IA mais fraca.</td></tr>
+    <tr><td><span class="id">MP-GD-08</span></td><td>Papéis de unidade.</td><td>M</td><td><span class="pill md">Com ressalva</span> Começar por arqueiro à distância e cavaleiro que recua; zona de controle e veterania depois.</td></tr>
+    <tr><td><span class="id">MP-GD-07</span></td><td>Níveis de dificuldade com bônus declarados.</td><td>P</td><td><span class="pill lo">Aprovada</span></td></tr>
+    <tr><td><span class="id">MP-UX-05</span></td><td>Cursor de hexágono no teclado e foco preservado.</td><td>M</td><td><span class="pill lo">Aprovada</span></td></tr>
+  </table></div>
+
+  <h3>Onda 4: expandir</h3>
+  <div class="tw"><table>
+    <tr><th>ID</th><th>Mudança</th><th>Esf.</th><th>Parecer</th></tr>
+    <tr><td><span class="id">MP-GD-11</span></td><td>Placar dos rivais e objetivos intermediários.</td><td>M</td><td><span class="pill lo">Aprovada</span></td></tr>
+    <tr><td><span class="id">MP-UX-13</span></td><td>Menu de acessibilidade.</td><td>G</td><td><span class="pill lo">Aprovada</span> Em etapas: escala de texto primeiro.</td></tr>
+    <tr><td><span class="id">MP-UX-14</span></td><td>Uma só fonte de cores para CSS, 3D e minimapa.</td><td>P</td><td><span class="pill lo">Aprovada</span> Pode subir junto com a MP-UX-03.</td></tr>
+    <tr><td><span class="id">MP-GD-13</span></td><td>Rota só com unidades visíveis, desempate explícito, remoção de código morto.</td><td>P</td><td><span class="pill lo">Aprovada</span></td></tr>
+    <tr><td><span class="id">MP-GD-12</span></td><td>Traços por tribo, recursos, bárbaros e tipos de mapa.</td><td>G</td><td><span class="pill hi">Adiar</span> Conteúdo novo sobre regras ainda instáveis vira retrabalho. O save já está na MP-ARQ-03.</td></tr>
+    <tr><td><span class="id">MP-ARQ-12</span></td><td>Migrar para three.js atual.</td><td>M</td><td><span class="pill hi">Adiar</span> Sem ganho para o jogador; a versão fixada funciona.</td></tr>
+  </table></div>
+</section>
+
+<section id="guia">
+  <h2>Guia de design: o que os premiados ensinam</h2>
+  <p>Pesquisa feita em 10/11/2026, com leitura das fontes. Só entram prêmios confirmados; os que não foram confirmados estão no fim desta seção.</p>
+
+  <h3>Sites e apps premiados</h3>
+  <div class="tw"><table>
+    <tr><th>Prêmio</th><th>Vencedor</th><th>Lição</th></tr>
+    <tr><td><a href="https://awwwards.com/annual-awards-2023/site-of-the-year">Awwwards Site do Ano 2023</a></td><td>Lusion v3</td><td>O 3D serve à narrativa, não é enfeite.</td></tr>
+    <tr><td><a href="https://awwwards.com/annual-awards-2024/developer-site-of-the-year">Awwwards Site do Ano 2024</a></td><td>Igloo Inc</td><td>Um site que se comporta como um jogo, com controle fluido.</td></tr>
+    <tr><td><a href="https://www.awwwards.com/annual-awards/winners">Awwwards Site do Ano 2025</a></td><td>Lando Norris</td><td>Movimento que responde ao cursor na hora.</td></tr>
+    <tr><td><a href="https://www.awwwards.com/annual-awards/winners">Awwwards Developer 2025</a></td><td>Messenger (abeto)</td><td>Jogo de navegador feito só com three.js. É a referência mais próxima do seu.</td></tr>
+    <tr><td><a href="https://winners.webbyawards.com/winners/websites-and-mobile-sites/features-design/best-user-experience">Webby 2026, melhor UX</a></td><td>Pentagram Archive</td><td>Navegação clara num acervo grande.</td></tr>
+    <tr><td><a href="https://www.apple.com/newsroom/2025/06/apple-unveils-winners-and-finalists-of-the-2025-apple-design-awards/">Apple Design Awards 2025</a></td><td>Balatro, DREDGE</td><td>Regras profundas com interface simples; controles iguais em todos os aparelhos.</td></tr>
+  </table></div>
+  <p>O que eles têm em comum: uma ideia central forte, movimento a serviço da interação, resposta imediata e o mesmo comportamento em qualquer tela.</p>
+
+  <h3>Jogos de referência</h3>
+  <div class="tw"><table>
+    <tr><th>Jogo</th><th>Reconhecimento</th><th>Lição para o Civilização 3D</th></tr>
+    <tr><td>Into the Breach</td><td><a href="https://www.bafta.org/?p=371836">BAFTA 2019</a> e melhor design no <a href="https://www.gamedeveloper.com/game-platforms/-i-god-of-war-i-wins-game-of-the-year-at-the-2019-game-developers-choice-awards">GDC Awards 2019</a></td><td>Mostrar a intenção do inimigo e o resultado antes da jogada; permitir desfazer.</td></tr>
+    <tr><td>The Battle of Polytopia</td><td><a href="https://mobidictum.com/interview-with-midjiwan-developer-of-the-battle-of-polytopia/">Entrevista do criador</a></td><td>Redesenhar o gênero para a tela pequena em vez de portar menus.</td></tr>
+    <tr><td>Civilization VII</td><td><a href="https://www.cgmagonline.com/news/civilization-vii-quality-of-life-updates">Interface criticada no lançamento</a></td><td>Interface de 4X é infraestrutura. Testar legibilidade desde o início.</td></tr>
+    <tr><td>Old World</td><td><a href="https://culturedvultures.com/old-world-pc-review/">Tooltips em cascata elogiados</a></td><td>Tooltips que se aprofundam ajudam, mas não substituem o tutorial.</td></tr>
+    <tr><td>Bad North</td><td><a href="https://80.lv/articles/bad-north-cure-minimalistic-rts-with-vikings">Artigo do estúdio</a></td><td>Terreno pouco saturado, unidades bem saturadas.</td></tr>
+    <tr><td>The Last of Us Part II</td><td><a href="https://gameinformer.com/the-game-awards-2020/2020/12/10/all-the-winners-at-the-game-awards-2020">Acessibilidade, The Game Awards 2020</a></td><td>Mais de 60 opções, agrupadas em perfis prontos.</td></tr>
+  </table></div>
+
+  <h3>Usabilidade</h3>
+  <ul>
+    <li>Use as <a href="https://www.nngroup.com/articles/ten-usability-heuristics/">10 heurísticas de Nielsen</a> como lista de revisão: estado sempre visível, poder desfazer, reconhecer em vez de lembrar.</li>
+    <li>Pelas <a href="https://lawsofux.com/">Leis de UX</a>: alvos frequentes grandes e próximos (Fitts), menos opções por decisão (Hick), convenções do gênero (Jakob) e resposta em menos de 400 ms (Doherty).</li>
+    <li><a href="https://www.nngroup.com/articles/progressive-disclosure/">Revelação progressiva</a>: resumo primeiro, detalhe sob demanda, no máximo dois níveis.</li>
+    <li><a href="https://web.dev/articles/vitals">Core Web Vitals</a>: LCP até 2,5 s, INP até 200 ms e CLS até 0,1, no percentil 75.</li>
+    <li>Todo componente precisa de estado vazio, carregando, erro e sucesso.</li>
+  </ul>
+
+  <h3>Tipografia, movimento e acessibilidade</h3>
+  <ul>
+    <li>Escala de texto fluida com <code>clamp()</code>, como no <a href="https://utopia.fyi/">Utopia</a>. Rótulos nunca abaixo de 12 px.</li>
+    <li>Animações de <a href="https://www.nngroup.com/articles/animation-duration/">100 a 500 ms</a>: cerca de 100 ms para retorno pequeno, 200 a 300 ms para painéis. A saída é mais curta que a entrada.</li>
+    <li><a href="https://www.w3.org/WAI/standards-guidelines/wcag/new-in-22/">WCAG 2.2</a>: alvos de 24 px ou mais, foco nunca coberto por painéis e alternativa para toda ação de arrastar.</li>
+    <li><a href="https://gameaccessibilityguidelines.com/full-list/">Game Accessibility Guidelines</a>: nada só por cor, controles remapeáveis, texto ajustável e configurações salvas.</li>
+  </ul>
+
+  <h3>Arquitetura de dados</h3>
+  <ul>
+    <li>Estado puro e serializável, separado da cena 3D. A cena só mostra o estado.</li>
+    <li>Toda ação vira um <a href="https://gameprogrammingpatterns.com/command.html">comando</a> com desfazer. Gravar os comandos permite replay.</li>
+    <li>Seed e posição do gerador de acaso dentro do save, como em <a href="https://xcom.fandom.com/wiki/Random_vs_Seed_(XCOM:_Enemy_Unknown)">XCOM</a>.</li>
+    <li>Entidades por id (<a href="https://redux.js.org/usage/structuring-reducers/normalizing-state-shape">estado normalizado</a>) e versão de esquema em cada save, com migração.</li>
+    <li>Cores, tipos e espaços como <a href="https://www.w3.org/community/design-tokens/">design tokens</a>, numa fonte única para CSS e 3D.</li>
+    <li>No three.js: instâncias para peças repetidas, desenho só quando algo muda, limite de densidade de pixels e descarte de recursos (<a href="https://discoverthreejs.com/tips-and-tricks/">boas práticas</a>).</li>
+  </ul>
+
+  <details>
+    <summary>O que a pesquisa não confirmou</summary>
+    <ul>
+      <li>Vencedores recentes de CSS Design Awards, FWA, Red Dot e iF na categoria interface.</li>
+      <li>Material Design Awards depois de 2021.</li>
+      <li>Vencedor de acessibilidade do The Game Awards 2022.</li>
+      <li>Apple Design Award para Polytopia, Mini Metro ou Townscaper.</li>
+      <li>Os prêmios de jogos vêm de cobertura de imprensa, não dos sites oficiais.</li>
+    </ul>
+  </details>
+</section>
+
+<section id="paletas">
+  <h2>Paletas</h2>
+  <h3>Jogadores e alertas, proposta do painel</h3>
+  <div class="sw">
+    <span><i style="background:#3a7bff"></i>#3a7bff Azul ●</span>
+    <span><i style="background:#d6336c"></i>#d6336c Carmim ▲</span>
+    <span><i style="background:#ffd60a"></i>#ffd60a Amarelo ■</span>
+    <span><i style="background:#38bdf8"></i>#38bdf8 Bom ✓</span>
+    <span><i style="background:#fb923c"></i>#fb923c Ruim ⚠</span>
+  </div>
+  <p>Na deuteranopia, a diferença entre Carmim e Amarelo sobe de ΔE 35 para 77. Texto sobre o Amarelo deve ser sempre escuro (13,3:1); sobre Azul e Carmim, branco (5,2:1 e 4,6:1). Cada jogador ganha também uma forma, porque a cor nunca deve ser o único sinal.</p>
+
+  <h3>Interface escura de jogo</h3>
+  <div class="sw">
+    <span><i style="background:#0f1115"></i>#0F1115 fundo</span>
+    <span><i style="background:#1a1d23"></i>#1A1D23 painel</span>
+    <span><i style="background:#e6e8eb"></i>#E6E8EB texto</span>
+    <span><i style="background:#9ba3ae"></i>#9BA3AE secundário</span>
+    <span><i style="background:#4c8dff"></i>#4C8DFF destaque</span>
+    <span><i style="background:#f2b33d"></i>#F2B33D recurso</span>
+  </div>
+
+  <h3>Paletas publicadas e seguras para daltonismo</h3>
+  <p class="mu"><a href="https://search.r-project.org/CRAN/refmans/see/html/okabeito_colors.html">Okabe-Ito</a>, boa para até oito jogadores:</p>
+  <div class="sw">
+    <span><i style="background:#e69f00"></i>#E69F00</span><span><i style="background:#56b4e9"></i>#56B4E9</span><span><i style="background:#009e73"></i>#009E73</span><span><i style="background:#f0e442"></i>#F0E442</span><span><i style="background:#0072b2"></i>#0072B2</span><span><i style="background:#d55e00"></i>#D55E00</span><span><i style="background:#cc79a7"></i>#CC79A7</span>
+  </div>
+  <p class="mu"><a href="https://tueplots.readthedocs.io/en/latest/docs_api/tueplots.constants.color.palettes.html">Paul Tol "bright"</a>:</p>
+  <div class="sw">
+    <span><i style="background:#4477aa"></i>#4477AA</span><span><i style="background:#ee6677"></i>#EE6677</span><span><i style="background:#228833"></i>#228833</span><span><i style="background:#ccbb44"></i>#CCBB44</span><span><i style="background:#66ccee"></i>#66CCEE</span><span><i style="background:#aa3377"></i>#AA3377</span>
+  </div>
+  <ul>
+    <li>Defina cores em <a href="https://evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl">OKLCH</a>: a luminosidade é perceptual, então variações ficam previsíveis.</li>
+    <li>Dê papéis às cores, como nas <a href="https://www.radix-ui.com/colors/docs/palette-composition/understanding-the-scale">escalas de 12 passos do Radix</a>: fundo, componente, borda, sólido e texto.</li>
+    <li>Regra 60-30-10: 60% de cor dominante, 30% de secundária e 10% de destaque.</li>
+    <li>Contraste mínimo de 4,5:1 para texto e 3:1 para elementos de interface.</li>
+  </ul>
+</section>
+
+<section id="top">
+  <h2>As 12 dicas que mais pesam</h2>
+  <ol>
+    <li>Mostre o resultado antes da ação: alcance, rota e chance de vitória.</li>
+    <li>Permita desfazer o movimento até a ação ser confirmada.</li>
+    <li>Faça o botão de turno levar à próxima pendência.</li>
+    <li>Ensine dentro da primeira partida, um sistema por vez.</li>
+    <li>Nunca dependa só da cor: forma e ícone primeiro.</li>
+    <li>Terreno calmo, peças vivas: saturação baixa no mapa e alta nas unidades.</li>
+    <li>Responda a cada toque em menos de 100 ms.</li>
+    <li>Desenhe para o celular: alvos de 44 px, pinça e folha inferior.</li>
+    <li>Salve sozinho a cada turno, com versão de esquema.</li>
+    <li>Guarde a seed: partida repetível é partida testável.</li>
+    <li>Separe regras de desenho; a cena só mostra o estado.</li>
+    <li>Uma fonte única de cores, tipos e espaços para toda a interface.</li>
+  </ol>
+</section>
+
+<footer>
+  <p>Limites deste parecer: contrastes e diferenças de cor foram calculados por script sobre os valores do código; tempos de turno e consumo de memória da versão original são estimativas, não medições; o jogo não foi testado com jogadores, nem antes nem depois das mudanças.</p>
+</footer>
+
+</div>
+
+</body></html>

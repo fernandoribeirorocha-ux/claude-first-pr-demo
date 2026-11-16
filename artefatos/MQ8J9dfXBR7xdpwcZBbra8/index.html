@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulado · História da Psicologia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f6f3ec; --card:#fffdf8; --ink:#1d1b17; --ink2:#55524a; --muted:#8a867b;
+  --line:#e4dfd2; --accent:#2a78d6; --accent-soft:#e3eefb;
+  --good:#1e7a3c; --good-soft:#e2f2e7; --bad:#b3261e; --bad-soft:#fbe6e4;
+  --warn:#a06200; --warn-soft:#fbf0db; --grid:#ebe6da;
+}
+@media (prefers-color-scheme: dark){
+  :root:where(:not([data-theme="light"])){
+    color-scheme: dark;
+    --bg:#141412; --card:#1d1c1a; --ink:#f0efec; --ink2:#c3c2b7; --muted:#8e8c84;
+    --line:#2e2d29; --accent:#3987e5; --accent-soft:#1d2d42;
+    --good:#4cbc6c; --good-soft:#18301f; --bad:#ef7a72; --bad-soft:#3a1d1b;
+    --warn:#e0a640; --warn-soft:#352812; --grid:#2a2926;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;font-size:16px;line-height:1.5}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 60px}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:700;margin:0;line-height:1.2}
+h1{font-size:1.75rem} h2{font-size:1.3rem} h3{font-size:1.05rem}
+.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:.72rem;color:var(--muted);font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:14px 0}
+.muted{color:var(--muted)} .ink2{color:var(--ink2)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 .95rem Inter,sans-serif;padding:12px 18px;border-radius:12px;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.danger{color:var(--bad)}
+.tabs{display:flex;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:5px;position:sticky;top:8px;z-index:5}
+.tabs button{flex:1;border:0;background:transparent;color:var(--ink2);font:600 .9rem Inter,sans-serif;padding:10px 6px;border-radius:10px;cursor:pointer}
+.tabs button.on{background:var(--accent-soft);color:var(--ink)}
+.progress{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin:10px 0 4px}
+.progress>i{display:block;height:100%;background:var(--accent);border-radius:6px;transition:width .3s}
+.qtopic{display:inline-block;font-size:.75rem;font-weight:600;color:var(--ink2);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.qtext{font-size:1.08rem;margin:14px 0 16px;white-space:pre-line}
+.opt{display:flex;gap:12px;align-items:stretch;width:100%;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:0;margin:8px 0;cursor:pointer;font:inherit;overflow:hidden}
+.opt .l{flex:0 0 44px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--ink2);background:var(--bg)}
+.opt .t{padding:12px 12px 12px 0}
+.opt.sel{border-color:var(--accent)} .opt.sel .l{background:var(--accent);color:#fff}
+.opt.ok{border-color:var(--good);background:var(--good-soft)} .opt.ok .l{background:var(--good);color:#fff}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)} .opt.no .l{background:var(--bad);color:#fff}
+.feedback{border-radius:12px;padding:12px 14px;margin-top:12px;font-size:.95rem}
+.feedback.ok{background:var(--good-soft)}
+.oc{list-style:none;padding:0;margin:10px 0 0}
+.oc li{display:grid;grid-template-columns:24px 1fr;gap:4px 8px;padding:8px 0;border-top:1px solid var(--line);font-size:.9rem}
+.oc li:first-child{border-top:0}
+.oc .k{font-weight:700}
+.oc .k.ok{color:var(--good)} .oc .k.no{color:var(--bad)}
+.oc .ot{font-weight:600}
+.oc .cm{grid-column:2;color:var(--ink2)} .feedback.no{background:var(--bad-soft)}
+.score{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.big{font-family:Fraunces,serif;font-size:4.2rem;font-weight:700;line-height:1}
+.badge{display:inline-flex;gap:6px;align-items:center;font-weight:700;font-size:.85rem;border-radius:999px;padding:5px 12px}
+.badge.ok{background:var(--good-soft);color:var(--good)} .badge.no{background:var(--bad-soft);color:var(--bad)}
+.scale{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;margin:16px 0 6px}
+.scale div{height:10px;border-radius:3px;background:var(--line)}
+.scale div.on{background:var(--accent)}
+.scale div.pass{outline:2px solid transparent}
+.lvl{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;font-size:.9rem;align-items:baseline}
+.lvl .r{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600}
+.lvl .n{font-weight:600}
+.lvl .cur{color:var(--accent)}
+.lvl .s{font-size:.8rem;color:var(--muted)}
+.review-item{border-top:1px solid var(--line);padding:14px 0}
+.review-item:first-child{border-top:0}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+td.num{font-variant-numeric:tabular-nums;font-weight:600}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:.8rem;padding:6px 9px;border-radius:8px;white-space:nowrap;transform:translate(-50%,-110%);opacity:0;transition:opacity .12s}
+.legend{display:flex;gap:14px;font-size:.8rem;color:var(--ink2);margin-top:8px;flex-wrap:wrap}
+.legend i{display:inline-block;width:18px;height:0;border-top:2px solid var(--accent);vertical-align:middle;margin-right:6px}
+.legend i.dash{border-top:2px dashed var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--bg);border-radius:12px;padding:12px}
+.stat b{display:block;font-family:Fraunces,serif;font-size:1.6rem}
+.stat span{font-size:.78rem;color:var(--muted)}
+.report p{margin:.6em 0}
+.report h3{margin-top:18px}
+.report ul{padding-left:20px;margin:.4em 0}
+.report li{margin:.35em 0}
+.pill{font-size:.75rem;font-weight:700;border-radius:999px;padding:2px 8px;margin-left:6px}
+.pill.no{background:var(--bad-soft);color:var(--bad)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.ok{background:var(--good-soft);color:var(--good)}
+.note{font-size:.82rem;color:var(--muted)}
+.hide{display:none!important}
+.ai{white-space:pre-wrap}
+.sticky-actions{position:sticky;bottom:0;margin:14px -18px -18px;padding:12px 18px 14px;display:flex;gap:10px;background:var(--card);border-top:1px solid var(--line);border-radius:0 0 16px 16px}
+.sticky-actions .btn{flex:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header style="margin:6px 0 16px">
+    <div class="eyebrow">Psicologia · 1º semestre</div>
+    <h1>Simulado de História da Psicologia</h1>
+    <p class="ink2" style="margin:.4em 0 0">Questões das TEAs da Uni Ítalo. Nota de 0 a 10, média para aprovação: <b>6,0</b>.</p>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button data-v="home" class="on">Início</button>
+    <button data-v="evo">Evolução</button>
+    <button data-v="rep">Relatório</button>
+  </nav>
+
+  <!-- HOME -->
+  <section id="v-home">
+    <div class="card">
+      <h2>Como funciona</h2>
+      <p class="ink2">Cada rodada traz 20 questões: as 18 das suas TEAs (01 a 10) e 2 variações montadas só com o texto dessas mesmas questões. Depois de cada resposta você vê o comentário de todas as alternativas: por que a certa está certa e por que cada errada está errada. A ordem das questões e das alternativas muda a cada rodada. Você responde, confirma e vê a explicação na hora. No fim sai a nota, a faixa da escala e a correção completa. Tudo fica guardado para comparar tentativas.</p>
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary" id="startBtn">Começar simulado</button>
+        <label class="row ink2" style="gap:6px;font-size:.9rem"><input type="checkbox" id="instant" checked> Mostrar correção a cada questão</label>
+        <label class="row ink2" style="gap:6px;font-size:.9rem"><input type="checkbox" id="onlyOrig"> Só as 18 originais</label>
+        <label class="row ink2" style="gap:6px;font-size:.9rem"><input type="checkbox" id="enadeMode"> Modo Enade 2025 (6 questões)</label>
+      </div>
+      <p class="note" style="margin-top:10px">Modo Enade 2025: 6 questões novas no formato do Enade (situação-problema, afirmativas e asserção-razão), uma por bloco, alinhadas à <a href="https://abmes.org.br/legislacoes/detalhe/5146/portaria-inep-n-348" target="_blank" rel="noopener">Portaria Inep nº 348/2025</a>, que define a prova de Psicologia. Depois de responder, cada questão mostra o nível da Taxonomia de Bloom, a competência e o objeto de conhecimento avaliados. Fora desse modo, o simulado continua só com as questões das TEAs.</p>
+      <p class="note" id="storeNote" style="margin-top:12px">Conectando ao armazenamento…</p>
+    </div>
+    <div class="card">
+      <h2>Escala de desempenho</h2>
+      <p class="ink2" style="margin-top:.3em">Abaixo de 6,0 não atinge a média.</p>
+      <div class="lvl" id="scaleList"></div>
+    </div>
+    <div class="card" id="lastCard" style="display:none"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="v-quiz" class="hide">
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <span class="eyebrow" id="qCount"></span>
+        <span class="eyebrow" id="qTimer"></span>
+      </div>
+      <div class="progress"><i id="qBar"></i></div>
+      <div style="margin-top:14px"><span class="qtopic" id="qTopic"></span></div>
+      <div class="qtext" id="qText"></div>
+      <div id="qOpts"></div>
+      <div id="qFb"></div>
+      <div class="sticky-actions">
+        <button class="btn ghost" id="quitBtn">Sair</button>
+        <button class="btn primary" id="nextBtn" disabled>Confirmar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="v-result" class="hide"></section>
+
+  <!-- EVOLUTION -->
+  <section id="v-evo" class="hide"></section>
+
+  <!-- REPORT -->
+  <section id="v-rep" class="hide"></section>
+</div>
+
+<script>
+/* ===================== BANCO DE QUESTÕES ===================== */
+const TOPICS = {
+  cie:"Psicologia como ciência",
+  sau:"Processo saúde-doença",
+  esc:"Escolas da Psicologia",
+  psa:"Psicanálise",
+  beh:"Behaviorismo",
+  des:"Teorias do desenvolvimento"
+};
+const STUDY = {
+  cie:"Retome a definição de ciência do material: conhecimentos sobre aspectos da realidade, numa linguagem precisa e obtidos de forma programada, sistemática e controlada, para que se possa verificar sua validade. Depois fixe o conceito de Psicologia (mente e comportamento em relação com o meio físico e social) e o de subjetividade (síntese singular e individual construída nas experiências sociais e culturais).",
+  sau:"Releia as três afirmativas da TEA 02. A loucura era explicada por intrusões vindas de fora, fossem materiais (desequilíbrio dos humores) ou sobrenaturais. O espírito científico dos séculos XVII e XVIII preparou a mudança, e a medicina já reconhecia o peso dos fatores emocionais no adoecer.",
+  esc:"No século XIX são três escolas: Associacionismo, Estruturalismo e Funcionalismo. Gestalt, Behaviorismo e Psicanálise vêm depois e são a pegadinha. Ligue Wundt aos elementos da consciência estudados por introspecção controlada, o Funcionalismo à pergunta 'o que fazem os homens e por que o fazem' e a Gestalt à percepção.",
+  psa:"Separe as duas tópicas. Primeira: consciente, pré-consciente ('pode vir à consciência no momento seguinte') e inconsciente (conteúdos reprimidos). Segunda: id (inato, libido, gratificação imediata), ego (organiza e mantém contato com a realidade) e superego (valores parentais e sociais incorporados na infância). Mecanismos de defesa: processos inconscientes do ego que protegem contra o que é indesejável.",
+  beh:"Reforço é toda consequência que altera a probabilidade futura de uma resposta. O positivo aumenta a probabilidade da resposta que o produz; o negativo, a da resposta que remove ou atenua algo. Os dois aumentam. O artigo de 1913 é de John B. Watson.",
+  des:"Organize por autor. Piaget: esquemas que se refinam e quatro estágios (sensório-motor, pré-operatório, operatório concreto, operatório formal). Vygotsky: perspectiva sociointeracionista e zona de desenvolvimento proximal. Erikson: teoria psicossocial, com o ego se fortalecendo pela passagem por crises a cada fase."
+};
+/* o: alternativas (a correta primeiro; a ordem é embaralhada a cada rodada); c: comentário de cada alternativa, na mesma ordem */
+const Q = [
+ {t:"esc",src:"TEA 01",q:"Quais as escolas da Psicologia que contribuíram para a conceituação da Psicologia como Ciência no Século XIX?",
+  o:["Funcionalismo, Estruturalismo e Associacionismo.","Behaviorismo, Psicanálise e Gestalt.","Estruturalismo, Psicanálise e Gestalt.","Associacionismo, Gestalt e Behaviorismo.","Behaviorismo, Estruturalismo e Psicanálise."],
+  c:["Correta. São as três escolas do século XIX que deram à Psicologia o estatuto de ciência.","Errada. As três são do século XX: Psicanálise (1900), Gestalt (1912) e Behaviorismo (1913).","Errada. O Estruturalismo é do século XIX, mas Psicanálise e Gestalt são do século XX.","Errada. O Associacionismo é do século XIX, mas Gestalt e Behaviorismo são do século XX.","Errada. Só o Estruturalismo é do século XIX. Behaviorismo e Psicanálise vêm depois."],a:0},
+ {t:"sau",src:"TEA 02",q:"O processo saúde-doença merece uma atenção especial e pode ser compreendido de diferentes formas além do direcionado ao tratamento do distúrbio mental propriamente dito. Analise as afirmativas abaixo e marque \"V\" para VERDADEIRO e \"F\" para FALSO.\n\n( ) A percepção da importância dos fatores emocionais no adoecimento e recuperação da saúde já estavam presentes na medicina, principalmente na atuação de algumas especialidades.\n( ) A loucura era concebida, portanto, como devida a intrusões de fora, ou intrusões materiais causadas por desequilíbrio do humor ou intrusões sobrenaturais.\n( ) O crescimento do espírito científico, especialmente o desenvolvimento da ciência da vida nos séculos XVII e XVIII, começou a colocar fundamentos para uma mudança.\n\nA alternativa que preenche corretamente os parênteses, de cima para baixo, é:",
+  o:["V, V, V","F, F, F","F, V, F","V, F, V","V, F, F"],
+  c:["Correta. As três afirmativas descrevem a história: a medicina já via o peso do emocional, a loucura era explicada por intrusões externas (humores ou sobrenatural) e a ciência dos séculos XVII e XVIII preparou a mudança.","Errada. Nenhuma das afirmativas é falsa.","Errada. Marca como falsas a primeira e a terceira, que são verdadeiras.","Errada. A segunda afirmativa (concepção antiga da loucura) também é verdadeira.","Errada. A segunda e a terceira afirmativas também são verdadeiras."],a:0},
+ {t:"cie",src:"TEA 02",q:"Conceituar a Psicologia como ciência é bem mais árdua e complicada. A ciência compõe-se de um conjunto de _____ sobre fatos ou aspectos da _____ (objeto de estudo), expresso por meio de uma linguagem precisa e rigorosa. Esses conhecimentos devem ser obtidos de maneira programada, _____ e controlada, para que se permita a verificação de sua validade.\n\nComplete as lacunas.",
+  o:["Conhecimentos – realidade – sistemática","Pesquisas – cosmologia – aleatória","Conhecimentos – religião – sistemática","Antepassados – filosofia – casual","Acontecimentos – realidade – desordenada"],
+  c:["Correta. O próprio texto confirma: a frase seguinte começa com 'Esses conhecimentos', e 'sistemática' combina com 'programada e controlada'.","Errada. 'Aleatória' contradiz 'programada e controlada', e cosmologia não é o objeto da ciência em geral.","Errada. A primeira e a terceira lacunas estão certas, mas religião não é o objeto da ciência.","Errada. 'Antepassados' não faz sentido na frase e 'casual' contradiz 'programada'.","Errada. 'Realidade' está certa, mas 'desordenada' contradiz 'controlada', e o texto fala em conhecimentos, não em acontecimentos."],a:0},
+ {t:"cie",src:"TEA 03",q:"Qual o conceito de Psicologia como ciência?",
+  o:["A psicologia é uma ciência que estuda a mente e o comportamento do ser humano por meio de suas relações com o meio físico e social","Estuda o desenvolvimento humano e sua mudança e estabilidade","Estuda o comportamento sem fundamentação teórica","A psicologia se preocupa com questões relacionadas a mente humana e sua ligação com o inconsciente","Não é possível estudar o comportamento, pois está em constante mudança"],
+  c:["Correta. É a única definição completa: mente, comportamento e relação com o meio físico e social.","Errada. Desenvolvimento humano é uma área da Psicologia (Psicologia do Desenvolvimento), não a definição da Psicologia inteira.","Errada. Ciência sem fundamentação teórica é uma contradição.","Errada. O inconsciente é o recorte da Psicanálise, não o objeto da Psicologia como um todo.","Errada. Nega a própria possibilidade da Psicologia. Fenômenos que mudam também podem ser estudados cientificamente."],a:0},
+ {t:"cie",src:"TEA 03",q:"A Psicologia possui uma diversidade de objetos de estudo, dentre esses objetos temos a subjetividade que pode ser descrita como:",
+  o:["A subjetividade é a síntese singular e individual que cada um de nós vai constituindo conforme vamos nos desenvolvendo e vivenciando as experiências da vida social e cultural","A subjetividade é a maneira de sentir, pensar, fantasiar, sonhar de forma inconsciente.","É uma forma de experienciar o mundo de forma coletiva","É uma experiência mística que contribui para a formação do ser Humano","Nenhuma das alternativas"],
+  c:["Correta. Subjetividade é singular e individual, mas construída nas experiências sociais e culturais.","Errada. Sentir, pensar e sonhar fazem parte da subjetividade, mas ela não se restringe ao inconsciente.","Errada. A subjetividade é individual. O coletivo entra na sua construção, mas ela não é coletiva.","Errada. Nada de místico: é um conceito psicológico.","Errada. A primeira alternativa está correta."],a:0},
+ {t:"esc",src:"TEA 04",q:"Qual a principal proposta de Wundt na formulação da Psicologia como Ciência?",
+  o:["Conhecer os elementos mais simples da consciência (as sensações), através da introspecção controlada","Estudar aspectos do inconsciente","Elaborar uma pesquisa de comportamento observável","Comprovar elementos da consciência através de uma perspectiva metodológica","Estudar aspectos da personalidade da alma"],
+  c:["Correta. Wundt estudava a consciência e seus elementos (sensações) por introspecção controlada em laboratório.","Errada. O inconsciente é o objeto de Freud, não de Wundt.","Errada. Comportamento observável é o objeto do Behaviorismo de Watson (1913).","Errada. Parece próxima, mas é vaga: não diz quais elementos nem qual método (a introspecção). É um distrator construído para confundir.","Errada. 'Alma' remete à Psicologia filosófica, anterior à científica. Wundt rompe justamente com isso."],a:0},
+ {t:"esc",src:"TEA 04",q:"Considerado como a primeira sistematização genuinamente americana de conhecimentos em Psicologia. Uma sociedade que exigia respostas para questões como \"o que fazem os homens\" e \"por que o fazem\".\n\nEsse texto refere-se a qual escola de pensamento do século XIX?",
+  o:["Funcionalismo","Estruturalismo","Associacionismo","Gestalt","Psicanálise"],
+  c:["Correta. 'O que fazem e por que fazem' é a pergunta pela função. O Funcionalismo (William James) é a primeira escola genuinamente americana.","Errada. O Estruturalismo perguntava do que a consciência é feita, e sua origem é alemã (Wundt e Titchener).","Errada. O Associacionismo é do século XIX, mas não é a escola americana da 'função'.","Errada. A Gestalt é alemã e do século XX.","Errada. A Psicanálise é austríaca (Freud, Viena) e de 1900."],a:0},
+ {t:"psa",src:"TEA 05",q:"A estrutura do Aparelho Psíquico é composta por três instâncias que são: Inconsciente, Pré-consciente e Consciente. Podemos definir inconsciente como:",
+  o:["É o conjunto dos conteúdos não presentes no campo atual da consciência e é constituído por conteúdos reprimidos","É aquilo que não está na consciência, neste momento, e no momento seguinte pode estar.","Momento Pré-consciente","Conteúdos presentes em uma determinada região do cérebro","Capacidade de reprimir sentimentos que causam dor"],
+  c:["Correta. A marca do inconsciente é o recalque: conteúdos reprimidos, fora do campo da consciência.","Errada, e é a pegadinha: essa é a definição do pré-consciente, cujo conteúdo pode chegar à consciência no momento seguinte.","Errada. Pré-consciente é outra instância, não o inconsciente.","Errada. As tópicas de Freud são modelos psíquicos, não regiões anatômicas do cérebro.","Errada. Reprimir é uma operação (o recalque, ligado aos mecanismos de defesa do ego), não a definição do inconsciente."],a:0},
+ {t:"psa",src:"TEA 05",q:"Freud se interessou pelo comportamento humano e criou a teoria sobre a estrutura da personalidade humana, dividindo-a em três instâncias: ID, EGO e SUPEREGO. Podemos definir superego como:\n\n( ) É a parte \"consciência\" da personalidade, que contém valores e atitudes parentais e sociais incorporados durante a infância.\n( ) É a porção da personalidade que organiza, planeja e mantém a pessoa em contato com a realidade.\n( ) É a porção inata, primitiva da personalidade, o depósito da libido, a energia básica que exige gratificação imediata.\n\nA alternativa que preenche corretamente os parênteses, de cima para baixo, é:",
+  o:["V, F, F","V, V, V","F, F, F","F, V, F","V, F, V"],
+  c:["Correta. A primeira afirmativa define o superego, a segunda o ego e a terceira o id.","Errada. As três afirmativas estão certas sobre a personalidade, mas só a primeira define o superego, que é o que a questão pede.","Errada. A primeira afirmativa define o superego, logo é V.","Errada. Marca como V a definição do ego e como F a do superego, exatamente ao contrário.","Errada. A terceira afirmativa define o id (libido, gratificação imediata), não o superego."],a:0},
+ {t:"psa",src:"TEA 06",q:"Qual a principal função dos Mecanismos de defesa?",
+  o:["Garantia de proteção de processos indesejáveis","Garantir o equilíbrio entre aspectos conscientes e inconscientes","Superação de momentos difíceis vivenciados por um indivíduo","São processos realizados pelo ego e são inconscientes, isto é, ocorrem independentemente da vontade do indivíduo","Formulação exigida pelo ego como composição de um processo de assimilação"],
+  c:["Correta (gabarito provável). A questão pede a função: proteger o ego do que é indesejável e gera angústia. O gabarito oficial só sai em 25/11.","Errada. Os mecanismos de defesa não equilibram consciente e inconsciente. Eles mantêm conteúdos fora da consciência.","Errada. Superar momentos difíceis é enfrentamento consciente. A defesa é inconsciente e, muitas vezes, evita em vez de superar.","Afirmação verdadeira, mas descreve o que os mecanismos de defesa são, e não a função que a questão pede. Atenção: alguns gabaritos aceitam esta.","Errada. Assimilação é um conceito de Piaget, não da Psicanálise."],a:0},
+ {t:"beh",src:"TEA 06",q:"Chamamos de reforço a toda consequência que, seguindo uma resposta, altera a probabilidade futura de ocorrência dessa resposta. O reforço pode ser positivo ou negativo. O reforço positivo é todo evento que aumenta a probabilidade futura da resposta que o produz. O reforço negativo corresponde a:",
+  o:["A todo evento que aumenta a probabilidade futura da resposta que o remove ou atenua","Os eventos estressantes que aceleram a resposta diante de um determinado estímulo","Os eventos estressantes que desaceleram a resposta diante de um determinado estímulo","A forma como um indivíduo se comporta frente aos estímulos","Um evento que inibe qualquer emoção desconfortável"],
+  c:["Correta. Como o positivo, o negativo aumenta a resposta. A diferença é que a resposta remove ou atenua o evento em vez de produzi-lo.","Errada. Reforço não se define por estresse nem por velocidade, e sim por probabilidade futura da resposta.","Errada. Diminuir a resposta seria punição, não reforço.","Errada. Isso é uma definição vaga de comportamento, não de reforço negativo.","Errada. Reforço não trata de inibir emoções."],a:0},
+ {t:"des",src:"TEA 07",q:"Piaget considera que os indivíduos adquirem o conhecimento segundo o seu estágio de desenvolvimento, e é a partir das diversas formas de aquisição do conhecimento que se dá a aprendizagem. Este autor classifica os estágios de desenvolvimento da criança em quatro períodos. Marque a alternativa que corresponde ao estágio das operações concretas.",
+  o:["Durante este estágio, a criança desenvolve processos de pensamento lógico que podem ser aplicados a problemas reais e as decisões são lógicas ao invés de perceptuais","A criança não aceita a ideia do acaso e tudo deve ter uma explicação (é a fase dos \"por quês\")","O processo de aprendizagem ocorre por meio de reflexos neurológicos básicos e começa a construção de esquemas mentais","A percepção está presente no momento das decisões e é possível exigir da criança mais responsabilidade em determinadas tarefas","Para este autor o desenvolvimento independe do período, pois o conhecimento ocorre por toda a vida"],
+  c:["Correta. Operatório concreto: lógica aplicada a problemas reais e concretos, com decisões lógicas e não mais perceptuais.","Errada. A fase dos 'por quês' é o pré-operatório.","Errada. Reflexos e início dos esquemas descrevem o sensório-motor, o primeiro estágio.","Errada. Decisões guiadas pela percepção são justamente o que o operatório concreto supera. Isso descreve o pensamento pré-operatório.","Errada. Para Piaget, o desenvolvimento depende do estágio. A alternativa contradiz o próprio enunciado."],a:0},
+ {t:"des",src:"TEA 08",q:"Vygotsky, importante teórico da Psicologia, dedicou boa parte de seus estudos ao processo de aprendizagem dentro de uma perspectiva sociointeracionista. Um dos conceitos desenvolvidos por este autor se refere a área de aprendizagem com funções que ainda não amadureceram, mas que estão em processo de maturação, que a criança ainda não consegue realizar sozinha, mas consegue realizá-la na interação com um professor ou colega em nível mais avançado. Estamos nos referindo à:",
+  o:["Zona de desenvolvimento Proximal","Aprendizagem mediadora","Área de desenvolvimento potencial","Capacidade de mediação","Campo de internalização"],
+  c:["Correta. É a distância entre o que a criança faz sozinha (desenvolvimento real) e o que faz com ajuda (desenvolvimento potencial).","Errada. Mediação é um conceito central em Vygotsky, mas 'aprendizagem mediadora' não é o nome desse conceito.","Errada, e é a mais perigosa: 'nível de desenvolvimento potencial' existe em Vygotsky, mas é uma das pontas da zona, não a zona em si.","Errada. Expressão genérica, não é um conceito do autor.","Errada. Internalização existe em Vygotsky (o social que se torna individual), mas 'campo de internalização' não é o conceito descrito."],a:0},
+ {t:"des",src:"TEA 08",q:"Piaget entendeu a mente como dotada de estruturas do mesmo modo que o corpo. Sobre Esquemas mentais, podemos dizer:\n\n( ) Esquemas são as estruturas mentais ou cognitivas pelas quais os indivíduos se adaptam e organizam intelectualmente o meio.\n( ) Mudam continuamente e tornam-se mais refinados.\n( ) Eles se modificam com o desenvolvimento mental.\n\nA alternativa que preenche corretamente os parênteses, de cima para baixo, é:",
+  o:["V, V, V","F, F, F","F, V, F","V, F, V","V, F, F"],
+  c:["Correta. As três afirmativas descrevem os esquemas: são estruturas de adaptação e organização, mudam e se refinam, e se modificam com o desenvolvimento.","Errada. Nenhuma afirmativa é falsa.","Errada. A primeira é a própria definição de esquema, e a terceira também é verdadeira.","Errada. A segunda também é verdadeira: os esquemas se refinam com a assimilação e a acomodação.","Errada. Se os esquemas se modificam (terceira), eles mudam e se refinam (segunda). As duas são verdadeiras."],a:0},
+ {t:"esc",src:"TEA 09",q:"A Psicologia da Gestalt é uma das tendências teóricas mais coerentes e coesas da história da Psicologia. Seus articuladores preocuparam-se em construir não só uma teoria consistente, mas também uma base metodológica forte, que garantisse a consistência teórica. Nesse sentido qual o principal ponto de partida dessa teoria?",
+  o:["Percepção","Emoção","Discriminação","Associação","Formalização"],
+  c:["Correta. A Gestalt parte do estudo da percepção, e o próprio nome quer dizer 'forma' ou 'configuração' percebida.","Errada. A emoção não é o ponto de partida da Gestalt.","Errada. Discriminação de estímulos é um conceito do Behaviorismo.","Errada. Associação é o princípio do Associacionismo, que a Gestalt critica: o todo não é a soma de elementos associados.","Errada. Não é um conceito da Gestalt. É um distrator que lembra 'forma'."],a:0},
+ {t:"des",src:"TEA 09",q:"Erik Erikson é um dos teóricos que fundamenta a estrutura da personalidade por meio do fortalecimento do EGO e para esse fortalecimento o ser humano precisa passar por um processo denominado por ele como:",
+  o:["Valor da crise","Valor do sentimento","Valor da emoção","Valor da experiência","Valor da vivência"],
+  c:["Correta. Para Erikson, cada fase traz uma crise psicossocial, e o ego se fortalece ao atravessá-la.","Errada. O sentimento não é o eixo da teoria de Erikson.","Errada. A emoção não é o processo que fortalece o ego em Erikson.","Errada. Parece plausível, mas o termo da teoria é crise, não experiência.","Errada. Mesma armadilha: 'vivência' soa bem, mas o conceito é crise."],a:0},
+ {t:"des",src:"TEA 10",q:"Erikson desviou a ideia de que o desenvolvimento ocorre por meio de instintos sexuais e passou a olhar para o desenvolvimento com uma ideia central de que cada fase influenciará a seguinte. Sua teoria tem como base o aspecto:",
+  o:["Psicossocial","Biopsíquico","Relacional","Interpessoal","Intrapessoal"],
+  c:["Correta. É a teoria do desenvolvimento psicossocial: Erikson troca o eixo psicossexual de Freud pelo social.","Errada. 'Biopsíquico' remete ao biológico e instintual, justamente o que Erikson deixa em segundo plano.","Errada. Termo genérico, não é o nome da teoria.","Errada. As relações importam em Erikson, mas o termo da teoria é psicossocial.","Errada. Intrapessoal aponta para dentro do indivíduo, o oposto da ênfase social de Erikson."],a:0},
+ {t:"beh",src:"TEA 10",q:"O termo Behaviorismo foi por meio de um artigo publicado em 1913, que apresentava o título \"Psicologia: como os behavioristas a vêem\". Este artigo foi publicado pelo americano:",
+  o:["John B. Watson","Burrhus Skinner","Henri Wallon","Jonh Feldman","Jean Piaget"],
+  c:["Correta. Watson publicou o 'manifesto behaviorista' em 1913, na Psychological Review.","Errada. Skinner é behaviorista, mas tinha 9 anos em 1913. Ele desenvolveu o behaviorismo radical depois.","Errada. Wallon era francês e estudou o desenvolvimento e a afetividade.","Errada. Distrator (com erro de grafia, 'Jonh'). Não tem relação com o behaviorismo de 1913.","Errada. Piaget era suíço e criou a epistemologia genética."],a:0},
+ /* variações: montadas só com o texto dos prints */
+ {t:"psa",src:"Variação · TEA 05",v:1,q:"Na primeira tópica (Inconsciente, Pré-consciente e Consciente), a definição \"é aquilo que não está na consciência neste momento, e no momento seguinte pode estar\" corresponde a:",
+  o:["Pré-consciente","Inconsciente","Consciente","Superego","Id"],
+  c:["Correta. É conteúdo disponível, que pode chegar à consciência sem barreira de recalque. Na TEA 05 essa frase aparece como distrator.","Errada. O inconsciente é feito de conteúdos reprimidos, que não chegam à consciência 'no momento seguinte'.","Errada. O consciente é o que está presente agora, e a frase fala do que não está.","Errada. O superego é da segunda tópica (id, ego, superego), não da primeira.","Errada. O id também é da segunda tópica."],a:0},
+ {t:"beh",src:"Variação · TEA 06",v:1,q:"De acordo com o enunciado da TEA 06, o reforço positivo é:",
+  o:["Todo evento que aumenta a probabilidade futura da resposta que o produz","Todo evento que aumenta a probabilidade futura da resposta que o remove ou atenua","Os eventos estressantes que aceleram a resposta diante de um determinado estímulo","A forma como um indivíduo se comporta frente aos estímulos","Um evento que inibe qualquer emoção desconfortável"],
+  c:["Correta. É a definição do próprio enunciado: a resposta produz o evento, e isso aumenta a chance de ela se repetir.","Errada. 'Remove ou atenua' é a definição de reforço negativo.","Errada. Reforço não se define por estresse nem por velocidade.","Errada. Isso é uma definição vaga de comportamento, não de reforço.","Errada. Reforço não trata de inibir emoções."],a:0}
+,
+ {"t": "cie", "src": "Enade 2025 · situação-problema com afirmativas", "q": "Uma estudante de Psicologia quer provar, num trabalho de iniciação científica, a eficácia de uma técnica de \"reprogramação emocional\" divulgada nas redes sociais. Seu plano é reunir depoimentos de clientes satisfeitos publicados no perfil do criador da técnica.\n\nAvalie as afirmações a seguir.\n\nI. Depoimentos escolhidos pelo próprio divulgador não permitem verificar a validade da técnica, porque não foram obtidos de forma sistemática e controlada.\n\nII. Um desenho mais adequado definiria antes os critérios de resultado e compararia quem recebeu a técnica com um grupo de comparação.\n\nIII. O Código de Ética Profissional do Psicólogo (Resolução CFP nº 10/2005, art. 1º, alínea c) prevê como dever prestar serviços com técnicas reconhecidamente fundamentadas na ciência psicológica.\n\nÉ correto o que se afirma em", "o": ["I, II e III.", "I, apenas.", "II, apenas.", "I e II, apenas.", "II e III, apenas."], "c": ["Correta. I verdadeira: a ciência exige conhecimento obtido de forma programada, sistemática e controlada, e depoimentos selecionados não cumprem isso; II verdadeira: critérios definidos de antemão e comparação permitem separar o efeito da técnica de outros fatores; III verdadeira: é o texto do art. 1º, c, do Código de Ética. A questão junta a definição de ciência vista na disciplina com o desenho de pesquisa e a ética profissional.", "Errada. Deixa de fora a II, que é verdadeira; deixa de fora a III, que é verdadeira.", "Errada. Deixa de fora a I, que é verdadeira; deixa de fora a III, que é verdadeira.", "Errada. Deixa de fora a III, que é verdadeira.", "Errada. Deixa de fora a I, que é verdadeira."], "a": 0, "v": 1, "e": 1, "bl": "Avaliar — pede julgar a validade de um plano de pesquisa e sua adequação ética", "cp": "I.3 · Pesquisa e produção de conhecimento: planejar e conduzir pesquisa científica; I.1 · Pesquisa e produção de conhecimento: dominar fundamentos teóricos, metodológicos e epistemológicos", "ob": "I · Bases epistemológicas e históricas; II · Métodos e técnicas de pesquisa; III · Ética profissional"},
+ {"t": "sau", "src": "Enade 2025 · situação-problema", "q": "A família de um homem com diagnóstico de esquizofrenia, que faz acompanhamento num CAPS e está estável, pede à psicóloga que ajude a interná-lo \"por tempo indeterminado\" num hospital psiquiátrico, porque \"lá é o lugar dele\". Pela história da Psicologia, essa ideia lembra o modelo asilar, em que isolar a pessoa era o próprio tratamento.\n\nÀ luz da Lei nº 10.216/2001, que trata da proteção e dos direitos das pessoas com transtornos mentais, a orientação correta é:", "o": ["A internação só é indicada quando os recursos extra-hospitalares se mostrarem insuficientes, e o tratamento deve visar, como finalidade permanente, à reinserção social da pessoa em seu meio.", "A família pode decidir a internação involuntária sem laudo médico, desde que o paciente more com ela.", "O isolamento prolongado continua sendo a forma preferencial de tratamento, porque protege a família e a comunidade.", "O CAPS só pode atender a pessoa depois de uma internação hospitalar prévia.", "A internação por tempo indeterminado é obrigatória para quem tem diagnóstico de esquizofrenia."], "c": ["Correta. É o que dizem o art. 4º, caput e § 1º, da Lei 10.216/2001: internação só quando os recursos extra-hospitalares forem insuficientes, e reinserção social como finalidade permanente.", "Errada. A lei exige laudo médico circunstanciado para qualquer internação (art. 6º), e a involuntária deve ser comunicada ao Ministério Público em até 72 horas (art. 8º, § 1º).", "Errada. É justamente o modelo asilar que a lei e a Reforma Psiquiátrica superam.", "Errada. O CAPS é serviço de base comunitária e porta de entrada da rede; não exige internação prévia.", "Errada. Nenhum diagnóstico, por si, obriga a internação; o caso descrito, aliás, está estável."], "a": 0, "v": 1, "e": 1, "bl": "Aplicar — pede aplicar a legislação de saúde mental a um caso concreto", "cp": "II.1 · Avaliação, diagnóstico e intervenção: processos psicossociais e populações vulneráveis", "ob": "V · Políticas públicas; IV · Direitos humanos; I · Bases epistemológicas e históricas"},
+ {"t": "esc", "src": "Enade 2025 · situação-problema com afirmativas", "q": "Três projetos de pesquisa estudam como motoristas reagem às placas de trânsito.\n\nProjeto A: participantes treinados descrevem as sensações elementares (cor, brilho, forma) que experimentam ao ver a placa.\nProjeto B: investiga por que a placa é percebida como uma forma organizada, cujo sentido depende do conjunto e não das partes isoladas.\nProjeto C: mede apenas o tempo entre o aparecimento da placa e o pé no freio, sem coletar nenhum relato dos participantes.\n\nAvalie as afirmações a seguir.\n\nI. O projeto A se aproxima do estruturalismo de Wundt e Titchener, que decompunha a experiência consciente em elementos por meio da introspecção.\n\nII. O projeto B se aproxima da Gestalt, para a qual o todo percebido é mais do que a soma das partes.\n\nIII. O projeto C se aproxima do funcionalismo de William James, que recusava o estudo da consciência.\n\nÉ correto o que se afirma em", "o": ["I e II, apenas.", "I, apenas.", "III, apenas.", "II e III, apenas.", "I, II e III."], "c": ["Correta. I verdadeira: decompor em sensações elementares por introspecção treinada é o método estruturalista; II verdadeira: é o princípio central da Gestalt; III falsa: James estudava justamente a consciência e sua função adaptativa; medir só a resposta observável, sem relato, é a proposta do behaviorismo de Watson. A questão cobra a pergunta que cada escola fazia e o método que usava, não só os nomes.", "Errada. Deixa de fora a II, que é verdadeira.", "Errada. Deixa de fora a I, que é verdadeira; deixa de fora a II, que é verdadeira; inclui a III, que é falsa (James estudava justamente a consciência e sua função adaptativa; medir só a resposta observável, sem relato, é a proposta do behaviorismo de Watson).", "Errada. Deixa de fora a I, que é verdadeira; inclui a III, que é falsa (James estudava justamente a consciência e sua função adaptativa; medir só a resposta observável, sem relato, é a proposta do behaviorismo de Watson).", "Errada. Inclui a III, que é falsa (James estudava justamente a consciência e sua função adaptativa; medir só a resposta observável, sem relato, é a proposta do behaviorismo de Watson)."], "a": 0, "v": 1, "e": 1, "bl": "Analisar — exige relacionar desenhos de pesquisa às escolas e seus métodos", "cp": "I.1 · Pesquisa e produção de conhecimento: dominar fundamentos teóricos, metodológicos e epistemológicos", "ob": "I · Bases epistemológicas e históricas; II · Métodos e técnicas de pesquisa"},
+ {"t": "psa", "src": "Enade 2025 · situação-problema com afirmativas", "q": "Uma paciente em psicoterapia de orientação psicanalítica conta, sem dar importância, que já \"esqueceu\" três vezes o retorno ao médico que vai lhe entregar o resultado de uma biópsia. Diz que é \"só cabeça cheia\".\n\nAvalie as afirmações a seguir.\n\nI. Para a psicanálise, esses esquecimentos são falhas de memória sem sentido psíquico, explicadas pelo cansaço.\n\nII. Se houver aí uma defesa contra a angústia, ela opera de forma inconsciente, pelo ego, o que explica por que a paciente não percebe a relação.\n\nIII. A interpretação deve levar em conta o vínculo e o momento da análise; comunicá-la de forma prematura, sem que a paciente possa elaborá-la, tende a reforçar a resistência.\n\nÉ correto o que se afirma em", "o": ["II e III, apenas.", "I, apenas.", "II, apenas.", "I e III, apenas.", "I, II e III."], "c": ["Correta. I falsa: Freud tratou os esquecimentos e atos falhos como formações do inconsciente, com sentido; II verdadeira: os mecanismos de defesa são processos inconscientes do ego; III verdadeira: é a crítica de Freud à chamada psicanálise \"selvagem\", em texto de 1910. Além de reconhecer o ato falho e a defesa, a questão pede um juízo sobre o manejo clínico.", "Errada. Inclui a I, que é falsa (Freud tratou os esquecimentos e atos falhos como formações do inconsciente, com sentido); deixa de fora a II, que é verdadeira; deixa de fora a III, que é verdadeira.", "Errada. Deixa de fora a III, que é verdadeira.", "Errada. Inclui a I, que é falsa (Freud tratou os esquecimentos e atos falhos como formações do inconsciente, com sentido); deixa de fora a II, que é verdadeira.", "Errada. Inclui a I, que é falsa (Freud tratou os esquecimentos e atos falhos como formações do inconsciente, com sentido)."], "a": 0, "v": 1, "e": 1, "bl": "Avaliar — pede julgar a leitura e o manejo de um fenômeno clínico", "cp": "II.3 · Avaliação, diagnóstico e intervenção: avaliação, psicodiagnóstico e intervenção clínica", "ob": "XIV · Processos clínicos; I · Bases epistemológicas e históricas"},
+ {"t": "beh", "src": "Enade 2025 · situação-problema", "q": "Numa sala do 1º ano, um menino faz birra sempre que recebe uma atividade de escrita. A professora, então, senta-se ao lado dele, conversa e o acalma até que ele comece. A psicóloga escolar faz a análise funcional do comportamento.\n\nA conclusão e a intervenção mais adequadas, segundo a análise do comportamento, são:", "o": ["A atenção da professora pode estar funcionando como reforço positivo da birra; a intervenção é deixar de reforçar a birra e reforçar comportamentos alternativos, como pedir ajuda.", "A atenção da professora é um reforço negativo, porque é desagradável para a criança, e por isso deve ser mantida.", "A birra é um reflexo inato, sem relação com as consequências, e só pode ser tratada com medicação.", "A melhor intervenção é a punição física moderada, por ser a forma mais rápida de reduzir o comportamento.", "O caso é de condicionamento clássico, porque a atividade foi pareada com a birra."], "c": ["Correta. A birra é seguida de algo acrescentado (atenção), e o comportamento se mantém: reforço positivo. Retirar o reforço da birra (extinção) e reforçar um comportamento alternativo é a intervenção típica. Espere uma piora inicial, a explosão da extinção.", "Errada. Reforço negativo é a retirada de algo aversivo. Aqui algo é acrescentado.", "Errada. O padrão de repetição ligado à consequência indica comportamento operante, não reflexo.", "Errada. Além de produzir efeitos colaterais conhecidos, o castigo físico é vedado pelo ECA (art. 18-A, incluído pela Lei nº 13.010/2014).", "Errada. O comportamento é mantido pela consequência que o segue, o que caracteriza o condicionamento operante."], "a": 0, "v": 1, "e": 1, "bl": "Aplicar — pede aplicar a análise funcional a um caso escolar e escolher a intervenção", "cp": "II.5 · Avaliação, diagnóstico e intervenção: processos educativos", "ob": "XV · Ensino e aprendizagem; X · Processos psicológicos básicos; IV · Direitos humanos"},
+ {"t": "des", "src": "Enade 2025 · asserção-razão", "q": "Numa turma do 2º ano, a professora organiza duplas com crianças em níveis diferentes de leitura para atividades guiadas, em que a mais experiente lê junto com a outra e a ajuda a decifrar as palavras novas.\n\nI. A estratégia da professora tem fundamento na teoria de Vygotsky\n\nPORQUE\n\nII. o que a criança consegue fazer com a ajuda de um parceiro mais experiente indica funções em processo de amadurecimento, ou seja, a zona de desenvolvimento proximal.\n\nA respeito dessas asserções, assinale a opção correta.", "o": ["As asserções I e II são proposições verdadeiras, e a II é uma justificativa correta da I.", "As asserções I e II são proposições verdadeiras, mas a II não é uma justificativa correta da I.", "A asserção I é uma proposição verdadeira, e a II é uma proposição falsa.", "A asserção I é uma proposição falsa, e a II é uma proposição verdadeira.", "As asserções I e II são proposições falsas."], "c": ["Correta. A I é verdadeira: a interação com um parceiro mais experiente é central na perspectiva sociointeracionista. A II é verdadeira: é a definição da zona de desenvolvimento proximal. A II explica a I: a estratégia funciona porque atua na distância entre o que a criança faz sozinha e o que faz com ajuda.", "Errada. A II explica a I.", "Errada. A II é verdadeira.", "Errada. A I é verdadeira.", "Errada. A I é verdadeira; a II é verdadeira."], "a": 0, "v": 1, "e": 1, "bl": "Analisar — pede julgar duas proposições e a relação causal entre elas", "cp": "II.5 · Avaliação, diagnóstico e intervenção: processos educativos", "ob": "IX · Desenvolvimento humano; XV · Ensino e aprendizagem"}
+];
+const BANK = "tea-v3";
+
+/* ===================== ENADE 2025 ===================== */
+/* Questões no formato Enade, alinhadas à Portaria Inep nº 348/2025. e:1 marca a questão; bl = Taxonomia de Bloom revisada; cp = competência (art. 5º); ob = objeto de conhecimento (art. 6º) */
+function enadeMeta(q){
+  const d = document.createElement("div");
+  if(!q.bl) return d;
+  d.style.cssText = "margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px;font-size:.86rem;color:var(--ink2);line-height:1.45";
+  d.innerHTML = "<div><b>Bloom:</b> <span></span></div><div style=\"margin-top:4px\"><b>Competência avaliada (art. 5º):</b> <span></span></div><div style=\"margin-top:4px\"><b>Objeto de conhecimento (art. 6º):</b> <span></span></div>";
+  const s = d.querySelectorAll("span"); s[0].textContent = q.bl; s[1].textContent = q.cp; s[2].textContent = q.ob;
+  return d;
+}
+
+
+/* ===================== ESCALA ===================== */
+const SCALE = [
+  {min:0,  max:2.9, n:"Tábula rasa", s:"Tudo por escrever, como em Locke. Hora de começar do básico."},
+  {min:3,  max:4.4, n:"Introspecção sem treino", s:"Há impressões, falta método. Volte aos marcos e datas."},
+  {min:4.5,max:5.9, n:"Zona de desenvolvimento proximal", s:"Quase lá. Com um pouco de mediação, você chega."},
+  {min:6,  max:6.9, n:"Função adaptativa", s:"Na média. A consciência já cumpre sua função, como em James."},
+  {min:7,  max:7.9, n:"Boa forma", s:"Pregnância: o todo começa a fazer sentido."},
+  {min:8,  max:8.9, n:"Insight de Köhler", s:"A reorganização aconteceu. Domínio sólido."},
+  {min:9,  max:9.9, n:"Autorrealização", s:"Topo da pirâmide de Maslow."},
+  {min:10, max:10,  n:"Laboratório de Leipzig", s:"Nota máxima. Wundt assinaria embaixo."}
+];
+const PASS = 6;
+const level = g => SCALE.find(s => g >= s.min && g <= s.max + 0.0001) || SCALE[0];
+const fmt = n => n.toFixed(1).replace(".", ",");
+
+/* ===================== ARMAZENAMENTO ===================== */
+let attempts = [];            // {id, ts, grade, correct, total, secs, items:[{qid,t,ok}]}
+let store = "local";          // "db" | "local" | "none"
+let db = null, uid = null, sample = null;
+const LS_KEY = "simulado-hist-psi-tea-v3";
+
+function lsLoad(){ try{ return JSON.parse(localStorage.getItem(LS_KEY) || "[]").filter(r => r.bank === BANK); }catch(e){ return []; } }
+function lsSave(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(attempts)); }catch(e){} }
+
+async function initStore(){
+  attempts = lsLoad();
+  if(!attempts.length) store = "local";
+  setStoreNote();
+  renderHome();
+  try{
+    const c = window.claude;
+    if(!c || !c.use){ store = attempts.length ? "local" : "local"; setStoreNote(); return; }
+    const [d, u, s] = await Promise.all([c.use("db"), c.use("user"), c.use("sample")]);
+    sample = s || null;
+    if(d && u){
+      const id = await u.id();
+      if(id){
+        db = d; uid = id;
+        const col = db.collection("data/users/" + uid);
+        let done = false;
+        const timer = setTimeout(() => { if(!done){ setStoreNote("Não foi possível alcançar o armazenamento agora; usando a cópia deste aparelho."); } }, 10000);
+        try{
+          const snap = await col.get();
+          done = true; clearTimeout(timer);
+          const remote = snap.docs.filter(x => x.exists).map(x => x.data()).filter(r => r.bank === BANK);
+          // mescla tentativas locais que ainda não subiram
+          const ids = new Set(remote.map(r => r.id));
+          const pending = attempts.filter(a => !ids.has(a.id));
+          for(const p of pending){ try{ await col.doc(p.id).set(p); remote.push(p); }catch(e){} }
+          attempts = remote.sort((a,b) => a.ts - b.ts);
+          store = "db"; lsSave();
+        }catch(e){ done = true; clearTimeout(timer); }
+      }
+    }
+  }catch(e){}
+  setStoreNote(); renderHome(); refreshCurrent();
+}
+async function saveAttempt(a){
+  attempts.push(a); lsSave();
+  if(store === "db" && db){
+    try{ await db.collection("data/users/" + uid).doc(a.id).set(a); }
+    catch(e){ setStoreNote("A tentativa ficou salva neste aparelho, mas não subiu para a nuvem. Ela será enviada na próxima abertura."); }
+  }
+}
+async function clearAll(){
+  if(store === "db" && db){
+    const col = db.collection("data/users/" + uid);
+    for(const a of attempts){ try{ await col.doc(a.id).delete(); }catch(e){} }
+  }
+  attempts = []; lsSave();
+}
+function setStoreNote(msg){
+  const el = document.getElementById("storeNote");
+  if(msg){ el.textContent = msg; return; }
+  el.textContent = store === "db"
+    ? `Resultados guardados na sua conta (${attempts.length} tentativa${attempts.length===1?"":"s"}). Ficam disponíveis em qualquer aparelho.`
+    : `Resultados guardados neste aparelho (${attempts.length} tentativa${attempts.length===1?"":"s"}).`;
+}
+
+/* ===================== NAVEGAÇÃO ===================== */
+const views = ["home","quiz","result","evo","rep"];
+let current = "home";
+function show(v){
+  current = v;
+  views.forEach(x => document.getElementById("v-"+x).classList.toggle("hide", x !== v));
+  document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.v === v));
+  document.getElementById("tabs").classList.toggle("hide", v === "quiz");
+  if(v === "evo") renderEvo();
+  if(v === "rep") renderReport();
+  if(v === "home") renderHome();
+  window.scrollTo(0,0);
+}
+function refreshCurrent(){ if(current === "evo") renderEvo(); if(current === "rep") renderReport(); }
+document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => show(b.dataset.v));
+
+/* ===================== HOME ===================== */
+function renderHome(){
+  const last = attempts[attempts.length-1];
+  const sl = document.getElementById("scaleList");
+  sl.innerHTML = SCALE.slice().reverse().map(s => {
+    const cur = last && level(last.grade) === s;
+    const rng = s.min === s.max ? "10,0" : `${fmt(s.min)}–${fmt(s.max)}`;
+    return `<span class="r">${rng}</span><span class="n ${cur?"cur":""}">${s.n}${cur?" ← última":""}</span><span class="${s.min>=PASS?"badge ok":"badge no"}" style="padding:1px 8px;font-size:.72rem">${s.min>=PASS?"aprovado":"abaixo"}</span>
+      <span></span><span class="s" style="grid-column:2 / 4">${s.s}</span>`;
+  }).join("");
+  const lc = document.getElementById("lastCard");
+  if(last){
+    const best = Math.max(...attempts.map(a=>a.grade));
+    const avg = attempts.reduce((s,a)=>s+a.grade,0)/attempts.length;
+    lc.style.display = "";
+    lc.innerHTML = `<h2>Seu histórico</h2>
+      <div class="stats" style="margin-top:12px">
+        <div class="stat"><b>${fmt(last.grade)}</b><span>Última nota</span></div>
+        <div class="stat"><b>${fmt(best)}</b><span>Melhor nota</span></div>
+        <div class="stat"><b>${fmt(avg)}</b><span>Média (${attempts.length})</span></div>
+      </div>
+      <div class="row" style="margin-top:12px"><button class="btn" onclick="show('evo')">Ver evolução</button><button class="btn" onclick="show('rep')">Relatório do professor</button></div>`;
+  } else lc.style.display = "none";
+}
+
+/* ===================== QUIZ ===================== */
+let run = null, tick = null;
+const shuffle = arr => { const a = arr.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+
+function buildRound(){
+  const only = document.getElementById("onlyOrig").checked;
+  const en = document.getElementById("enadeMode").checked;
+  return shuffle(Q.map((q,i)=>i).filter(i => en ? Q[i].e : (!Q[i].e && (!only || !Q[i].v))));
+}
+document.getElementById("startBtn").onclick = () => {
+  const ids = buildRound();
+  run = { ids, i:0, start:Date.now(), instant:document.getElementById("instant").checked,
+          answers: ids.map(id => ({ qid:id, order: shuffle([0,1,2,3,4]), pick:null })), confirmed:false };
+  clearInterval(tick);
+  tick = setInterval(()=>{ const s = Math.floor((Date.now()-run.start)/1000); document.getElementById("qTimer").textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`; }, 1000);
+  show("quiz"); renderQ();
+};
+let quitArmed = false;
+document.getElementById("quitBtn").onclick = (e) => {
+  if(!quitArmed){ quitArmed = true; e.target.textContent = "Sair sem salvar?"; setTimeout(()=>{ quitArmed=false; e.target.textContent="Sair"; }, 3000); return; }
+  quitArmed = false; e.target.textContent = "Sair"; clearInterval(tick); run = null; show("home");
+};
+function commentList(q, order, pick){
+  const ul = document.createElement("ul"); ul.className = "oc";
+  order.forEach((oi, k) => {
+    const li = document.createElement("li");
+    const ok = oi === q.a;
+    li.innerHTML = `<span class="k ${ok?"ok":"no"}">${"ABCDE"[k]}</span><span class="ot"></span><span class="cm"></span>`;
+    li.querySelector(".ot").textContent = (ok ? "✓ " : "✗ ") + q.o[oi] + (oi === pick && !ok ? "  (sua resposta)" : "");
+    li.querySelector(".cm").textContent = q.c[oi];
+    ul.appendChild(li);
+  });
+  return ul;
+}
+function renderQ(){
+  const a = run.answers[run.i], q = Q[a.qid];
+  run.confirmed = false;
+  document.getElementById("qCount").textContent = `Questão ${run.i+1} de ${run.ids.length}`;
+  document.getElementById("qBar").style.width = `${(run.i)/run.ids.length*100}%`;
+  document.getElementById("qTopic").textContent = TOPICS[q.t] + " · " + q.src;
+  document.getElementById("qText").textContent = q.q;
+  document.getElementById("qFb").innerHTML = "";
+  const box = document.getElementById("qOpts"); box.innerHTML = "";
+  a.order.forEach((oi, k) => {
+    const b = document.createElement("button");
+    b.className = "opt"; b.dataset.oi = oi;
+    b.innerHTML = `<span class="l">${"ABCDE"[k]}</span><span class="t"></span>`;
+    b.querySelector(".t").textContent = q.o[oi];
+    b.onclick = () => { if(run.confirmed) return; a.pick = oi; box.querySelectorAll(".opt").forEach(x => x.classList.toggle("sel", +x.dataset.oi === oi)); nb.disabled = false; };
+    box.appendChild(b);
+  });
+  const nb = document.getElementById("nextBtn");
+  nb.disabled = true; nb.textContent = run.instant ? "Confirmar" : (run.i === run.ids.length-1 ? "Finalizar" : "Próxima");
+}
+document.getElementById("nextBtn").onclick = () => {
+  const a = run.answers[run.i], q = Q[a.qid];
+  const nb = document.getElementById("nextBtn");
+  if(run.instant && !run.confirmed){
+    run.confirmed = true;
+    const ok = a.pick === q.a;
+    document.querySelectorAll("#qOpts .opt").forEach(x => {
+      const oi = +x.dataset.oi; x.classList.remove("sel");
+      if(oi === q.a) x.classList.add("ok"); else if(oi === a.pick) x.classList.add("no");
+    });
+    const fb = document.getElementById("qFb");
+    fb.innerHTML = `<div class="feedback ${ok?"ok":"no"}"><b>${ok?"Correto.":"Não foi dessa vez."}</b> Comentário de cada alternativa:</div>`;
+    fb.firstChild.appendChild(commentList(q, a.order, a.pick));
+    fb.firstChild.appendChild(enadeMeta(q));
+    nb.textContent = run.i === run.ids.length-1 ? "Ver resultado" : "Próxima";
+    return;
+  }
+  if(run.i < run.ids.length-1){ run.i++; renderQ(); }
+  else finish();
+};
+async function finish(){
+  clearInterval(tick);
+  const items = run.answers.map(a => ({ qid:a.qid, t:Q[a.qid].t, ok: a.pick === Q[a.qid].a, pick:a.pick }));
+  const correct = items.filter(x=>x.ok).length;
+  const N = items.length;
+  const att = { id: "t" + Date.now(), ts: Date.now(), bank: BANK, grade: Math.round(correct/N*100)/10, correct, total:N,
+                secs: Math.round((Date.now()-run.start)/1000), items, mode: document.getElementById("enadeMode").checked ? "enade" : "tea" };
+  const answers = run.answers; run = null;
+  await saveAttempt(att);
+  setStoreNote();
+  renderResult(att, answers);
+  show("result");
+}
+
+/* ===================== RESULTADO ===================== */
+function renderResult(att, answers){
+  const lv = level(att.grade), pass = att.grade >= PASS;
+  const prev = attempts.length > 1 ? attempts[attempts.length-2] : null;
+  const delta = prev ? att.grade - prev.grade : null;
+  const segs = SCALE.map(s => `<div class="${s===lv?"on":""}" title="${s.n}"></div>`).join("");
+  const byT = {}; att.items.forEach(it => { (byT[it.t] ||= {ok:0,n:0}); byT[it.t].n++; if(it.ok) byT[it.t].ok++; });
+  const weak = Object.entries(byT).filter(([t,v]) => v.ok/v.n < 0.6).map(([t]) => TOPICS[t]);
+  const el = document.getElementById("v-result");
+  el.innerHTML = `
+  <div class="card">
+    <div class="eyebrow">Resultado · ${new Date(att.ts).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"})}</div>
+    <div class="score" style="margin-top:10px">
+      <div class="big">${fmt(att.grade)}</div>
+      <div>
+        <div class="badge ${pass?"ok":"no"}">${pass?"✓ Aprovado":"✕ Abaixo da média"}</div>
+        <h2 style="margin-top:8px">${lv.n}</h2>
+        <div class="ink2">${lv.s}</div>
+      </div>
+    </div>
+    <div class="scale">${segs}</div>
+    <div class="row muted" style="justify-content:space-between;font-size:.75rem"><span>0</span><span>média 6,0</span><span>10</span></div>
+    <div class="stats" style="margin-top:14px">
+      <div class="stat"><b>${att.correct}/${att.total}</b><span>Acertos</span></div>
+      <div class="stat"><b>${Math.floor(att.secs/60)}:${String(att.secs%60).padStart(2,"0")}</b><span>Tempo</span></div>
+      <div class="stat"><b>${delta===null?"—":(delta>=0?"+":"")+fmt(delta)}</b><span>vs. anterior</span></div>
+    </div>
+    ${weak.length ? `<p class="ink2" style="margin-top:14px"><b>Blocos abaixo de 60% nesta tentativa:</b> ${weak.join("; ")}.</p>` : `<p class="ink2" style="margin-top:14px">Nenhum bloco ficou abaixo de 60% nesta tentativa.</p>`}
+    <div class="row" style="margin-top:12px">
+      <button class="btn primary" onclick="document.getElementById('startBtn').click()">Nova tentativa</button>
+      <button class="btn" onclick="show('rep')">Relatório do professor</button>
+      <button class="btn" onclick="show('evo')">Evolução</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Correção</h2>
+    <div id="reviewList" style="margin-top:8px"></div>
+  </div>`;
+  const rl = el.querySelector("#reviewList");
+  answers.forEach((a, i) => {
+    const q = Q[a.qid], ok = a.pick === q.a;
+    const d = document.createElement("div"); d.className = "review-item";
+    d.innerHTML = `<div class="row" style="justify-content:space-between"><span class="eyebrow">${i+1}. ${TOPICS[q.t]} · ${q.src}</span><span class="badge ${ok?"ok":"no"}" style="font-size:.72rem;padding:2px 9px">${ok?"acertou":"errou"}</span></div>
+      <p style="margin:.4em 0;font-weight:600;white-space:pre-line"></p>`;
+    d.querySelector("p").textContent = q.q;
+    d.appendChild(commentList(q, a.order, a.pick));
+    d.appendChild(enadeMeta(q));
+    rl.appendChild(d);
+  });
+}
+
+/* ===================== ANÁLISE ===================== */
+function topicStats(list){
+  const r = {}; Object.keys(TOPICS).forEach(t => r[t] = {ok:0,n:0});
+  list.forEach(a => a.items.forEach(it => { r[it.t].n++; if(it.ok) r[it.t].ok++; }));
+  return r;
+}
+function slope(ys){
+  const n = ys.length; if(n < 2) return 0;
+  const xm = (n-1)/2, ym = ys.reduce((s,y)=>s+y,0)/n;
+  let num=0, den=0; ys.forEach((y,i)=>{ num += (i-xm)*(y-ym); den += (i-xm)**2; });
+  return num/den;
+}
+
+/* ===================== EVOLUÇÃO ===================== */
+function svgEl(tag, attrs){ const e = document.createElementNS("http://www.w3.org/2000/svg", tag); for(const k in attrs) e.setAttribute(k, attrs[k]); return e; }
+function renderEvo(){
+  const el = document.getElementById("v-evo");
+  if(!attempts.length){ el.innerHTML = `<div class="card"><h2>Evolução</h2><p class="ink2">Faça a primeira tentativa para ver o gráfico.</p></div>`; return; }
+  const grades = attempts.map(a=>a.grade);
+  const avg = grades.reduce((s,g)=>s+g,0)/grades.length;
+  const passN = grades.filter(g=>g>=PASS).length;
+  el.innerHTML = `
+  <div class="card">
+    <h2>Notas por tentativa</h2>
+    <div class="stats" style="margin:12px 0">
+      <div class="stat"><b>${attempts.length}</b><span>Tentativas</span></div>
+      <div class="stat"><b>${fmt(avg)}</b><span>Média geral</span></div>
+      <div class="stat"><b>${passN}/${attempts.length}</b><span>Acima da média</span></div>
+    </div>
+    <div class="chart" id="lineChart"><div class="tip" id="lineTip"></div></div>
+    <div class="legend"><span><i></i>Nota</span><span><i class="dash"></i>Média de aprovação (6,0)</span></div>
+  </div>
+  <div class="card">
+    <h2>Acerto por bloco</h2>
+    <p class="note" style="margin:.3em 0 10px">Todas as tentativas somadas. A linha tracejada marca 60%, o equivalente à média.</p>
+    <div class="chart" id="barChart"><div class="tip" id="barTip"></div></div>
+  </div>
+  <div class="card">
+    <h2>Histórico</h2>
+    <div style="overflow-x:auto"><table><thead><tr><th>#</th><th>Data</th><th>Nota</th><th>Faixa</th><th>Tempo</th></tr></thead><tbody id="histBody"></tbody></table></div>
+    <div class="row" style="margin-top:14px"><button class="btn danger" id="clearBtn">Apagar histórico</button></div>
+  </div>`;
+  drawLine(document.getElementById("lineChart"), grades);
+  drawBars(document.getElementById("barChart"), topicStats(attempts));
+  document.getElementById("histBody").innerHTML = attempts.map((a,i) => `<tr><td>${i+1}</td><td>${new Date(a.ts).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})} ${new Date(a.ts).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}</td><td class="num" style="color:${a.grade>=PASS?"var(--good)":"var(--bad)"}">${fmt(a.grade)}</td><td>${level(a.grade).n}</td><td>${Math.floor(a.secs/60)}min</td></tr>`).reverse().join("");
+  let armed = false;
+  document.getElementById("clearBtn").onclick = async (e) => {
+    if(!armed){ armed = true; e.target.textContent = "Toque de novo para apagar tudo"; setTimeout(()=>{armed=false; e.target.textContent="Apagar histórico";},4000); return; }
+    e.target.disabled = true; e.target.textContent = "Apagando…";
+    await clearAll(); setStoreNote(); renderEvo(); renderHome();
+  };
+}
+function drawLine(host, ys){
+  const W = Math.max(300, Math.round(host.clientWidth || 600)), H = 230, L = 30, R = 16, T = 22, B = 28;
+  const svg = svgEl("svg", {viewBox:`0 0 ${W} ${H}`, role:"img", "aria-label":"Notas por tentativa"});
+  const x = i => ys.length === 1 ? L + (W-L-R)/2 : L + i*(W-L-R)/(ys.length-1);
+  const y = v => T + (10 - v)*(H-T-B)/10;
+  for(let g=0; g<=10; g+=2){
+    svg.appendChild(svgEl("line",{x1:L,x2:W-R,y1:y(g),y2:y(g),stroke:"var(--grid)","stroke-width":1}));
+    const tx = svgEl("text",{x:L-8,y:y(g)+4,"text-anchor":"end","font-size":11,fill:"var(--muted)"}); tx.textContent = g; svg.appendChild(tx);
+  }
+  svg.appendChild(svgEl("line",{x1:L,x2:W-R,y1:y(PASS),y2:y(PASS),stroke:"var(--muted)","stroke-width":1.5,"stroke-dasharray":"5 4"}));
+  const step = Math.max(1, Math.ceil(ys.length/10));
+  ys.forEach((v,i) => { if(i % step === 0 || i === ys.length-1){ const tx = svgEl("text",{x:x(i),y:H-8,"text-anchor":"middle","font-size":11,fill:"var(--muted)"}); tx.textContent = i+1; svg.appendChild(tx); } });
+  if(ys.length > 1) svg.appendChild(svgEl("polyline",{points:ys.map((v,i)=>`${x(i)},${y(v)}`).join(" "),fill:"none",stroke:"var(--accent)","stroke-width":2,"stroke-linejoin":"round","stroke-linecap":"round"}));
+  ys.forEach((v,i) => svg.appendChild(svgEl("circle",{cx:x(i),cy:y(v),r:4.5,fill:"var(--accent)",stroke:"var(--card)","stroke-width":2})));
+  const last = ys.length-1;
+  const lab = svgEl("text",{x:x(last),y:y(ys[last])-12,"text-anchor":"middle","font-size":12,"font-weight":700,fill:"var(--ink)"}); lab.textContent = fmt(ys[last]); svg.appendChild(lab);
+  const cross = svgEl("line",{y1:T,y2:H-B,stroke:"var(--muted)","stroke-width":1,opacity:0}); svg.appendChild(cross);
+  const hit = svgEl("rect",{x:L,y:T,width:W-L-R,height:H-T-B,fill:"transparent"}); svg.appendChild(hit);
+  host.insertBefore(svg, host.firstChild);
+  const tip = host.querySelector(".tip");
+  const move = ev => {
+    const p = ev.touches ? ev.touches[0] : ev; const r = svg.getBoundingClientRect();
+    const px = (p.clientX - r.left) * W / r.width;
+    let i = ys.length === 1 ? 0 : Math.round((px - L) / ((W-L-R)/(ys.length-1))); i = Math.max(0, Math.min(ys.length-1, i));
+    cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("opacity", .6);
+    const a = attempts[i];
+    tip.textContent = `Tentativa ${i+1} · ${fmt(ys[i])} · ${level(ys[i]).n}`;
+    tip.style.left = (x(i)*r.width/W) + "px"; tip.style.top = (y(ys[i])*r.height/H) + "px"; tip.style.opacity = 1;
+  };
+  const out = () => { tip.style.opacity = 0; cross.setAttribute("opacity",0); };
+  hit.addEventListener("mousemove", move); hit.addEventListener("touchstart", move, {passive:true}); hit.addEventListener("touchmove", move, {passive:true});
+  hit.addEventListener("mouseleave", out); hit.addEventListener("touchend", () => setTimeout(out, 1500));
+}
+function drawBars(host, st){
+  const keys = Object.keys(TOPICS);
+  const tip = host.querySelector(".tip");
+  const wrap = document.createElement("div");
+  wrap.innerHTML = keys.map(k => {
+    const v = st[k].n ? st[k].ok/st[k].n : null;
+    const pct = v===null ? 0 : Math.round(v*100);
+    return `<div class="brow" data-k="${k}" style="padding:7px 0;cursor:default">
+      <div class="row" style="justify-content:space-between;font-size:.86rem"><span class="ink2">${TOPICS[k]}</span><b style="color:${v===null?"var(--muted)":(v<0.6?"var(--bad)":"var(--ink)")};font-variant-numeric:tabular-nums">${v===null?"—":pct+"%"}</b></div>
+      <div style="position:relative;height:12px;background:var(--grid);border-radius:4px;margin-top:5px">
+        ${v ? `<div style="height:100%;width:${Math.max(2,pct)}%;background:var(--accent);border-radius:4px"></div>` : ""}
+        <div style="position:absolute;left:60%;top:-3px;bottom:-3px;border-left:1.5px dashed var(--muted)"></div>
+      </div>
+      <div class="note bdet" style="display:none;margin-top:3px">${v===null?"Sem questões ainda":`${st[k].ok} acertos em ${st[k].n} questões`}</div>
+    </div>`;
+  }).join("");
+  wrap.querySelectorAll(".brow").forEach(r => {
+    const on = () => wrap.querySelectorAll(".bdet").forEach(d => d.style.display = d.parentNode === r ? "block" : "none");
+    r.addEventListener("mouseenter", on); r.addEventListener("click", on);
+  });
+  host.insertBefore(wrap, host.firstChild);
+}
+/* ===================== RELATÓRIO DO PROFESSOR ===================== */
+function buildReport(){
+  const n = attempts.length, grades = attempts.map(a=>a.grade);
+  const last = attempts[n-1], first = attempts[0];
+  const avg = grades.reduce((s,g)=>s+g,0)/n;
+  const sl = slope(grades);
+  const recent = attempts.slice(-3);
+  const stAll = topicStats(attempts), stRecent = topicStats(recent);
+  const rows = Object.keys(TOPICS).map(t => ({ t, all: stAll[t].n ? stAll[t].ok/stAll[t].n : null, rec: stRecent[t].n ? stRecent[t].ok/stRecent[t].n : null, n: stAll[t].n }))
+    .filter(r => r.all !== null).sort((a,b) => a.all - b.all);
+  // questões erradas mais de uma vez
+  const miss = {}; attempts.forEach(a => a.items.forEach(it => { if(!it.ok) miss[it.qid] = (miss[it.qid]||0) + 1; }));
+  const seen = {}; attempts.forEach(a => a.items.forEach(it => seen[it.qid] = (seen[it.qid]||0)+1));
+  const chronic = Object.entries(miss).filter(([q,c]) => c >= 2).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([q,c]) => ({q:+q, c, s:seen[q]}));
+  const sd = Math.sqrt(grades.reduce((s,g)=>s+(g-avg)**2,0)/n);
+  return {n, grades, last, first, avg, sl, sd, rows, chronic};
+}
+function renderReport(){
+  const el = document.getElementById("v-rep");
+  if(!attempts.length){ el.innerHTML = `<div class="card"><h2>Relatório do professor</h2><p class="ink2">O relatório aparece depois da primeira tentativa.</p></div>`; return; }
+  const R = buildReport();
+  const weak = R.rows.filter(r => r.all < 0.6), mid = R.rows.filter(r => r.all >= 0.6 && r.all < 0.8), strong = R.rows.filter(r => r.all >= 0.8);
+  let diag;
+  if(R.n === 1) diag = `Há só uma tentativa, com nota ${fmt(R.last.grade)} (${level(R.last.grade).n}). Ela serve de linha de base. As comparações ganham peso a partir da terceira tentativa, porque cada simulado sorteia questões diferentes.`;
+  else {
+    const tr = R.sl > 0.25 ? "em alta" : R.sl < -0.25 ? "em queda" : "estável";
+    diag = `Em ${R.n} tentativas, a média é ${fmt(R.avg)} e a tendência está ${tr} (cerca de ${R.sl>=0?"+":""}${fmt(R.sl)} ponto por tentativa). Da primeira (${fmt(R.first.grade)}) para a última (${fmt(R.last.grade)}) a variação foi de ${R.last.grade-R.first.grade>=0?"+":""}${fmt(R.last.grade-R.first.grade)}. `;
+    diag += R.sd > 1.5 ? `As notas oscilam bastante (desvio de ${fmt(R.sd)}). Isso costuma indicar conhecimento ainda dependente de quais questões caem, e não domínio consolidado.` : `As notas oscilam pouco (desvio de ${fmt(R.sd)}), o que sugere um patamar real de conhecimento, e não sorte no sorteio.`;
+  }
+  const verdict = R.last.grade >= PASS
+    ? (weak.length ? `A última nota está acima da média, mas ainda há ${weak.length===1?"um bloco abaixo":"blocos abaixo"} de 60%. Numa prova real, com outras questões, isso pode custar a aprovação.` : `A última nota está acima da média e nenhum bloco ficou abaixo de 60%. O trabalho agora é consolidar, não remediar.`)
+    : `A última nota ficou abaixo da média. A prioridade não é refazer o simulado várias vezes, e sim estudar os blocos marcados abaixo antes da próxima tentativa.`;
+  const pill = v => v < 0.6 ? `<span class="pill no">${Math.round(v*100)}%</span>` : v < 0.8 ? `<span class="pill warn">${Math.round(v*100)}%</span>` : `<span class="pill ok">${Math.round(v*100)}%</span>`;
+  const trendTxt = r => (r.rec === null || R.n < 3) ? "" : (r.rec - r.all > 0.1 ? " · melhorando nas últimas tentativas" : r.all - r.rec > 0.1 ? " · piorou nas últimas tentativas" : "");
+  el.innerHTML = `
+  <div class="card report">
+    <div class="eyebrow">Parecer · ${new Date().toLocaleDateString("pt-BR")}</div>
+    <h2 style="margin-top:4px">Relatório do professor</h2>
+    <h3>Diagnóstico geral</h3>
+    <p>${diag}</p>
+    <p><b>${verdict}</b></p>
+    <h3>O que precisa melhorar</h3>
+    ${weak.length ? `<ul>${weak.map(r => `<li><b>${TOPICS[r.t]}</b>${pill(r.all)}<span class="note">${trendTxt(r)}</span><br><span class="ink2">${STUDY[r.t]}</span></li>`).join("")}</ul>` : `<p class="ink2">Nenhum bloco abaixo de 60%. Veja os pontos de atenção.</p>`}
+    ${mid.length ? `<h3>Pontos de atenção (60 a 79%)</h3><ul>${mid.map(r => `<li><b>${TOPICS[r.t]}</b>${pill(r.all)}<span class="note">${trendTxt(r)}</span><br><span class="ink2">${STUDY[r.t]}</span></li>`).join("")}</ul>` : ""}
+    ${strong.length ? `<h3>Pontos fortes</h3><p>${strong.map(r => `${TOPICS[r.t]}${pill(r.all)}`).join(" · ")}</p>` : ""}
+    ${R.chronic.length ? `<h3>Erros recorrentes</h3><p class="ink2">Questões que você errou mais de uma vez. Aqui o problema é uma ideia fixada de forma errada, não esquecimento.</p><ul>${R.chronic.map(c => `<li>${escapeHtml(Q[c.q].q)}<br><span class="note">Errou ${c.c} de ${c.s} vezes · Resposta: <b>${escapeHtml(Q[c.q].o[Q[c.q].a])}</b></span></li>`).join("")}</ul>` : ""}
+    <h3>Plano para a próxima tentativa</h3>
+    <ul>
+      ${weak.length ? `<li>Estude primeiro ${weak.slice(0,2).map(r=>TOPICS[r.t]).join(" e ")}, de preferência pelo material da aula e não pelo simulado.</li>` : `<li>Mantenha uma tentativa por semana para não perder o que já consolidou.</li>`}
+      <li>Nas questões de V/F, julgue cada afirmativa sozinha contra o que o enunciado pede (por exemplo, "isto define o superego?") antes de olhar as alternativas.</li>
+      <li>Desconfie das alternativas que trazem uma definição verdadeira de outro conceito (pré-consciente no lugar de inconsciente, reforço positivo no lugar de negativo). É a pegadinha mais frequente nessas TEAs.</li>
+      <li>Espere pelo menos um dia entre tentativas. Repetir na sequência mede memória de curto prazo, não aprendizagem.</li>
+    </ul>
+  </div>
+  <div class="card" id="aiCard">
+    <h2>Parecer por extenso</h2>
+    <p class="ink2" style="margin-top:.3em">Gera um parecer escrito com base nos seus dados, no tom de um professor de História da Psicologia.</p>
+    <button class="btn primary" id="aiBtn">Gerar parecer</button>
+    <div id="aiOut" class="ai" style="margin-top:14px"></div>
+  </div>`;
+  const aiCard = document.getElementById("aiCard");
+  if(!sample){ aiCard.classList.add("hide"); return; }
+  document.getElementById("aiBtn").onclick = async (e) => {
+    const out = document.getElementById("aiOut"); e.target.disabled = true; out.textContent = "Escrevendo…";
+    const data = {
+      tentativas: R.n, notas: R.grades, media_aprovacao: PASS, media_geral: +R.avg.toFixed(2), tendencia_por_tentativa: +R.sl.toFixed(2),
+      blocos: R.rows.map(r => ({bloco: TOPICS[r.t], acerto_total: Math.round(r.all*100), acerto_ultimas3: r.rec===null?null:Math.round(r.rec*100), questoes_vistas: r.n})),
+      erros_recorrentes: R.chronic.map(c => ({questao: Q[c.q].q, resposta_correta: Q[c.q].o[Q[c.q].a], erros: c.c, vezes: c.s}))
+    };
+    const prompt = `Você é um professor experiente de História da Psicologia num curso de graduação brasileiro. O simulado usa questões das TEAs (atividades) da disciplina. Escreva um parecer em português do Brasil, em prosa, com 3 a 5 parágrafos curtos, dirigido ao aluno (Fernando, adulto, estudante do 1º semestre). Comente: (1) o desempenho e a tendência, comparando com a média 6; (2) os blocos mais fracos, explicando qual confusão conceitual provavelmente está por trás deles, com base nos erros recorrentes; (3) um plano concreto de estudo para a próxima semana. Seja direto e específico. Não use listas com marcadores nem títulos, não elogie em excesso, não invente dados que não estão abaixo e não cite autores ou datas que você não tenha certeza de que estão corretos.\n\nDADOS:\n${JSON.stringify(data)}`;
+    try{
+      const r = await sample(prompt, { onText: ({text}) => { out.textContent = text; } });
+      out.textContent = r.text;
+    }catch(err){
+      if(err && err.code === "not_granted"){ aiCard.classList.add("hide"); }
+      else out.textContent = err && err.code === "rate_limited" ? "Limite de uso atingido. Tente de novo em alguns minutos." : "Não foi possível gerar o parecer agora.";
+    }
+    e.target.disabled = false; e.target.textContent = "Gerar de novo";
+  };
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+initStore();
+</script>
+</body>
+</html>

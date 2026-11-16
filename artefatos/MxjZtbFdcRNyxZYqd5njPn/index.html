@@ -1,0 +1,123 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Roteiro de teste do Divã</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;1,6..96,500&family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&display=swap">
+<style>
+/* Layout: um roteiro para ter aberto durante a sessão de teste. Coluna de leitura, falas prontas em bloco destacado, ficha de anotação em tabela. */
+:root{
+  --bg:#ECEFEA; --surface:#F8F9F5; --sunk:#E2E6E0; --ink:#1A201E; --muted:#56615B; --line:#CBD2CA; --accent:#1E4C46; --warn:#7A5000; --warn-bg:#F5EACB;
+  --f-display:"Bodoni Moda","Didot",Georgia,serif; --f-read:"Source Serif 4",Georgia,serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif; --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#111614; --surface:#18201D; --sunk:#0D1210; --ink:#E4EAE5; --muted:#97A39C; --line:#2A3430; --accent:#86C8BC; --warn:#E9C26A; --warn-bg:#2E2614; color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111614; --surface:#18201D; --sunk:#0D1210; --ink:#E4EAE5; --muted:#97A39C; --line:#2A3430; --accent:#86C8BC; --warn:#E9C26A; --warn-bg:#2E2614; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:36px 64px;display:grid;gap:40px}
+h1,h2,h3{margin:0;font-family:var(--f-display);font-weight:500;text-wrap:balance}
+h1{font-size:clamp(2rem,3vw + 1rem,2.9rem);line-height:1.08}
+h2{font-size:1.8rem;line-height:1.15}
+h3{font-size:1.25rem}
+p{margin:0;max-width:68ch}
+a{color:var(--accent)}
+section{display:grid;gap:14px;min-width:0}
+.eyebrow{font-family:var(--f-mono);font-size:.8rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.lede{font-family:var(--f-read);font-size:1.12rem;max-width:64ch}
+.fala{font-family:var(--f-read);font-size:1.1rem;line-height:1.65;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:14px 18px}
+.fala::before{content:"Diga:";display:block;font-family:var(--f-mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+ol,ul{margin:0;padding-left:22px;display:grid;gap:8px}
+.tarefa{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:16px}
+.tarefa .obs{color:var(--muted);font-size:.97rem}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.94rem;min-width:560px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);vertical-align:top}
+th:last-child,td:last-child{border-right:0}
+tr:last-child td{border-bottom:0}
+th{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+td.vz{height:44px}
+.aviso{background:var(--warn-bg);border-radius:12px;padding:14px 16px;display:grid;gap:6px}
+.aviso b{color:var(--warn)}
+.coment li b{font-weight:700}
+</style>
+
+<div class="wrap">
+<header style="display:grid;gap:12px">
+  <span class="eyebrow">Divã Psicanalítico · teste com cinco colegas</span>
+  <h1>Roteiro de teste</h1>
+  <p class="lede">Cinco sessões individuais de cerca de vinte e cinco minutos, com colegas da formação, na <a href="https://claude.ai/artifact/7hxRXtVjBHBHHjeLBjY9oF" target="_blank" rel="noopener">demonstração</a>. A primeira parte é para usar como está. A segunda explica cada escolha, para você mudar o que quiser.</p>
+</header>
+
+<section>
+  <span class="eyebrow">Versão pronta para uso</span>
+  <h2>Antes de começar</h2>
+  <ul>
+    <li>Um colega por vez, no computador ou no celular dele, com a demonstração aberta na Biblioteca.</li>
+    <li>Você ao lado, com a ficha de anotação. Não aponte para a tela e não explique o app.</li>
+    <li>Peça que a pessoa pense em voz alta.</li>
+  </ul>
+  <div class="fala">Estou testando o app, e não você. Não existe resposta certa. Se travar, me diga o que esperava encontrar; eu não vou ajudar durante as tarefas, e isso faz parte do teste. Posso anotar o que você disser? Não vou registrar o seu nome.</div>
+</section>
+
+<section>
+  <h2>Três tarefas</h2>
+  <div class="tarefa">
+    <h3>Tarefa 1 · achar uma leitura</h3>
+    <div class="fala">Abra o caso Dora e me diga uma coisa que Lacan escutou nessa fala e que Freud não destacou.</div>
+    <p class="obs">Observe: como a pessoa chega da Biblioteca ao Escutar; se entende que cada autor é um botão; se percebe o trecho sublinhado mudar.</p>
+  </div>
+  <div class="tarefa">
+    <h3>Tarefa 2 · entender o treino</h3>
+    <div class="fala">Existe um treino de exemplo já feito. Encontre-o e me diga de qual autor a escuta do exemplo ficou mais próxima, e o que ela deixou de fora.</div>
+    <p class="obs">Observe: se acha a área Praticar; se entende que o treino pede a escuta antes de mostrar os autores; se o retorno é lido até o fim.</p>
+  </div>
+  <div class="tarefa">
+    <h3>Tarefa 3 · ler uma divergência</h3>
+    <div class="fala">No Ateliê há um desenho de exemplo analisado. Descubra qual autor discordou na primeira rodada e o que mudou na segunda.</div>
+    <p class="obs">Observe: se encontra o histórico das rodadas; se entende concordar, ressalva e discordar; se o diagrama das cinco palavras ajuda ou confunde.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Perguntas de fechamento</h2>
+  <ol>
+    <li>Com as suas palavras, para que serve isto?</li>
+    <li>O que você usaria de verdade nos seus estudos? O que não usaria?</li>
+    <li>Em que momento você se perdeu?</li>
+    <li>As leituras dos autores parecem fiéis ao que você estudou deles? Onde não?</li>
+    <li>Você indicaria a um colega da turma? Por quê?</li>
+  </ol>
+</section>
+
+<section>
+  <h2>Ficha de anotação</h2>
+  <p>Uma ficha por pessoa. Marque o tempo com o relógio do celular.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Tarefa</th><th>Concluiu sem ajuda?</th><th>Tempo</th><th>Onde hesitou ou errou</th><th>Frase que disse</th></tr></thead>
+    <tbody>
+      <tr><td>1 · Dora</td><td class="vz"></td><td></td><td></td><td></td></tr>
+      <tr><td>2 · Treino</td><td class="vz"></td><td></td><td></td><td></td></tr>
+      <tr><td>3 · Ateliê</td><td class="vz"></td><td></td><td></td><td></td></tr>
+    </tbody>
+  </table></div>
+  <p>Ao fim das cinco sessões, some três números: quantas das quinze tarefas foram concluídas sem ajuda, o tempo médio de cada tarefa e quantas pessoas disseram que usariam. Um problema que apareceu com três pessoas ou mais vai para o topo da lista de correções.</p>
+</section>
+
+<section>
+  <span class="eyebrow">Versão comentada</span>
+  <h2>Por que está assim</h2>
+  <ol class="coment">
+    <li><b>Cinco pessoas, uma por vez.</b> A referência clássica de Nielsen sustenta que cinco participantes costumam revelar a maior parte dos problemas de uso. Em grupo, um explica para o outro e você perde o que queria ver. <a href="https://www.nngroup.com/articles/why-you-only-need-to-test-with-5-users/" target="_blank" rel="noopener">Fonte</a></li>
+    <li><b>Tarefas na demonstração, com a IA desligada.</b> As três tarefas foram escolhidas para funcionar só com os exemplos prontos. O limite disso é sério: você não testa o momento central do produto, que é a pessoa escrever a própria escuta e receber as leituras. Para ver isso, faça uma quarta tarefa no seu computador, com a sua conta, na versão completa.</li>
+    <li><b>Não ajudar.</b> É a parte mais difícil. Cada dica que você dá apaga um problema que o próximo usuário vai encontrar sozinho.</li>
+    <li><b>A tarefa 1 pede uma comparação, e não "abra o caso Dora".</b> Uma tarefa com objetivo mostra se a pessoa entende para que servem as lentes. Uma instrução de clique só mostra se ela sabe clicar.</li>
+    <li><b>A pergunta 4, sobre fidelidade.</b> É a que mais interessa a uma escola de formação e a um investidor. Se os colegas acharem que Lacan soa como Freud, o produto tem um problema que nenhum ajuste de tela resolve.</li>
+    <li><b>"Indicaria?" no lugar de "gostou?".</b> Quem testa ao lado do autor tende a elogiar. Perguntar sobre um comportamento concreto reduz a cortesia, sem eliminá-la.</li>
+    <li><b>Anotar a frase literal.</b> Os depoimentos da página de apresentação saem daqui. Peça autorização antes de publicar qualquer um, mesmo sem nome.</li>
+  </ol>
+  <div class="aviso"><b>Sobre contar o uso</b><p>O plano previa contagem anônima de uso. Na plataforma em que o Divã roda hoje, isso não é possível para quem abre o link público: a página não consegue gravar nada fora do navegador de um visitante sem conta. Até existir uma versão fora do Claude, os números vêm desta ficha e de quantas pessoas pedirem para continuar usando.</p></div>
+</section>
+</div>
+
+</body></html>

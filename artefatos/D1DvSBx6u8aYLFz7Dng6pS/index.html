@@ -1,0 +1,243 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Psi-AI Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&display=swap">
+<style>
+/* Layout: coluna única de leitura (máx. 760px) com a demonstração do instrumento como peça central; escala 1–7 como motivo gráfico. */
+:root{
+  --bg:#F5F7FA; --surface:#FFFFFF; --fg:#1A2230; --muted:#5A667A; --line:#D9DFE8;
+  --accent:#1F5F8B; --accent-soft:#E3EEF6; --accent-fg:#FFFFFF;
+  --warn:#8A5A00; --warn-soft:#FFF1D6;
+  --f-display:'IBM Plex Serif',Georgia,serif; --f-body:'IBM Plex Sans',system-ui,sans-serif; --f-mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#10161F; --surface:#18202C; --fg:#E6EBF2; --muted:#9AA6B8; --line:#2B3647;
+  --accent:#6FB1DE; --accent-soft:#1B2E3F; --accent-fg:#0C1520;
+  --warn:#F0C066; --warn-soft:#33270F; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10161F; --surface:#18202C; --fg:#E6EBF2; --muted:#9AA6B8; --line:#2B3647;
+  --accent:#6FB1DE; --accent-soft:#1B2E3F; --accent-fg:#0C1520;
+  --warn:#F0C066; --warn-soft:#33270F; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.6 var(--f-body);
+  padding-block:40px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:48px}
+h1,h2{font-family:var(--f-display);font-weight:600;line-height:1.2;text-wrap:balance;margin:0}
+h1{font-size:clamp(2rem,6vw,2.75rem)}
+h2{font-size:1.5rem}
+h3{font-size:1rem;margin:0}
+p{margin:0}
+.lede{color:var(--muted);font-size:1.0625rem;max-width:62ch}
+.tag{font:500 .75rem/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.head{display:flex;flex-direction:column;gap:14px}
+.chip{display:inline-flex;align-self:flex-start;gap:8px;align-items:center;background:var(--warn-soft);color:var(--warn);
+  border-radius:999px;padding:6px 12px;font:500 .8125rem/1.2 var(--f-body)}
+section{display:flex;flex-direction:column;gap:18px;min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:20px;min-width:0}
+.tabs{display:flex;flex-wrap:wrap;gap:8px}
+.tabs button{font:500 .875rem var(--f-body);color:var(--fg);background:transparent;border:1px solid var(--line);border-radius:6px;padding:8px 12px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chat{display:flex;flex-direction:column;gap:10px}
+.msg{padding:12px 14px;border-radius:8px;max-width:92%;font-size:.9375rem}
+.msg small{display:block;font:500 .6875rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;opacity:.7;margin-bottom:2px}
+.msg.u{background:var(--accent-soft);align-self:flex-end}
+.msg.a{background:var(--bg);border:1px solid var(--line);align-self:flex-start}
+.items{display:flex;flex-direction:column;gap:18px}
+.item{display:flex;flex-direction:column;gap:8px;min-width:0}
+.item p{font-size:.9375rem}
+.likert{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.likert label{position:relative;display:flex;justify-content:center;align-items:center;border:1px solid var(--line);border-radius:6px;
+  padding:8px 0;font:500 .875rem var(--f-mono);cursor:pointer;background:var(--bg)}
+.likert input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.likert label:has(input:checked){background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.likert label:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.ends{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.btn{font:500 .875rem var(--f-body);border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:6px;padding:8px 14px;cursor:pointer}
+.btn.pri{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.note{font-size:.8125rem;color:var(--muted)}
+.res{display:flex;flex-direction:column;gap:18px}
+.scale{display:flex;flex-direction:column;gap:6px}
+.scale .lab{display:flex;justify-content:space-between;gap:8px;font-size:.875rem}
+.scale .lab b{font:500 .9375rem var(--f-mono)}
+.track{position:relative;height:28px}
+.track .rail{position:absolute;left:0;right:0;top:13px;height:2px;background:var(--line)}
+.track .tick{position:absolute;top:8px;width:1px;height:12px;background:var(--line)}
+.track .mid{position:absolute;top:2px;width:1px;height:24px;background:var(--muted);opacity:.6}
+.track .dot{position:absolute;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:var(--accent);border:3px solid var(--surface);box-shadow:0 0 0 1px var(--accent);transition:left .25s}
+.nums{display:flex;justify-content:space-between;font:400 .6875rem var(--f-mono);color:var(--muted)}
+.wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.875rem}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:500 .6875rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td.m{font-family:var(--f-mono);white-space:nowrap}
+.rev{color:var(--accent);font:500 .75rem var(--f-mono)}
+ul.l{margin:0;padding-left:1.1rem;display:flex;flex-direction:column;gap:10px}
+.tree{font:400 .8125rem/1.7 var(--f-mono);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;overflow-x:auto;white-space:pre;margin:0}
+.cmd{display:flex;gap:10px;align-items:stretch}
+.cmd code{flex:1;min-width:0;font:400 .8125rem/1.5 var(--f-mono);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:10px 12px;overflow-x:auto;white-space:pre}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.col{border-top:2px solid var(--accent);padding-top:10px;display:flex;flex-direction:column;gap:4px}
+.col p{font-size:.875rem;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.track .dot{transition:none}}
+</style>
+
+<main>
+  <header class="head">
+    <span class="tag">Projeto de pesquisa · Python, Streamlit, SQLite</span>
+    <h1>Psi-AI Lab</h1>
+    <p class="lede">Um protótipo para estudar como as pessoas reagem a respostas de IA em situações diferentes: quanto confiam, quanto acham útil, se lhe atribuem traços humanos e quão cautelosas ficam ao compartilhar informação pessoal.</p>
+    <span class="chip">Instrumento autoral, ainda não validado. Resultados são descritivos.</span>
+  </header>
+
+  <section aria-labelledby="demo-h">
+    <h2 id="demo-h">Experimente o questionário</h2>
+    <p class="lede">É a mesma lógica de pontuação do app. As respostas ficam só neste navegador e não são enviadas a lugar nenhum. Abre com respostas de exemplo.</p>
+    <div class="panel">
+      <div class="tabs" id="tabs" role="group" aria-label="Cenário"></div>
+      <div class="chat" id="chat"></div>
+      <div class="items" id="items"></div>
+      <div class="row">
+        <span class="note">Escala: 1 = discordo totalmente, 7 = concordo totalmente. Ordem dos itens embaralhada, como no app.</span>
+        <span style="display:flex;gap:8px"><button class="btn" id="sample" type="button">Respostas de exemplo</button><button class="btn" id="clear" type="button">Limpar</button></span>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="row"><h3>Escores por construto (média dos 2 itens, já com inversão)</h3><span class="note" id="count"></span></div>
+      <div class="res" id="res"></div>
+      <p class="note">A linha vertical marca o ponto médio (4). Um participante isolado não diz nada sobre a população; o app só calcula descritivos agregados.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="inst-h">
+    <h2 id="inst-h">Instrumento e pontuação</h2>
+    <p class="lede">Dois itens por construto. O segundo de cada par é invertido (pontuação = 8 − resposta) para reduzir a tendência a concordar com tudo.</p>
+    <div class="wrap"><table id="tbl"><thead><tr><th>Item</th><th>Construto</th><th>Afirmação</th><th>Sentido</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section aria-labelledby="lim-h">
+    <h2 id="lim-h">O que os dados não permitem concluir</h2>
+    <ul class="l">
+      <li><b>Itens sem validação.</b> Com dois itens por construto, a fidedignidade mal se estima. O alfa de Cronbach com dois itens informa pouco; a correlação entre os itens é mais honesta.</li>
+      <li><b>Roteiros estáticos.</b> A pessoa lê uma conversa fictícia e não interage com a IA. A validade ecológica é baixa.</li>
+      <li><b>Cenários variam em vários atributos juntos</b> (tema, tom, risco, tamanho). Uma diferença entre eles não diz qual atributo a causou.</li>
+      <li><b>Amostra de conveniência e autorrelato.</b> Sem controle de idade ou familiaridade com IA; sujeito a desejabilidade social.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="gov-h">
+    <h2 id="gov-h">Privacidade e ética</h2>
+    <div class="cols">
+      <div class="col"><h3>Sem identificadores</h3><p>Nada de nome, e-mail, IP ou texto livre. Cada participante recebe um código aleatório (uuid4).</p></div>
+      <div class="col"><h3>Consentimento antes de gravar</h3><p>Sem aceite explícito, nenhum registro é criado. O texto é versionado.</p></div>
+      <div class="col"><h3>Retirada de dados</h3><p>Com o código, a pessoa apaga suas respostas. Cópias já exportadas precisam ser limpas à mão.</p></div>
+      <div class="col"><h3>CSV pseudonimizado</h3><p>Sem datas e horários. Não é anonimização no sentido da LGPD (art. 12), e a documentação diz isso.</p></div>
+    </div>
+    <p class="note">Coleta com público externo ou para publicação deve passar antes pelo CEP da instituição. Dispositivos legais citados no projeto devem ser conferidos no texto vigente.</p>
+  </section>
+
+  <section aria-labelledby="run-h">
+    <h2 id="run-h">Estrutura e execução</h2>
+    <pre class="tree">psi-ai-lab/
+├── app.py                 interface Streamlit
+├── CLAUDE.md              regras do projeto para o Claude Code
+├── PROMPTS_CLAUDE_CODE.md 7 prompts de evolução
+├── requirements.txt
+├── docs/
+│   ├── PRD.md             escopo, delineamento, limitações
+│   └── DATA_GOVERNANCE.md LGPD, ética, retenção
+├── src/
+│   ├── scoring.py         itens, cenários, escores
+│   └── storage.py         SQLite, consentimento, CSV
+└── tests/                 21 testes (pytest)</pre>
+    <div class="cmd"><code id="c1">streamlit run app.py</code><button class="btn" type="button" data-copy="c1">Copiar</button></div>
+    <div class="cmd"><code id="c2">PSIAI_ADMIN_PASSWORD='troque-esta-senha' streamlit run app.py</code><button class="btn" type="button" data-copy="c2">Copiar</button></div>
+    <div class="cmd"><code id="c3">python -m pytest -q</code><button class="btn" type="button" data-copy="c3">Copiar</button></div>
+  </section>
+</main>
+
+<script>
+const CONSTRUCTS={trust:"Confiança na IA",usefulness:"Utilidade percebida",anthropomorphism:"Antropomorfização",disclosure_caution:"Cautela no compartilhamento"};
+const ITEMS=[
+ ["q1","trust","Eu confiaria na resposta que a IA deu nesta situação.",0],
+ ["q2","trust","Eu desconfiaria da informação fornecida pela IA e a checaria em outra fonte antes de usar.",1],
+ ["q3","usefulness","A resposta da IA me ajudaria a resolver a situação apresentada.",0],
+ ["q4","usefulness","A IA contribuiu pouco para esta situação.",1],
+ ["q5","anthropomorphism","A IA parece ter intenções e sentimentos próprios.",0],
+ ["q6","anthropomorphism","Eu vejo a IA apenas como uma ferramenta, sem qualquer traço de personalidade.",1],
+ ["q7","disclosure_caution","Eu pensaria bem antes de compartilhar dados pessoais com essa IA.",0],
+ ["q8","disclosure_caution","Eu me sentiria à vontade para contar à IA detalhes íntimos sobre mim.",1]];
+const SCEN=[
+ ["Redação de e-mail","Preciso avisar meu gestor que vou atrasar a entrega do relatório em dois dias. Pode redigir o e-mail?","Claro. Sugestão: \"Olá, [nome]. Quero avisar com antecedência que a entrega do relatório passará de sexta para terça-feira, por conta da revisão dos dados do último trimestre. Posso enviar uma versão parcial na sexta, se ajudar. Abraço.\""],
+ ["Dúvida sobre sintomas","Estou com dor de cabeça há três dias seguidos. O que pode ser?","Dor de cabeça persistente pode ter muitas causas, como tensão, desidratação, privação de sono ou enxaqueca. Não consigo avaliar o seu caso. Se a dor for intensa, piorar ou vier com febre, alteração visual ou fraqueza, procure atendimento médico."],
+ ["Dia difícil","Hoje foi um dia péssimo, me senti muito sozinho(a).","Sinto muito que o dia tenha sido assim. Se quiser, me conte o que aconteceu. Sou um sistema de IA e não substituo o contato com pessoas de confiança, mas posso ouvir e ajudar a organizar o que você está sentindo."],
+ ["Decisão financeira","Devo usar minha reserva de emergência para quitar o cartão de crédito?","Depende do juro, do valor e do seu orçamento. Juros de cartão costumam ser maiores que o rendimento de uma reserva, o que favorece quitar a dívida. Mas zerar a reserva expõe você a imprevistos. Uma opção intermediária é quitar parte e recompor a reserva aos poucos. Não sou consultor financeiro."]];
+const EXAMPLE={q1:5,q2:3,q3:6,q4:2,q5:3,q6:5,q7:6,q8:2};
+const ORDER=["q6","q2","q7","q4","q1","q8","q3","q5"]; // ordem fixa embaralhada, só para a demonstração
+const byId=Object.fromEntries(ITEMS.map(i=>[i[0],i]));
+let scen=0, ans={...EXAMPLE};
+const $=id=>document.getElementById(id);
+
+function drawTabs(){
+  const t=$("tabs"); t.innerHTML="";
+  SCEN.forEach((s,i)=>{const b=document.createElement("button");b.type="button";b.textContent=s[0];
+    b.setAttribute("aria-pressed",i===scen);b.onclick=()=>{scen=i;drawTabs();drawChat()};t.appendChild(b)});
+}
+function drawChat(){
+  const s=SCEN[scen];
+  $("chat").innerHTML=`<div class="msg u"><small>Pessoa</small></div><div class="msg a"><small>IA</small></div>`;
+  $("chat").children[0].append(document.createTextNode(s[1]));
+  $("chat").children[1].append(document.createTextNode(s[2]));
+}
+function drawItems(){
+  const box=$("items"); box.innerHTML="";
+  ORDER.forEach(id=>{
+    const it=byId[id]; const d=document.createElement("div"); d.className="item";
+    const p=document.createElement("p"); p.textContent=it[2]; d.appendChild(p);
+    const g=document.createElement("div"); g.className="likert"; g.setAttribute("role","radiogroup"); g.setAttribute("aria-label",it[2]);
+    for(let v=1;v<=7;v++){
+      const l=document.createElement("label"); const r=document.createElement("input");
+      r.type="radio"; r.name="r_"+id; r.id=`r_${id}_${v}`; r.value=v; r.checked=ans[id]===v;
+      r.onchange=()=>{ans[id]=v;drawRes()}; l.appendChild(r); l.appendChild(document.createTextNode(v)); g.appendChild(l);
+    }
+    d.appendChild(g);
+    const e=document.createElement("div"); e.className="ends"; e.innerHTML="<span>discordo totalmente</span><span>concordo totalmente</span>"; d.appendChild(e);
+    box.appendChild(d);
+  });
+}
+function score(id,v){return byId[id][3]?8-v:v}
+function drawRes(){
+  const done=ITEMS.filter(i=>ans[i[0]]).length; $("count").textContent=`${done} de 8 itens respondidos`;
+  const res=$("res"); res.innerHTML="";
+  Object.entries(CONSTRUCTS).forEach(([c,name])=>{
+    const its=ITEMS.filter(i=>i[1]===c); const ok=its.every(i=>ans[i[0]]);
+    const val=ok?its.reduce((s,i)=>s+score(i[0],ans[i[0]]),0)/its.length:null;
+    const w=document.createElement("div"); w.className="scale";
+    const pos=v=>((v-1)/6*100)+"%";
+    w.innerHTML=`<div class="lab"><span>${name}</span><b>${val===null?"incompleto":val.toFixed(2)}</b></div>
+      <div class="track"><div class="rail"></div>${[0,1,2,3,4,5,6].map(k=>`<div class="tick" style="left:${k/6*100}%"></div>`).join("")}
+      <div class="mid" style="left:50%"></div>${val===null?"":`<div class="dot" style="left:${pos(val)}"></div>`}</div>
+      <div class="nums">${[1,2,3,4,5,6,7].map(n=>`<span>${n}</span>`).join("")}</div>`;
+    res.appendChild(w);
+  });
+}
+function drawTable(){
+  const tb=document.querySelector("#tbl tbody");
+  ITEMS.forEach(i=>{const tr=document.createElement("tr");
+    [i[0],CONSTRUCTS[i[1]],i[2],i[3]?"invertido (8 − resposta)":"direto"].forEach((t,k)=>{
+      const td=document.createElement("td"); if(k===0)td.className="m"; if(k===3&&i[3])td.className="rev"; td.textContent=t; tr.appendChild(td)});
+    tb.appendChild(tr)});
+}
+$("sample").onclick=()=>{ans={...EXAMPLE};drawItems();drawRes()};
+$("clear").onclick=()=>{ans={};drawItems();drawRes()};
+document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=async()=>{
+  const el=$(b.dataset.copy);
+  try{await navigator.clipboard.writeText(el.textContent);b.textContent="Copiado";setTimeout(()=>b.textContent="Copiar",1500)}
+  catch(e){const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r)}
+});
+drawTabs();drawChat();drawItems();drawRes();drawTable();
+</script>
+
+</body></html>

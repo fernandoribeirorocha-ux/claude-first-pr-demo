@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulado · Processos Psicológicos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f6f3ec; --card:#fffdf8; --ink:#1d1b17; --ink2:#55524a; --muted:#8a867b;
+  --line:#e4dfd2; --accent:#b8473a; --accent-soft:#f7e4e0;
+  --good:#1e7a3c; --good-soft:#e2f2e7; --bad:#b3261e; --bad-soft:#fbe6e4;
+  --warn:#a06200; --warn-soft:#fbf0db; --grid:#ebe6da;
+}
+@media (prefers-color-scheme: dark){
+  :root:where(:not([data-theme="light"])){
+    color-scheme: dark;
+    --bg:#141412; --card:#1d1c1a; --ink:#f0efec; --ink2:#c3c2b7; --muted:#8e8c84;
+    --line:#2e2d29; --accent:#e0705f; --accent-soft:#3a201c;
+    --good:#4cbc6c; --good-soft:#18301f; --bad:#ef7a72; --bad-soft:#3a1d1b;
+    --warn:#e0a640; --warn-soft:#352812; --grid:#2a2926;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;font-size:16px;line-height:1.5}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 60px}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:700;margin:0;line-height:1.2}
+h1{font-size:1.75rem} h2{font-size:1.3rem} h3{font-size:1.05rem}
+.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:.72rem;color:var(--muted);font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:14px 0}
+.muted{color:var(--muted)} .ink2{color:var(--ink2)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 .95rem Inter,sans-serif;padding:12px 18px;border-radius:12px;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.danger{color:var(--bad)}
+.tabs{display:flex;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:5px;position:sticky;top:8px;z-index:5}
+.tabs button{flex:1;border:0;background:transparent;color:var(--ink2);font:600 .9rem Inter,sans-serif;padding:10px 6px;border-radius:10px;cursor:pointer}
+.tabs button.on{background:var(--accent-soft);color:var(--ink)}
+.progress{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin:10px 0 4px}
+.progress>i{display:block;height:100%;background:var(--accent);border-radius:6px;transition:width .3s}
+.qtopic{display:inline-block;font-size:.75rem;font-weight:600;color:var(--ink2);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.qtext{font-size:1.08rem;margin:14px 0 16px;white-space:pre-line}
+.qimg{display:block;max-width:100%;width:300px;border-radius:10px;border:1px solid var(--line);margin:0 0 14px}
+.opt{display:flex;gap:12px;align-items:stretch;width:100%;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:0;margin:8px 0;cursor:pointer;font:inherit;overflow:hidden}
+.opt .l{flex:0 0 44px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--ink2);background:var(--bg)}
+.opt .t{padding:12px 12px 12px 0}
+.opt.sel{border-color:var(--accent)} .opt.sel .l{background:var(--accent);color:#fff}
+.opt.ok{border-color:var(--good);background:var(--good-soft)} .opt.ok .l{background:var(--good);color:#fff}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)} .opt.no .l{background:var(--bad);color:#fff}
+.feedback{border-radius:12px;padding:12px 14px;margin-top:12px;font-size:.95rem}
+.feedback.ok{background:var(--good-soft)} .feedback.no{background:var(--bad-soft)}
+.oc{list-style:none;padding:0;margin:10px 0 0}
+.oc li{display:grid;grid-template-columns:24px 1fr;gap:4px 8px;padding:8px 0;border-top:1px solid var(--line);font-size:.9rem}
+.oc li:first-child{border-top:0}
+.oc .k{font-weight:700}
+.oc .k.ok{color:var(--good)} .oc .k.no{color:var(--bad)}
+.oc .ot{font-weight:600}
+.oc .cm{grid-column:2;color:var(--ink2)}
+.score{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.big{font-family:Fraunces,serif;font-size:4.2rem;font-weight:700;line-height:1}
+.badge{display:inline-flex;gap:6px;align-items:center;font-weight:700;font-size:.85rem;border-radius:999px;padding:5px 12px}
+.badge.ok{background:var(--good-soft);color:var(--good)} .badge.no{background:var(--bad-soft);color:var(--bad)}
+.scale{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;margin:16px 0 6px}
+.scale div{height:10px;border-radius:3px;background:var(--line)}
+.scale div.on{background:var(--accent)}
+.lvl{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;font-size:.9rem;align-items:baseline}
+.lvl .r{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600}
+.lvl .n{font-weight:600}
+.lvl .cur{color:var(--accent)}
+.lvl .s{font-size:.8rem;color:var(--muted)}
+.review-item{border-top:1px solid var(--line);padding:14px 0}
+.review-item:first-child{border-top:0}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+td.num{font-variant-numeric:tabular-nums;font-weight:600}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:.8rem;padding:6px 9px;border-radius:8px;white-space:nowrap;transform:translate(-50%,-110%);opacity:0;transition:opacity .12s}
+.legend{display:flex;gap:14px;font-size:.8rem;color:var(--ink2);margin-top:8px;flex-wrap:wrap}
+.legend i{display:inline-block;width:18px;height:0;border-top:2px solid var(--accent);vertical-align:middle;margin-right:6px}
+.legend i.dash{border-top:2px dashed var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--bg);border-radius:12px;padding:12px}
+.stat b{display:block;font-family:Fraunces,serif;font-size:1.6rem}
+.stat span{font-size:.78rem;color:var(--muted)}
+.report p{margin:.6em 0}
+.report h3{margin-top:18px}
+.report ul{padding-left:20px;margin:.4em 0}
+.report li{margin:.35em 0}
+.pill{font-size:.75rem;font-weight:700;border-radius:999px;padding:2px 8px;margin-left:6px}
+.pill.no{background:var(--bad-soft);color:var(--bad)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.ok{background:var(--good-soft);color:var(--good)}
+.note{font-size:.82rem;color:var(--muted)}
+.hide{display:none!important}
+.ai{white-space:pre-wrap}
+.sticky-actions{position:sticky;bottom:0;margin:14px -18px -18px;padding:12px 18px 14px;display:flex;gap:10px;background:var(--card);border-top:1px solid var(--line);border-radius:0 0 16px 16px}
+.sticky-actions .btn{flex:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header style="margin:6px 0 16px">
+    <div class="eyebrow">Psicologia · 1º semestre</div>
+    <h1>Simulado de Processos Psicológicos</h1>
+    <p class="ink2" style="margin:.4em 0 0">Questões das TEAs da Uni Ítalo. Nota de 0 a 10, média para aprovação: <b>6,0</b>.</p>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button data-v="home" class="on">Início</button>
+    <button data-v="evo">Evolução</button>
+    <button data-v="rep">Relatório</button>
+  </nav>
+
+  <section id="v-home">
+    <div class="card">
+      <h2>Como funciona</h2>
+      <p class="ink2">Cada rodada traz 20 questões sorteadas de um banco de <span id="bankN"></span>: as <span id="origN"></span> das suas TEAs e <span id="varN"></span> variações montadas com o conteúdo dessas mesmas questões. Todo bloco aparece pelo menos uma vez. Depois de cada resposta você vê o comentário de todas as alternativas. A ordem das questões e das alternativas muda a cada rodada. No fim sai a nota, a faixa da escala e a correção completa. Tudo fica guardado para comparar tentativas.</p>
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary" id="startBtn">Começar simulado</button>
+        <label class="row ink2" style="gap:6px;font-size:.9rem"><input type="checkbox" id="instant" checked> Mostrar correção a cada questão</label>
+        <label class="row ink2" style="gap:6px;font-size:.9rem"><input type="checkbox" id="onlyOrig"> Só as <span id="origN2"></span> originais</label>
+        <label class="row ink2" style="gap:6px;font-size:.9rem"><input type="checkbox" id="enadeMode"> Modo Enade 2025 (10 questões)</label>
+      </div>
+      <p class="note" style="margin-top:10px">Modo Enade 2025: 10 questões novas no formato do Enade (situação-problema, afirmativas e asserção-razão), uma por bloco, alinhadas à <a href="https://abmes.org.br/legislacoes/detalhe/5146/portaria-inep-n-348" target="_blank" rel="noopener">Portaria Inep nº 348/2025</a>, que define a prova de Psicologia. Depois de responder, cada questão mostra o nível da Taxonomia de Bloom, a competência e o objeto de conhecimento avaliados. Fora desse modo, o simulado continua só com as questões das TEAs.</p>
+      <p class="note" id="storeNote" style="margin-top:12px">Conectando ao armazenamento…</p>
+    </div>
+    <div class="card">
+      <h2>Escala de desempenho</h2>
+      <p class="ink2" style="margin-top:.3em">Abaixo de 6,0 não atinge a média.</p>
+      <div class="lvl" id="scaleList"></div>
+    </div>
+    <div class="card" id="lastCard" style="display:none"></div>
+  </section>
+
+  <section id="v-quiz" class="hide">
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <span class="eyebrow" id="qCount"></span>
+        <span class="eyebrow" id="qTimer"></span>
+      </div>
+      <div class="progress"><i id="qBar"></i></div>
+      <div style="margin-top:14px"><span class="qtopic" id="qTopic"></span></div>
+      <div class="qtext" id="qText"></div>
+      <img class="qimg hide" id="qImg" alt="">
+      <div id="qOpts"></div>
+      <div id="qFb"></div>
+      <div class="sticky-actions">
+        <button class="btn ghost" id="quitBtn">Sair</button>
+        <button class="btn primary" id="nextBtn" disabled>Confirmar</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="v-result" class="hide"></section>
+  <section id="v-evo" class="hide"></section>
+  <section id="v-rep" class="hide"></section>
+</div>
+
+<script>
+/* ===================== BANCO DE QUESTÕES ===================== */
+const TOPICS = {"sen": "Sensação e percepção", "ate": "Atenção", "con": "Consciência", "ori": "Orientação", "mem": "Memória", "pen": "Pensamento", "lin": "Linguagem", "int": "Inteligência", "mot": "Motivação", "emo": "Emoções, sentimentos e afetos"};
+const STUDY = {"sen": "Separe as duas etapas. Sensação: captação objetiva do estímulo pelos receptores e transdução em impulso nervoso. Percepção: interpretação ativa e construtiva desses dados pelo cérebro, influenciada por experiências anteriores, valores, aprendizados e cultura. Se a alternativa diz que a percepção é cópia fiel do estímulo, está errada. Adaptação sensorial: deixamos de notar um estímulo constante. Gestalt: figura e fundo, proximidade, semelhança, fechamento e continuidade organizam o que percebemos.", "ate": "Decore os tipos pelo que acontece com as tarefas. Seletiva: privilegia um estímulo e deixa outros de lado. Dividida: duas tarefas ao mesmo tempo. Alternada: troca de uma tarefa para outra. Sustentada: foco mantido por muito tempo. Involuntária (espontânea): captada por estímulo forte, sem esforço.", "con": "Consciência é o estado de estar ciente de si e do ambiente. A vigília é o estado de referência; sono, sonho, hipnose, meditação e uso de substâncias são estados alterados. Quando o enunciado fala de culpa, ética e autocontrole, a resposta é a consciência como bússola moral.", "ori": "Comece sempre pela orientação autopsíquica: a pessoa sabe quem é (nome, idade, profissão)? Depois a alopsíquica: sabe onde está (espaço) e quando (tempo)? Monte a resposta combinando as duas partes.", "mem": "Etapas: codificação, armazenamento e recuperação. Falhas e distorções não são etapas. Tipos: sensorial (fugaz), curto prazo (limitada, cerca de 7 ± 2 itens), longo prazo, que se divide em explícita (episódica e semântica, depende do hipocampo e do córtex pré-frontal) e implícita (procedural, sem esforço consciente). Episódica = acontecimentos vividos; semântica = fatos e conceitos. Amnésia retrógrada apaga o que veio antes do evento; anterógrada impede de formar memórias novas depois dele.", "pen": "Curso = fluxo e velocidade; forma = arquitetura (estrutura); conteúdo = assunto. Componentes: conceito (representação), juízo (relação entre conceitos), raciocínio (encadeamento de juízos). Delírio é alteração do conteúdo. Aceleração, lentificação e bloqueio são alterações do curso.", "lin": "Funções da linguagem vistas em aula: comunicativa, instrumento da expressão, afirmação do eu e suporte do pensamento. Imaginação não é função da linguagem. Vygotsky: a fala egocêntrica organiza a ação e se internaliza como fala interior; pensamento e linguagem têm raízes diferentes e se encontram por volta dos dois anos.", "int": "As oito inteligências de Gardner: linguística, lógico-matemática, espacial, musical, corporal-cinestésica, interpessoal, intrapessoal e naturalista. Intra = dentro de si; inter = entre pessoas. Qualquer nome fora dessa lista (como sensório-perceptiva) é a exceção.", "mot": "Maslow, da base ao topo: fisiológicas, segurança, sociais, estima e autorrealização. Fatores motivadores de outros teóricos: realização e poder (McClelland), crescimento pessoal. Motivação intrínseca vem da própria atividade; extrínseca, de recompensa externa. Frustração é a reação à expectativa não atendida. McClelland: necessidades de realização, poder e afiliação.", "emo": "Emoções primárias (alegria, tristeza, medo, raiva, surpresa, nojo), secundárias ou sociais (vergonha, culpa, orgulho, ciúme) e de fundo (bem-estar, mal-estar, calma, tensão). Emoção: breve, intensa, corporal. Sentimento: vivência subjetiva e consciente da emoção, mais duradoura, elaborada cognitivamente. Afetos pelo objeto: familiar, fraterno, romântico, amor-próprio."};
+/* o: alternativas (a correta primeiro; a ordem é embaralhada a cada rodada); c: comentário de cada alternativa, na mesma ordem */
+const Q = [
+ {"t": "sen", "src": "TEA Processos Psicológicos", "q": "A Sensação é a parte objetiva da recepção de estímulos externos, é um processo psicológico que acontece por vias neurais, células especializadas (receptores sensoriais), já a percepção é a interpretação desses dados sensoriais pelo cérebro. É um processo ativo e construtivo. Isso se dá pois:", "o": ["A percepção é afetada por experiências anteriores, valores pessoais e sociais e aprendizados", "A percepção acontece de forma parcial no cérebro e não condiz com uma interpretação real", "A sensação interpreta os estímulos externos de acordo com os estereótipos, preconceitos e influência do meio", "As informações percebidas são fiéis à captação de estímulos através dos órgãos do sentido", "Só podemos considerar uma informação percebida o que vem da propriocepção"], "c": ["Correta. \"Ativo e construtivo\" significa que o cérebro interpreta o estímulo com base no que a pessoa já viveu, aprendeu e valoriza.", "Errada. A percepção é interpretação, mas não é falsa nem desligada do real; o exagero derruba a alternativa.", "Errada. Troca os papéis: quem interpreta é a percepção. A sensação é a parte objetiva, a captação.", "Errada. É o extremo oposto: se a percepção fosse cópia fiel, não seria ativa e construtiva.", "Errada. Propriocepção é só a percepção da posição do próprio corpo; a percepção abrange todos os sentidos."], "a": 0},
+ {"t": "ate", "src": "TEA Processos Psicológicos", "q": "A atenção é um processo psicológico básico que orienta e coordena a atividade dos nossos sentidos e pensamentos para a seleção, distribuição e manutenção de todas as atividades cognitivas em geral. Portanto, como processo, ela permite filtrar o fluxo de informações recebidas pelo organismo.\n\nQue tipo de atenção é a capacidade do indivíduo privilegiar determinados estímulos em detrimento de outros:", "o": ["Atenção seletiva", "Atenção involuntária", "Atenção dividida", "Atenção alternada", "Atenção simultânea"], "c": ["Correta. Privilegiar um estímulo e deixar os outros de lado é a definição de atenção seletiva.", "Errada. A involuntária é captada por um estímulo forte e inesperado, sem escolha da pessoa.", "Errada. A dividida reparte a atenção entre duas tarefas ao mesmo tempo, sem deixar uma de lado.", "Errada. A alternada troca o foco de uma tarefa para outra, uma de cada vez.", "Errada. \"Simultânea\" é outro nome para a ideia de atenção dividida, não para a seleção de um estímulo."], "a": 0},
+ {"t": "con", "src": "TEA Processos Psicológicos", "q": "Juízo de valor é o ato de atribuir importância ou valor a algo. É uma avaliação subjetiva que se baseia em nossos princípios, crenças e emoções, que nos permite não apenas refletir sobre nossas ações, mas também sentir emoções como culpa e remorso quando agimos de forma contrária aos nossos valores. Das definições de consciência que se apresentam como mecanismo de autocontrole, nos incentivando a agir de forma ética, a definição correspondente é:", "o": ["Consciência como bússola moral.", "Estado subjetivo de estar ciente de si mesmo e do ambiente.", "Estado oposto à inconsciência.", "Estado alterado de consciência.", "Estado de vigília."], "c": ["Correta. Culpa, remorso, ética e autocontrole são as pistas: é a consciência no sentido moral.", "Errada. É a definição psicológica geral de consciência, sem relação com valores morais.", "Errada. Define consciência pelo contraste com o desmaio ou o coma, não pela ética.", "Errada. Estados alterados são sono, hipnose, meditação, efeito de substâncias.", "Errada. Vigília é o estado de estar acordado e alerta, a referência para os estados alterados."], "a": 0},
+ {"t": "con", "src": "TEA Processos Psicológicos", "q": "A consciência é o processo psicológico onde nos tornamos cientes, ou seja, tomamos conhecimento de nós mesmos e do meio que nos rodeia, consiste em uma experiência subjetiva do individuo. O estado da consciência pode ser alterado pela atividade cerebral, por causas naturais ou ainda por uso de substâncias. Assinale a alternativa que NÃO corresponde a alteração da consciência.", "o": ["Vigília", "Sono", "Hipnose", "Sonho", "Meditação"], "c": ["Correta (é a exceção). A vigília é o estado normal de referência; os outros se definem como alterações em relação a ela.", "Errada. O sono é o estado alterado mais comum, de causa natural.", "Errada. Na hipnose a pessoa está acordada, mas com a atenção concentrada e a sugestionabilidade aumentada: estado alterado.", "Errada. O sonho, sobretudo no sono REM, é um estado alterado.", "Errada. A meditação altera voluntariamente o foco e o nível de consciência."], "a": 0},
+ {"t": "mem", "src": "TEA Processos Psicológicos", "q": "A palavra memória primariamente nos remete a algo que revela parte de nossas experiências, momentos e associações guardadas em nosso cérebro. As memórias são provenientes dos nossos sentidos e percepções do ambiente. Fazemos uso da memória o tempo todo, mesmo sem percebermos. O processo psicológico básico da memória nos permite codificar a informação para armazená-la e depois recuperá-la, é um processo complexo baseado em mecanismos biológicos e psicológicos. O processo da memória envolve:", "o": ["Codificação, armazenamento e recuperação de informações", "Codificação, falhas, distorções de informações", "Aquisição, armazenamento e esquecimento das informações", "Aquisição, esquecimento e evocação das informações", "Aquisição, Codificação, Distorções de informações"], "c": ["Correta. São as três etapas, e o próprio enunciado as entrega: \"codificar... armazená-la e depois recuperá-la\".", "Errada. Falhas e distorções são problemas da memória, não etapas do processo.", "Errada. Esquecimento é falha, não etapa.", "Errada. Evocação é sinônimo de recuperação, mas o esquecimento no meio derruba a alternativa.", "Errada. Distorção é falha, não etapa."], "a": 0},
+ {"t": "ori", "src": "TEA Processos Psicológicos", "q": "Considerando os conceitos apresentados sobre Orientação Autopsíquica e Alopsíquica, é CORRETO afirmar que um paciente que consegue informar seu nome completo, sua idade e sua profissão, mas não sabe dizer o dia da semana atual nem a cidade onde se encontra, apresenta:", "o": ["Desorientação temporal e espacial, com orientação autopsíquica preservada.", "Desorientação exclusivamente autopsíquica.", "Apenas desorientação temporal, com as demais esferas preservadas.", "Ausência completa de orientação, necessitando de uma avaliação mais aprofundada de suas funções cognitivas básicas.", "Desorientação autopsíquica e temporal, mas com orientação espacial intacta."], "c": ["Correta. Sabe quem é (autopsíquica preservada); não sabe o dia (tempo) nem a cidade (espaço): alopsíquica comprometida.", "Errada. É o contrário: a autopsíquica (nome, idade, profissão) está preservada.", "Errada. Ignora que ele também não sabe a cidade, ou seja, a desorientação espacial.", "Errada. A orientação autopsíquica está preservada, então a desorientação não é completa.", "Errada. Erra duas vezes: a autopsíquica está preservada e a espacial está comprometida."], "a": 0},
+ {"t": "mem", "src": "TEA Processos Psicológicos", "q": "A literatura fala de memória de curto prazo e de memória de longo prazo desde o século XIX, no entanto, algumas classificações mais recentes levam em consideração outras características além do tempo de retenção da informação. Foram estabelecidas diversas formas de classificação das informações armazenadas, tal como conforme o tipo de codificação sensorial do estímulo, intervalo de tempo para posterior recuperação e em relação aos tipos de aprendizagem. De acordo com o que foi levantado sobre os tipos de memória, qual é a alternativa correspondente:", "o": ["A memória explícita depende de regiões do cérebro como o hipocampo e o córtex pré-frontal.", "A Memória Sensorial tem captação rápida de informações e duradoura.", "A memória implícita refere-se à lembrança consciente de informações.", "A memória de curto prazo possui armazenamento temporário e ilimitado.", "A memória episódica é a um tipo de memória que não requer esforço consciente para ser acessada."], "c": ["Correta. A memória explícita (declarativa) depende do hipocampo para se formar e do córtex pré-frontal para ser evocada.", "Errada. A captação é rápida, mas a memória sensorial dura frações de segundo; não é duradoura.", "Errada. Lembrança consciente é a explícita. A implícita funciona sem consciência (hábitos, habilidades).", "Errada. É temporária, mas limitada (cerca de 7 ± 2 itens, segundo Miller).", "Errada. A episódica é explícita: exige esforço consciente para lembrar o acontecimento."], "a": 0},
+ {"t": "mem", "src": "TEA Processos Psicológicos", "q": "Por sua enorme capacidade de armazenamento, não seria tão adequado falar no estudo da memória, mas no estudo das \"memórias\". A memória é uma processo cognitivo bastante estudado na literatura. A literatura fala de memória de curto prazo e de memória de longo prazo desde o século XIX, no entanto, algumas classificações mais recentes levam em consideração outras características além do tempo de retenção da informação. Dentre os tipos de memórias, estão:", "o": ["Memória sensorial, Memória de curto prazo e Memória semântica", "Memória ultrarrápida, memória progressiva e memória processual", "Memória retrógrada, memória de longo prazo e memória episódica", "Memória de infância, memória de trabalho e perda de memória", "Memória fantasiosa, Amnésia e memória de trabalho"], "c": ["Correta. Os três são classificações reconhecidas na literatura.", "Errada. \"Ultrarrápida\" e \"progressiva\" não são tipos de memória; o termo é procedural, não processual.", "Errada. \"Retrógrada\" descreve um tipo de amnésia (perda de memórias anteriores a um evento), não um tipo de memória.", "Errada. \"Memória de infância\" não é classificação, e perda de memória é patologia.", "Errada. Amnésia é patologia e \"memória fantasiosa\" não é categoria."], "a": 0},
+ {"t": "pen", "src": "TEA Processos Psicológicos", "q": "O pensamento é o processo psicológico que tem como tarefas processar todo tipo de estímulos (imagens, sons, ideias, experiências, etc), manipulando e transformando as informações sentidas e as armazenadas em nossa memória. Através do pensamento analisamos, comparamos, classificamos, enfim, fazemos julgamentos das informações de modo que possamos executar atividades, como resolver problemas ou criar algo novo. (GLOVER, 2019). Sobre o processo de pensar a alternativa que explica corretamente é:", "o": ["Curso, forma e conteúdo que diz respeito respectivamente a fluidez e velocidade, arquitetura e assunto.", "Curso, forma e conteúdo que diz respeito respectivamente a fluidez e velocidade, assunto e arquitetura.", "Curso, forma e conteúdo que diz respeito respectivamente fluidez e velocidade, construção e arquitetura.", "Curso, forma e conteúdo que diz respeito respectivamente a arquitetura, fluidez e velocidade e assunto.", "Curso, forma e conteúdo que diz respeito respectivamente ao julgamento, construção e assunto."], "c": ["Correta. Curso = fluxo e velocidade; forma = estrutura (arquitetura); conteúdo = assunto.", "Errada. Troca forma e conteúdo.", "Errada. Conteúdo não é arquitetura; é o tema do pensamento.", "Errada. Troca curso e forma.", "Errada. Julgamento é componente do pensamento (juízo), não seu curso."], "a": 0},
+ {"t": "pen", "src": "TEA Processos Psicológicos", "q": "Os pensamentos podem acontecer internamente independentemente dos órgãos sensoriais, ao contrário da percepção. Mas quando entendido no sentido mais amplo, o pensamento não se refere aos processos mentais em si, mas aos estados mentais ou sistemas de ideias provocados por esses processos. São componentes do pensamento:", "o": ["Conceitos; Juízo; Raciocínio", "Imaginação; Realização; Expressão", "Raciocínio; Emoção; Expressão", "Conceitos; Imaginação; Expressão", "Raciocínio; Ideia; Juízo"], "c": ["Correta. Os três elementos constitutivos do pensamento, segundo Dalgalarrondo.", "Errada. Nenhum dos três é componente do pensamento.", "Errada. Emoção é outro processo psicológico; expressão pertence à linguagem.", "Errada. Acerta o conceito, mas imaginação e expressão não são componentes.", "Errada. Quase: \"ideia\" entra no lugar de conceito, que é o termo técnico."], "a": 0},
+ {"t": "mot", "src": "TEA Processos Psicológicos", "q": "Podemos entender a motivação como uma energia que nos ativa, move e orienta nossas ações para um objetivo específico, esse objetivo está relacionado com a satisfação de nossas necessidades como seres humanos. Frustração é um sentimento decorrente da não realização de um desejo ou tendência, ou seja, é a reação diante da expectativa não correspondida. Diversos teóricos apresentam fatores motivadores, entre eles NÃO corresponde:", "o": ["Vazio Existencial", "Crescimento Pessoal", "Realização", "Necessidade de Poder", "Necessidade de Segurança"], "c": ["Correta (é a exceção). Vazio existencial é termo de Frankl e descreve a falta de sentido, não um fator que motiva.", "Errada. Crescimento pessoal aparece em Maslow, Alderfer e Herzberg.", "Errada. Necessidade de realização é um dos fatores de McClelland.", "Errada. Necessidade de poder também é de McClelland.", "Errada. Segurança é o segundo nível da pirâmide de Maslow."], "a": 0},
+ {"t": "mot", "src": "TEA Processos Psicológicos", "q": "Para o psicólogo Abraham Maslow, as necessidades que nós, seres humanos temos, nos impelem a ter a força de vontade para superar todas as dificuldades que surgem no nosso dia a dia. Quando falamos de motivação, nos referimos aos desejos que nos impulsionam a querer alcançar algum objetivo e satisfazer nossas necessidades humanas, conforme a teoria de Maslow as necessidades motivadoras em sua ordem de prioridade respectivamente são:", "o": ["Fisiológicas, segurança, sociais, estima e auto realização", "Auto realização, fisiológicas, segurança, sociais e estima", "Não há uma ordem pré estabelecida, as necessidades variam subjetivamente para cada indivíduo.", "Fisiológicas, auto realização, segurança, sociais e estima", "Estima, sociais, auto realização, segurança e fisiológicas"], "c": ["Correta. Da base ao topo da pirâmide.", "Errada. A autorrealização está no topo, não no começo.", "Errada. A teoria de Maslow é justamente uma hierarquia, com ordem definida.", "Errada. A autorrealização foi colocada no segundo nível.", "Errada. Ordem embaralhada."], "a": 0},
+ {"t": "int", "src": "TEA Processos Psicológicos", "q": "Inteligências múltiplas, conceito derivado da teoria das inteligências múltiplas, é um conceito utilizado para retratar os mais variados comportamentos através dos quais as pessoas expõem suas habilidades de cognição, cada uma de seu próprio modo individual. Na teoria das inteligências múltiplas de Gardner estão as habilidades listadas abaixo, com EXCEÇÃO:", "o": ["Inteligência sensório-perceptiva", "Inteligência linguística verbal", "Inteligência interpessoal", "Inteligência visual-espacial", "Inteligência lógico-matemática"], "c": ["Correta (é a exceção). Não existe na lista de Gardner.", "Errada. A linguística é uma das oito.", "Errada. A interpessoal é uma das oito.", "Errada. A espacial (visual-espacial) é uma das oito.", "Errada. A lógico-matemática é uma das oito."], "a": 0},
+ {"t": "lin", "src": "TEA Processos Psicológicos", "q": "Segundo Vygotsky (1989) a linguagem é responsável pela formação do sistema simbólico, pois atua mediando a relação sujeito e objeto de conhecimento, além de ter duas funções primordiais no desenvolvimento humano, que são a interação social e o pensamento generalizante. Das funções da linguagem marque a que NÃO corresponde:", "o": ["Imaginação", "Comunicativa", "Instrumento da Expressão", "Afirmação do Eu", "Suporte do Pensamento"], "c": ["Correta (é a exceção). Imaginação é outro processo psicológico, não função da linguagem.", "Errada. Comunicar é a função mais básica da linguagem (interação social).", "Errada. A linguagem é instrumento de expressão de ideias e afetos.", "Errada. Pela linguagem a pessoa se afirma e se diferencia dos outros.", "Errada. É o \"pensamento generalizante\" do enunciado: a palavra sustenta o pensamento."], "a": 0},
+ {"t": "emo", "src": "TEA Processos Psicológicos", "q": "As emoções se apresentam divididas em três tipos, primárias, secundárias e de fundo. As emoções primárias são reações diretas a eventos e situações, enquanto as emoções secundárias são respostas aos nossos sentimentos iniciais, já as de fundo: são as não perceptíveis, em relação às emoções primárias é correto dizer que são:", "o": ["Alegria, Tristeza e Medo", "Tristeza, Culpa e Tensão", "Calma, Ciúmes e Cólera", "Vergonha, Calma e Alegria", "Mal - estar, Orgulho e Medo"], "c": ["Correta. As três são primárias: universais e de aparecimento precoce.", "Errada. Culpa é secundária e tensão é de fundo.", "Errada. Calma é de fundo e ciúme é secundária.", "Errada. Vergonha é secundária e calma é de fundo.", "Errada. Mal-estar é de fundo e orgulho é secundária."], "a": 0},
+ {"t": "emo", "src": "TEA Processos Psicológicos", "q": "As emoções e os sentimentos são componentes cruciais da experiência humana, influenciando o comportamento, o pensamento e a tomada de decisões. Embora frequentemente usados como sinônimos no senso comum, a psicologia distingue-os como fenômenos com características, origens e manifestações distintas, que são interligadas, mas não idênticas.\n\nI. As emoções são reações psicofisiológicas intensas, de curta duração e com expressão corporal observável, desencadeadas por estímulos internos ou externos que ativam regiões cerebrais subcorticais e o sistema nervoso autônomo.\n\nPORQUE\n\nII. Os sentimentos representam a experiência subjetiva e consciente dessas emoções, sendo estados afetivos mais prolongados, internalizados e influenciados por processos cognitivos como a interpretação e a reflexão sobre a própria emoção e seu contexto.\n\nAcerca dessas asserções, assinale a opção correta:", "o": ["As asserções I e II são proposições verdadeiras, mas a II não é uma justificativa correta da I.", "As asserções I e II são proposições verdadeiras, e a II é uma justificativa correta da I.", "A asserção I é uma proposição verdadeira, e a II é uma proposição falsa.", "As asserções I e II são proposições falsas.", "A asserção I é uma proposição falsa, e a II é uma proposição verdadeira."], "c": ["Correta. As duas estão certas, mas a II não explica a I: diz o que é o sentimento, não por que a emoção ativa regiões subcorticais.", "Errada. As duas são verdadeiras, mas a II só define o sentimento; não explica por que a emoção é reação psicofisiológica.", "Errada. A II também é verdadeira: sentimento é a vivência subjetiva, mais duradoura e elaborada.", "Errada. As duas são verdadeiras.", "Errada. A I é verdadeira: descreve corretamente a emoção."], "a": 0},
+ {"t": "emo", "src": "TEA Processos Psicológicos", "q": "A experiência afetiva humana é largamente determinada pela interação do organismo com o ambiente e pelo processamento cognitivo. Embora a Emoção se inicie de forma instintiva (Natureza Inconsciente), sua transformação em Sentimento depende fundamentalmente do contexto sociocultural e da história individual.\n\nPORQUE\n\nO Sentimento é a vivência subjetiva e consciente da emoção, e esta etapa da vida afetiva requer processamento cognitivo, permitindo que a experiência seja influenciada por crenças, linguagem e elaboração (fatores que são adquiridos na interação social).\n\nA respeito dessas duas asserções, assinale a opção CORRETA.", "o": ["As asserções I e II são proposições verdadeiras, e a II é uma justificativa correta da I.", "As asserções I e II são proposições verdadeiras, mas a II não é uma justificativa correta da I.", "A asserção I é uma proposição verdadeira, e a II é uma proposição falsa.", "As asserções I e II são proposições falsas.", "A asserção I é uma proposição falsa, e a II é uma proposição verdadeira."], "c": ["Correta. A I diz que a passagem da emoção ao sentimento depende do contexto sociocultural; a II explica: o sentimento exige processamento cognitivo (crenças, linguagem), adquirido na interação social.", "Errada. A II explica a I: é justamente por exigir cognição aprendida socialmente que o sentimento depende do contexto.", "Errada. A II é verdadeira.", "Errada. As duas são verdadeiras.", "Errada. A I é verdadeira."], "a": 0},
+ {"t": "emo", "src": "TEA Processos Psicológicos", "q": "O sentimento e a expressão da afetividade são cruciais para a convivência humana, sendo moldados pelos laços interpessoais e intrapessoais. O material utilizado em sala lista diferentes categorias de afetos, baseadas no tipo de relacionamento e no objeto do afeto (familiar, fraterno, romântico e amor-próprio).\n\nUma jovem universitária sente-se profundamente ligada a um grupo de colegas de faculdade, com quem compartilha interesses e escolhas de vida, e que são a sua principal fonte de apoio emocional durante os estudos. Simultaneamente, ela está iniciando um novo relacionamento conjugal que é caracterizado por uma forte atração sexual e idealização mútua.\n\nAssinale a alternativa que identifica CORRETAMENTE e na ordem sequencial (amigos, depois parceiro conjugal) os tipos de afetos envolvidos nas relações descritas:", "o": ["Afeto Fraterno e Afeto Romântico.", "Amor-próprio e Afeto Fraterno.", "Afeto Familiar e Amor-próprio.", "Afeto Familiar e Afeto Fraterno.", "Afeto Romântico e Afeto Familiar."], "c": ["Correta. Colegas com afinidade de escolhas: fraterno. Parceiro com atração e idealização: romântico.", "Errada. Amor-próprio tem como objeto a própria pessoa.", "Errada. Afeto familiar é pelos laços de origem, e o objeto do amor-próprio é a própria pessoa.", "Errada. Os colegas não são família, e falta o romântico.", "Errada. Ordem trocada, e os amigos não são família."], "a": 0},
+ {"t": "sen", "src": "Variação · percepção", "q": "Dois torcedores assistem ao mesmo lance de futebol. Um vê um pênalti claro; o outro vê uma simulação. Os olhos de ambos captaram a mesma imagem.\n\nI. Pessoas diferentes podem perceber de modo diferente o mesmo estímulo sensorial\n\nPORQUE\n\nII. a percepção é um processo ativo, que organiza e interpreta os dados sensoriais a partir de experiências anteriores, expectativas, valores e cultura.\n\nAcerca dessas asserções, assinale a opção correta:", "o": ["As asserções I e II são proposições verdadeiras, e a II é uma justificativa correta da I.", "As asserções I e II são proposições verdadeiras, mas a II não é uma justificativa correta da I.", "A asserção I é uma proposição verdadeira, e a II é uma proposição falsa.", "As asserções I e II são proposições falsas.", "A asserção I é uma proposição falsa, e a II é uma proposição verdadeira."], "c": ["Correta. A sensação foi a mesma; a percepção, que interpreta, mudou. A II explica a I.", "Errada. A II explica a I: a diferença existe justamente porque a percepção interpreta.", "Errada. A II é verdadeira; é a ideia de \"processo ativo e construtivo\" da TEA.", "Errada. As duas são verdadeiras.", "Errada. A I é verdadeira."], "a": 0, "v": 1},
+ {"t": "sen", "src": "Variação · sensação", "q": "Os receptores sensoriais recebem luz, ondas sonoras, pressão e moléculas químicas, mas o cérebro só trabalha com sinais elétricos. O processo pelo qual o receptor converte a energia do estímulo em impulso nervoso é chamado de:", "o": ["Transdução.", "Adaptação sensorial.", "Limiar diferencial.", "Atenção seletiva.", "Percepção."], "c": ["Correta. Transdução é a conversão da energia do estímulo em potencial elétrico; é o primeiro passo da sensação.", "Errada. Adaptação é a redução da resposta a um estímulo constante (deixar de sentir o relógio no pulso).", "Errada. Limiar diferencial é a menor diferença entre dois estímulos que conseguimos notar.", "Errada. A atenção seletiva age depois que o sinal já chegou ao cérebro.", "Errada. A percepção é a interpretação, etapa posterior à transdução."], "a": 0, "v": 1},
+ {"t": "ate", "src": "Variação · atenção dividida", "q": "Um motorista experiente dirige enquanto conversa com o passageiro. Mantém a velocidade, troca de faixa e olha os retrovisores sem interromper a conversa. Quando o trânsito complica, ele para de falar. O tipo de atenção descrito é:", "o": ["Atenção dividida, porque realiza duas tarefas ao mesmo tempo, com capacidade limitada.", "Atenção seletiva, porque ignora o trânsito para conversar.", "Atenção alternada, porque deixa de dirigir para conversar e depois volta.", "Atenção sustentada, porque mantém o foco em uma única tarefa por muito tempo.", "Atenção involuntária, porque é captada por um estímulo forte."], "c": ["Correta. Duas tarefas juntas, uma delas automatizada. Quando a principal exige mais, a outra é abandonada: o limite da atenção dividida.", "Errada. Ele não ignora o trânsito; atende às duas coisas.", "Errada. Na alternada a pessoa troca de tarefa, uma de cada vez; ele faz as duas juntas.", "Errada. Há duas tarefas, não uma.", "Errada. Nada no caso é um estímulo súbito que capture a atenção."], "a": 0, "v": 1},
+ {"t": "ate", "src": "Variação · atenção sustentada", "q": "Um controlador de tráfego aéreo passa horas diante do radar, onde quase nada acontece, mas precisa perceber na hora qualquer sinal fora do padrão. Por isso o trabalho tem pausas obrigatórias. O tipo de atenção exigido é:", "o": ["Atenção sustentada (vigilância).", "Atenção alternada.", "Atenção dividida.", "Atenção involuntária.", "Atenção espontânea."], "c": ["Correta. Manter o foco por muito tempo é atenção sustentada; ela cai com o tempo, daí as pausas.", "Errada. Alternada envolve trocar entre tarefas.", "Errada. Dividida envolve duas tarefas simultâneas.", "Errada. Involuntária é captada por estímulo forte, sem esforço.", "Errada. Espontânea é sinônimo de involuntária."], "a": 0, "v": 1},
+ {"t": "ate", "src": "Variação · atenção alternada", "q": "Uma estudante resolve um exercício de estatística, para para responder uma mensagem do grupo da turma e depois volta ao exercício; minutos depois, faz o mesmo de novo. Ela não faz as duas coisas ao mesmo tempo, mas passa de uma para outra. Esse tipo de atenção é:", "o": ["Atenção alternada.", "Atenção dividida.", "Atenção seletiva.", "Atenção sustentada.", "Atenção involuntária."], "c": ["Correta. Alternar é deslocar o foco de uma tarefa para outra, uma de cada vez.", "Errada. Na dividida as duas tarefas acontecem ao mesmo tempo.", "Errada. Seletiva é privilegiar um estímulo e ignorar os demais.", "Errada. Sustentada é manter o foco numa tarefa por muito tempo, o contrário do caso.", "Errada. Ela escolhe trocar de tarefa; não é captura involuntária."], "a": 0, "v": 1},
+ {"t": "con", "src": "Variação · sono e sonho", "q": "Sobre o sono e os sonhos, assinale a alternativa CORRETA:", "o": ["Os sonhos mais vívidos ocorrem principalmente no sono REM, em que a atividade cerebral se parece com a da vigília e os músculos ficam relaxados.", "Durante o sono o cérebro fica sem atividade elétrica.", "O sono REM ocorre uma única vez, logo após adormecer.", "A hipnose é uma forma de sono profundo.", "A vigília é um estado alterado de consciência, assim como o sono."], "c": ["Correta. No REM o EEG lembra a vigília, os olhos se movem e há atonia muscular.", "Errada. O cérebro permanece ativo durante todo o sono.", "Errada. O REM aparece em cada ciclo de cerca de 90 minutos, de quatro a seis vezes por noite.", "Errada. Na hipnose a pessoa está acordada, com atenção concentrada.", "Errada. A vigília é o estado de referência, não um estado alterado (como na TEA)."], "a": 0, "v": 1},
+ {"t": "con", "src": "Variação · estados alterados", "q": "Assinale a alternativa que traz APENAS estados alterados de consciência:", "o": ["Sono, hipnose e meditação.", "Vigília, sono e hipnose.", "Vigília, atenção e meditação.", "Memória, sonho e sono.", "Percepção, vigília e sonho."], "c": ["Correta. Os três se definem em relação à vigília, o estado de referência.", "Errada. A vigília não é estado alterado.", "Errada. Vigília não é estado alterado e atenção é outro processo psicológico.", "Errada. Memória é processo psicológico, não estado de consciência.", "Errada. Percepção é processo, e vigília é o estado normal."], "a": 0, "v": 1},
+ {"t": "ori", "src": "Variação · orientação", "q": "Uma paciente informa corretamente a data, o dia da semana e o hospital onde está, mas não sabe dizer o próprio nome, a idade nem a profissão. Ela apresenta:", "o": ["Desorientação autopsíquica, com orientação alopsíquica preservada.", "Desorientação temporal e espacial, com orientação autopsíquica preservada.", "Orientação totalmente preservada.", "Desorientação apenas temporal.", "Desorientação nas três esferas."], "c": ["Correta. Erra os dados de si (autopsíquica) e acerta tempo e espaço (alopsíquica). É o caso invertido em relação à TEA.", "Errada. É o quadro da TEA, não este: aqui tempo e espaço estão preservados.", "Errada. Ela não sabe quem é.", "Errada. Ela sabe a data.", "Errada. Tempo e espaço estão preservados."], "a": 0, "v": 1},
+ {"t": "mem", "src": "Variação · recuperação", "q": "Na prova, Ana não lembra o nome do autor das inteligências múltiplas. Ao sair, um colega diz \"Gardner\" e ela reconhece na hora. A falha ocorreu na etapa de:", "o": ["Recuperação, porque a informação estava armazenada, mas não foi evocada.", "Codificação, porque a informação nunca entrou na memória.", "Armazenamento, porque a informação foi apagada.", "Percepção, porque ela não leu com atenção.", "Memória sensorial, porque a informação durou segundos."], "c": ["Correta. Se reconheceu, estava codificada e armazenada; falhou o acesso (o fenômeno da ponta da língua).", "Errada. Ela reconheceu o nome, então ele foi codificado.", "Errada. Se tivesse sido apagado, ela não reconheceria.", "Errada. Ela estudou o tema; o problema foi na hora de lembrar.", "Errada. Ela guardou o nome de um dia para o outro: memória de longo prazo."], "a": 0, "v": 1},
+ {"t": "mem", "src": "Variação · memória procedural", "q": "Um homem que não anda de bicicleta há vinte anos sai pedalando sem dificuldade, mas não sabe explicar em palavras como se equilibra. O tipo de memória envolvido é:", "o": ["Memória procedural, um tipo de memória implícita.", "Memória episódica.", "Memória semântica.", "Memória de trabalho.", "Memória sensorial."], "c": ["Correta. Habilidades motoras e hábitos são procedurais: usados sem esforço consciente e difíceis de pôr em palavras.", "Errada. Episódica guarda acontecimentos vividos (o dia em que aprendeu a pedalar).", "Errada. Semântica guarda fatos e conceitos (saber que bicicleta tem duas rodas).", "Errada. A de trabalho mantém informação por segundos.", "Errada. A sensorial dura frações de segundo."], "a": 0, "v": 1},
+ {"t": "mem", "src": "Variação · curto prazo", "q": "I. A memória de curto prazo tem capacidade limitada, de cerca de sete itens, com variação de dois para mais ou para menos\n\nPORQUE\n\nII. a memória de curto prazo armazena as informações de forma permanente, por toda a vida.\n\nAcerca dessas asserções, assinale a opção correta:", "o": ["A asserção I é uma proposição verdadeira, e a II é uma proposição falsa.", "As asserções I e II são proposições verdadeiras, e a II é uma justificativa correta da I.", "As asserções I e II são proposições verdadeiras, mas a II não é uma justificativa correta da I.", "As asserções I e II são proposições falsas.", "A asserção I é uma proposição falsa, e a II é uma proposição verdadeira."], "c": ["Correta. A I traz o \"7 ± 2\" de Miller (1956). A II é falsa: a de curto prazo retém por segundos; permanente é a de longo prazo.", "Errada. A II é falsa.", "Errada. A II é falsa.", "Errada. A I é verdadeira.", "Errada. A I é verdadeira e a II é falsa."], "a": 0, "v": 1},
+ {"t": "pen", "src": "Variação · conteúdo", "q": "Um paciente afirma, com convicção inabalável, que é vigiado pela polícia por câmeras escondidas na televisão. Nenhuma prova o faz mudar de ideia, e a crença não é compartilhada pelo seu meio cultural. Essa alteração é do:", "o": ["Conteúdo do pensamento, caracterizada como delírio.", "Curso do pensamento, por aceleração.", "Curso do pensamento, por bloqueio.", "Forma do pensamento, por perda da ligação lógica entre as ideias.", "Nenhuma: é pensamento normal, porque ele justifica o que diz."], "c": ["Correta. Ideia falsa, mantida com certeza, irredutível e não compartilhada: delírio, alteração do conteúdo (o assunto).", "Errada. Nada no caso fala de velocidade.", "Errada. Bloqueio é a interrupção súbita do pensamento.", "Errada. As frases podem ser bem construídas; o problema é o tema.", "Errada. Justificar não torna a ideia normal."], "a": 0, "v": 1},
+ {"t": "pen", "src": "Variação · juízo", "q": "A frase \"o cachorro é um mamífero\" é um exemplo de qual componente do pensamento?", "o": ["Juízo.", "Conceito.", "Raciocínio.", "Imaginação.", "Percepção."], "c": ["Correta. Liga dois conceitos afirmando uma relação entre eles.", "Errada. \"Cachorro\" sozinho seria um conceito.", "Errada. Raciocínio encadeia juízos até uma conclusão.", "Errada. Imaginação não é componente do pensamento.", "Errada. Percepção depende dos sentidos; aqui há uma afirmação abstrata."], "a": 0, "v": 1},
+ {"t": "lin", "src": "Variação · Vygotsky", "q": "Uma criança de quatro anos monta um quebra-cabeça falando sozinha em voz alta: \"essa peça é do céu... não cabe... vou tentar aqui\". Segundo Vygotsky, essa fala:", "o": ["Organiza a ação e, com o tempo, se internaliza como fala interior, que sustenta o pensamento.", "Não tem função e deve ser corrigida pelos adultos.", "Mostra que pensamento e linguagem surgem juntos desde o nascimento.", "Indica atraso no desenvolvimento.", "É dirigida aos outros e desaparece quando a criança aprende a se comunicar."], "c": ["Correta. Para Vygotsky a fala egocêntrica é transição entre a fala social e a fala interior.", "Errada. Ela tem função de planejamento.", "Errada. Para Vygotsky têm raízes diferentes e se encontram por volta dos dois anos.", "Errada. É uma etapa normal.", "Errada. A fala da criança não se dirige a ninguém, e para Vygotsky ela não desaparece: vai para dentro."], "a": 0, "v": 1},
+ {"t": "lin", "src": "Variação · funções da linguagem", "q": "Ao contar ao grupo, com firmeza, que discorda da opinião da maioria e explicar por quê, um estudante usa a linguagem para se posicionar e marcar quem ele é diante dos outros. A função da linguagem que mais se destaca é:", "o": ["Afirmação do eu.", "Imaginação.", "Suporte do pensamento.", "Percepção.", "Memória."], "c": ["Correta. Pela linguagem a pessoa se afirma e se diferencia, uma das funções vistas na TEA.", "Errada. Imaginação não é função da linguagem (é a exceção da TEA).", "Errada. É função da linguagem, mas o destaque aqui é o posicionamento pessoal, não a organização do pensamento.", "Errada. Percepção é outro processo psicológico.", "Errada. Memória é outro processo psicológico."], "a": 0, "v": 1},
+ {"t": "int", "src": "Variação · Gardner", "q": "Mariana reconhece com facilidade as próprias emoções, sabe o que a motiva e conhece seus limites. Segundo Gardner, destaca-se nela a inteligência:", "o": ["Intrapessoal.", "Interpessoal.", "Linguística.", "Naturalista.", "Lógico-matemática."], "c": ["Correta. Intra = compreender a si mesmo.", "Errada. Inter = compreender os outros.", "Errada. Linguística é o domínio das palavras.", "Errada. Naturalista é reconhecer e classificar elementos da natureza.", "Errada. Lógico-matemática é raciocínio com números e lógica."], "a": 0, "v": 1},
+ {"t": "int", "src": "Variação · Gardner", "q": "Um bailarino executa movimentos complexos com precisão e usa o corpo para expressar emoções no palco. Segundo Gardner, destaca-se nele a inteligência:", "o": ["Corporal-cinestésica.", "Espacial.", "Musical.", "Interpessoal.", "Sensório-perceptiva."], "c": ["Correta. Usar o corpo com habilidade para se expressar ou resolver problemas.", "Errada. Espacial é visualizar e manipular formas e espaços mentalmente.", "Errada. A música acompanha a dança, mas o destaque é o uso do corpo.", "Errada. Interpessoal é compreender os outros.", "Errada. Não existe na teoria (foi a exceção da TEA)."], "a": 0, "v": 1},
+ {"t": "mot", "src": "Variação · intrínseca", "q": "Um estudante lê psicanálise à noite por prazer, sem nota nem dinheiro envolvidos. O tipo de motivação é:", "o": ["Intrínseca, porque a satisfação vem da própria atividade.", "Extrínseca, porque traz recompensa externa.", "Necessidade fisiológica, segundo Maslow.", "Frustração, porque a leitura não será cobrada.", "Reforço negativo, porque retira algo aversivo."], "c": ["Correta. Interesse e prazer na própria atividade.", "Errada. O enunciado exclui nota e dinheiro.", "Errada. Ler não é necessidade fisiológica.", "Errada. Frustração é reação à expectativa não atendida.", "Errada. Nada aversivo está sendo retirado."], "a": 0, "v": 1},
+ {"t": "mot", "src": "Variação · Maslow", "q": "Sobre a teoria de Maslow, assinale a alternativa INCORRETA:", "o": ["A autorrealização está na base da pirâmide, por ser a primeira necessidade a ser satisfeita.", "As necessidades fisiológicas ocupam a base da pirâmide.", "Quem não tem o que comer tende a não se mobilizar, naquele momento, por reconhecimento profissional.", "As necessidades sociais incluem amizade, afeto e pertencimento.", "A estima envolve autoestima e reconhecimento pelos outros."], "c": ["Correta (é a incorreta). A autorrealização está no topo.", "Verdadeira. Fome, sede e sono ficam na base.", "Verdadeira. Ilustra a ideia de que as necessidades inferiores mobilizam primeiro.", "Verdadeira. É o terceiro nível.", "Verdadeira. É o quarto nível."], "a": 0, "v": 1},
+ {"t": "emo", "src": "Variação · secundárias", "q": "Um aluno erra a resposta diante da turma e sente o rosto queimar; à noite, remói ter prometido estudar e não ter estudado. Vergonha e culpa são emoções:", "o": ["Secundárias (sociais), porque dependem da avaliação de si diante dos outros e de normas aprendidas.", "Primárias, porque são inatas e universais.", "De fundo, porque não são perceptíveis.", "Primárias, porque provocam rubor.", "De fundo, porque duram mais."], "c": ["Correta. Só existem quando a pessoa se avalia pelo olhar dos outros e por valores aprendidos.", "Errada. Primárias são alegria, tristeza, medo, raiva, surpresa, nojo.", "Errada. O aluno percebe bem o que sente.", "Errada. Secundárias também têm manifestação corporal.", "Errada. De fundo são estados de base como calma, tensão, bem-estar."], "a": 0, "v": 1},
+ {"t": "emo", "src": "Variação · emoção × sentimento", "q": "I. O sentimento é um estado afetivo mais duradouro e menos intenso que a emoção\n\nPORQUE\n\nII. a emoção é uma reação breve e intensa, acompanhada de manifestações fisiológicas.\n\nAcerca dessas asserções, assinale a opção correta:", "o": ["As asserções I e II são proposições verdadeiras, mas a II não é uma justificativa correta da I.", "As asserções I e II são proposições verdadeiras, e a II é uma justificativa correta da I.", "A asserção I é uma proposição verdadeira, e a II é uma proposição falsa.", "As asserções I e II são proposições falsas.", "A asserção I é uma proposição falsa, e a II é uma proposição verdadeira."], "c": ["Correta. As duas são verdadeiras, mas a II é comparação, não explicação. A justificativa seria a elaboração cognitiva do sentimento.", "Errada. A II só descreve a emoção; não explica por que o sentimento dura mais.", "Errada. A II é verdadeira.", "Errada. As duas são verdadeiras.", "Errada. A I é verdadeira."], "a": 0, "v": 1},
+ {"t": "emo", "src": "Variação · afetos", "q": "Depois de anos se colocando em segundo plano, Paula aprendeu a dizer não, cuida da saúde, reconhece suas qualidades e não aceita mais relações em que é desvalorizada. A mudança envolve o desenvolvimento do:", "o": ["Amor-próprio.", "Afeto familiar.", "Afeto fraterno.", "Afeto romântico.", "Afeto romântico e fraterno ao mesmo tempo."], "c": ["Correta. O objeto do afeto é a própria pessoa: autoestima, autocuidado, limites.", "Errada. Familiar é pelos laços de origem.", "Errada. Fraterno é por amigos e colegas com afinidade.", "Errada. Romântico envolve atração e idealização de um parceiro.", "Errada. Nenhum dos dois tem a própria pessoa como objeto."], "a": 0, "v": 1},
+ {"t": "emo", "src": "Variação · emoções de fundo", "q": "Ao fim de uma semana tranquila, Carlos percebe que vinha se sentindo bem de modo geral, sem nenhum motivo específico e sem ter reparado nisso antes. Esse estado corresponde a uma emoção:", "o": ["De fundo, como o bem-estar.", "Primária, como a alegria.", "Secundária, como o orgulho.", "Primária, como a surpresa.", "Secundária, como a culpa."], "c": ["Correta. Estado de base, difuso e pouco perceptível, sem causa pontual: emoção de fundo.", "Errada. A alegria é reação direta a um evento; aqui não há evento específico.", "Errada. Orgulho depende de avaliação social de si.", "Errada. Surpresa é reação súbita a algo inesperado.", "Errada. Culpa é secundária e desagradável."], "a": 0, "v": 1},
+ {"t": "sen", "src": "Variação · adaptação sensorial", "q": "Ao entrar numa padaria, Júlia sente forte o cheiro de café. Dez minutos depois, ainda lá dentro, já não percebe o cheiro, embora ele continue no ar. O fenômeno é chamado de:", "o": ["Adaptação sensorial.", "Transdução.", "Limiar absoluto.", "Atenção seletiva.", "Percepção subliminar."], "c": ["Correta. Diante de um estímulo constante, os receptores diminuem a resposta e deixamos de notá-lo.", "Errada. Transdução é a conversão do estímulo em impulso nervoso; ela continua acontecendo.", "Errada. Limiar absoluto é a menor intensidade de estímulo que conseguimos detectar.", "Errada. Ela não escolheu ignorar o cheiro; a redução é dos receptores.", "Errada. Subliminar é o estímulo abaixo do limiar de detecção desde o início; aqui ele foi percebido e depois deixou de ser."], "a": 0, "v": 1},
+ {"t": "sen", "src": "Variação · Gestalt", "q": "Numa figura clássica, ora vemos um vaso branco, ora dois perfis negros frente a frente. Nunca as duas coisas ao mesmo tempo. O princípio da Gestalt ilustrado é o de:", "o": ["Figura e fundo.", "Proximidade.", "Semelhança.", "Fechamento.", "Continuidade."], "c": ["Correta. A percepção destaca uma parte como figura e trata o resto como fundo; quando a escolha se inverte, a imagem muda.", "Errada. Proximidade é agrupar elementos que estão perto uns dos outros.", "Errada. Semelhança é agrupar elementos parecidos em cor ou forma.", "Errada. Fechamento é completar mentalmente uma figura incompleta.", "Errada. Continuidade é seguir linhas e padrões na direção em que parecem ir."], "a": 0, "v": 1},
+ {"t": "ate", "src": "Variação · atenção involuntária", "q": "Pedro estuda em silêncio quando um estrondo na rua faz com que ele vire a cabeça para a janela, sem ter decidido fazer isso. O tipo de atenção envolvido é:", "o": ["Atenção involuntária (espontânea).", "Atenção seletiva.", "Atenção sustentada.", "Atenção alternada.", "Atenção dividida."], "c": ["Correta. Um estímulo forte e inesperado captura a atenção sem participação da vontade.", "Errada. A seletiva é dirigida pela pessoa, que escolhe o que privilegiar.", "Errada. Sustentada é manter o foco por muito tempo; aqui o foco foi interrompido.", "Errada. Alternada é trocar de tarefa por decisão própria.", "Errada. Dividida é fazer duas tarefas ao mesmo tempo."], "a": 0, "v": 1},
+ {"t": "con", "src": "Variação · hipnose", "q": "Sobre a hipnose como estado alterado de consciência, assinale a alternativa CORRETA:", "o": ["A pessoa permanece acordada, com a atenção concentrada e a sugestionabilidade aumentada.", "É um tipo de sono profundo, igual ao sono REM.", "A pessoa perde totalmente a consciência e nunca lembra do que ocorreu.", "É o estado de referência a partir do qual se definem os estados alterados.", "Só ocorre com o uso de substâncias."], "c": ["Correta. É um estado alterado sem sono: foco estreitado e maior abertura à sugestão.", "Errada. O EEG da hipnose é de vigília, não de sono.", "Errada. A consciência não se apaga, e a lembrança costuma ser preservada.", "Errada. O estado de referência é a vigília.", "Errada. É induzida por sugestão e concentração, sem substâncias."], "a": 0, "v": 1},
+ {"t": "ori", "src": "Variação · orientação espacial", "q": "Dona Lúcia, internada há três dias, diz o próprio nome e a idade, informa corretamente o dia da semana e a data, mas afirma que está na casa da filha. Ela apresenta:", "o": ["Desorientação espacial, com orientação autopsíquica e temporal preservadas.", "Desorientação autopsíquica, com orientação alopsíquica preservada.", "Desorientação temporal e espacial.", "Ausência completa de orientação.", "Orientação totalmente preservada."], "c": ["Correta. Sabe quem é (autopsíquica) e quando está (tempo); erra onde está (espaço), uma das esferas alopsíquicas.", "Errada. Ela sabe quem é.", "Errada. Ela acerta a data.", "Errada. Só uma esfera está comprometida.", "Errada. Ela não sabe onde está."], "a": 0, "v": 1},
+ {"t": "mem", "src": "Variação · semântica", "q": "Rafael sabe que Freud criou a psicanálise, mas não lembra quando nem onde aprendeu isso. Esse conhecimento está guardado na memória:", "o": ["Semântica, um tipo de memória explícita.", "Episódica, porque é uma lembrança pessoal.", "Procedural, porque é usada sem esforço.", "Sensorial, porque veio de uma leitura.", "De trabalho, porque é usada no momento."], "c": ["Correta. Fatos e conceitos desligados do momento em que foram aprendidos formam a memória semântica.", "Errada. Episódica guardaria a cena da aula em que ele aprendeu; justamente o que ele não lembra.", "Errada. Procedural guarda habilidades e hábitos, não fatos.", "Errada. A sensorial dura frações de segundo.", "Errada. A de trabalho mantém informações por segundos, enquanto são usadas."], "a": 0, "v": 1},
+ {"t": "mem", "src": "Variação · memória de trabalho", "q": "Você ouve um número de telefone, repete-o mentalmente até terminar de digitar e, logo depois, já não lembra dele. A memória usada foi a:", "o": ["Memória de curto prazo (de trabalho).", "Memória sensorial.", "Memória episódica.", "Memória semântica.", "Memória procedural."], "c": ["Correta. Retém por segundos, com capacidade limitada, enquanto a repetição mantém a informação ativa.", "Errada. A sensorial dura frações de segundo e não é mantida pela repetição.", "Errada. Episódica é de longo prazo e guarda acontecimentos vividos.", "Errada. Semântica é de longo prazo e guarda fatos e conceitos.", "Errada. Procedural guarda habilidades motoras."], "a": 0, "v": 1},
+ {"t": "mem", "src": "Variação · amnésia", "q": "Depois de um acidente de carro, Rui não lembra nada das semanas anteriores à batida, mas grava normalmente o que acontece desde então. O quadro é de:", "o": ["Amnésia retrógrada.", "Amnésia anterógrada.", "Falha da memória sensorial.", "Desorientação autopsíquica.", "Distorção da percepção."], "c": ["Correta. Retro = para trás: perde memórias formadas antes do evento.", "Errada. Na anterógrada a pessoa não consegue formar memórias novas depois do evento.", "Errada. O problema está em memórias de longo prazo, não na captação de segundos.", "Errada. Nada indica que ele não saiba quem é.", "Errada. O caso é de memória, não de percepção."], "a": 0, "v": 1},
+ {"t": "pen", "src": "Variação · curso", "q": "Um paciente com depressão grave demora muito a responder às perguntas, faz pausas longas e diz que \"o pensamento anda devagar\". O que ele diz tem lógica e trata de temas comuns. A alteração é do:", "o": ["Curso do pensamento (lentificação).", "Conteúdo do pensamento (delírio).", "Forma do pensamento (perda da ligação entre as ideias).", "Juízo, por falta de conceitos.", "Nenhuma: é pensamento normal."], "c": ["Correta. Curso é fluxo e velocidade; aqui a velocidade está reduzida.", "Errada. O assunto é comum, sem ideia falsa irredutível.", "Errada. As ideias se encadeiam com lógica; a estrutura está preservada.", "Errada. Juízo é componente, não alteração; e não há falta de conceitos.", "Errada. A lentificação é alteração."], "a": 0, "v": 1},
+ {"t": "pen", "src": "Variação · raciocínio", "q": "\"Todo ser humano é mortal. Sócrates é um ser humano. Logo, Sócrates é mortal.\" Esse encadeamento é um exemplo de qual componente do pensamento?", "o": ["Raciocínio.", "Conceito.", "Juízo isolado.", "Imaginação.", "Percepção."], "c": ["Correta. Encadeia juízos e chega a uma conclusão (raciocínio dedutivo).", "Errada. \"Ser humano\" sozinho seria um conceito.", "Errada. Cada frase isolada é um juízo; o conjunto que chega à conclusão é raciocínio.", "Errada. Imaginação não é componente do pensamento.", "Errada. Não há estímulo sensorial; é uma operação lógica."], "a": 0, "v": 1},
+ {"t": "lin", "src": "Variação · funções da linguagem", "q": "Uma escritora transforma em poema a dor de uma perda, dando forma em palavras ao que sente. A função da linguagem que se destaca é:", "o": ["Instrumento da expressão.", "Imaginação.", "Percepção.", "Consciência moral.", "Memória."], "c": ["Correta. A linguagem dá forma e saída a afetos e ideias.", "Errada. Imaginação não é função da linguagem (é a exceção da TEA).", "Errada. Percepção é outro processo psicológico.", "Errada. Consciência moral pertence ao tema da consciência.", "Errada. Memória é outro processo psicológico."], "a": 0, "v": 1},
+ {"t": "int", "src": "Variação · Gardner", "q": "Uma psicoterapeuta percebe com rapidez o humor, as intenções e o desconforto dos pacientes, mesmo quando eles não dizem nada. Segundo Gardner, destaca-se nela a inteligência:", "o": ["Interpessoal.", "Intrapessoal.", "Linguística.", "Naturalista.", "Sensório-perceptiva."], "c": ["Correta. Inter = entre pessoas: compreender os estados e intenções dos outros.", "Errada. Intra = compreender a si mesmo.", "Errada. Ela capta o que não é dito; o destaque não é o uso das palavras.", "Errada. Naturalista é reconhecer e classificar elementos da natureza.", "Errada. Não existe na teoria (foi a exceção da TEA)."], "a": 0, "v": 1},
+ {"t": "int", "src": "Variação · Gardner", "q": "Uma botânica identifica centenas de espécies de plantas, percebe diferenças sutis entre elas e as classifica com facilidade. Segundo Gardner, destaca-se nela a inteligência:", "o": ["Naturalista.", "Lógico-matemática.", "Espacial.", "Corporal-cinestésica.", "Intrapessoal."], "c": ["Correta. Reconhecer, distinguir e classificar seres e elementos da natureza; foi a oitava inteligência acrescentada por Gardner.", "Errada. Lógico-matemática é raciocínio com números e lógica abstrata.", "Errada. Espacial é visualizar e manipular formas no espaço.", "Errada. Corporal-cinestésica é o uso habilidoso do corpo.", "Errada. Intrapessoal é compreender a si mesmo."], "a": 0, "v": 1},
+ {"t": "mot", "src": "Variação · McClelland", "q": "A TEA cita \"realização\" e \"necessidade de poder\" entre os fatores motivadores. Segundo David McClelland, as três necessidades adquiridas que motivam o comportamento são:", "o": ["Realização, poder e afiliação.", "Fisiológicas, segurança e estima.", "Existência, relacionamento e crescimento.", "Intrínseca, extrínseca e frustração.", "Vontade de sentido, vazio existencial e liberdade."], "c": ["Correta. Afiliação é a necessidade de pertencer e manter vínculos.", "Errada. São níveis da pirâmide de Maslow.", "Errada. É a teoria ERG de Alderfer.", "Errada. Intrínseca e extrínseca são tipos de motivação; frustração é reação.", "Errada. São conceitos de Viktor Frankl."], "a": 0, "v": 1},
+ {"t": "mot", "src": "Variação · extrínseca", "q": "Um funcionário só entrega os relatórios no prazo porque, se atrasar, perde o bônus do mês. Não tem nenhum interesse pela tarefa em si. O tipo de motivação é:", "o": ["Extrínseca.", "Intrínseca.", "Autorrealização.", "Necessidade fisiológica.", "Vazio existencial."], "c": ["Correta. O motor é uma consequência externa (o bônus), não a atividade.", "Errada. Intrínseca viria do interesse pela própria tarefa, que ele não tem.", "Errada. Autorrealização é desenvolver o próprio potencial.", "Errada. Fome, sede e sono são fisiológicas.", "Errada. Vazio existencial é falta de sentido, não fator motivador."], "a": 0, "v": 1},
+ {"t": "mot", "src": "Variação · frustração", "q": "Lucas estudou um ano para um concurso, contava com a aprovação e não passou. Ficou irritado e desanimado. Segundo o enunciado da TEA, o que ele vive é:", "o": ["Frustração.", "Motivação intrínseca.", "Autorrealização.", "Necessidade de afiliação.", "Atenção sustentada."], "c": ["Correta. Frustração é a reação diante da expectativa não correspondida.", "Errada. Motivação é o que o moveu a estudar, não a reação ao resultado.", "Errada. Autorrealização seria o topo de Maslow, o oposto do caso.", "Errada. Afiliação é necessidade de vínculo com outras pessoas.", "Errada. Atenção sustentada é outro processo psicológico."], "a": 0, "v": 1},
+ {"t": "emo", "src": "Variação · primárias", "q": "Assinale a alternativa que NÃO apresenta uma emoção primária:", "o": ["Orgulho.", "Medo.", "Raiva.", "Nojo.", "Surpresa."], "c": ["Correta (é a exceção). Orgulho é secundária: depende da avaliação de si diante de normas e do olhar dos outros.", "Errada. Medo é primária.", "Errada. Raiva é primária.", "Errada. Nojo é primária.", "Errada. Surpresa é primária."], "a": 0, "v": 1}
+,
+ {"t": "sen", "src": "Enade 2025 · situação-problema com afirmativas", "q": "Uma professora do 3º ano encaminha ao serviço de Psicologia da escola um aluno de 8 anos descrito como alguém que \"não presta atenção\". Ele copia o conteúdo do quadro com muitos erros e aproxima muito o rosto do caderno para ler. Antes de levantar hipóteses sobre atenção, a psicóloga pede à família uma avaliação oftalmológica e auditiva.\n\nConsiderando a distinção entre sensação e percepção, avalie as afirmações a seguir.\n\nI. Ao pedir a avaliação, a psicóloga considera que uma falha na captação do estímulo, ou seja, na sensação, pode produzir comportamentos parecidos com desatenção.\n\nII. Se a acuidade visual estiver normal, uma dificuldade persistente em organizar e interpretar o que vê diz respeito à percepção, processo ativo do cérebro.\n\nIII. Descartar um problema sensorial não encerra o caso: a atenção e outros fatores ainda podem ser investigados depois.\n\nÉ correto o que se afirma em", "o": ["I, II e III.", "I, apenas.", "II, apenas.", "I e II, apenas.", "II e III, apenas."], "c": ["Correta. I verdadeira: uma visão ou audição comprometida faz o aluno errar a cópia mesmo atento; II verdadeira: a percepção organiza e interpreta os dados que os órgãos dos sentidos captam; III verdadeira: excluir uma causa não confirma nem afasta as demais; a investigação continua. A conduta segue a ordem lógica da avaliação: primeiro se verifica se o estímulo chega (sensação), depois como é interpretado (percepção) e só então se olha para a atenção.", "Errada. Deixa de fora a II, que é verdadeira; deixa de fora a III, que é verdadeira.", "Errada. Deixa de fora a I, que é verdadeira; deixa de fora a III, que é verdadeira.", "Errada. Deixa de fora a III, que é verdadeira.", "Errada. Deixa de fora a I, que é verdadeira."], "a": 0, "v": 1, "e": 1, "bl": "Analisar — exige separar etapas do processamento e relacioná-las ao comportamento observado", "cp": "II.5 · Avaliação, diagnóstico e intervenção: processos educativos; II.3 · Avaliação, diagnóstico e intervenção: avaliação, psicodiagnóstico e intervenção clínica", "ob": "X · Processos psicológicos básicos; XV · Ensino e aprendizagem"},
+ {"t": "ate", "src": "Enade 2025 · situação-problema", "q": "Uma empresa de segurança mantém operadores diante de monitores de câmeras em turnos de seis horas sem pausa. Os relatórios mostram que os erros de detecção (ocorrências que passam despercebidas) crescem depois da primeira hora de trabalho. A empresa pede ao psicólogo organizacional uma proposta de intervenção.\n\nA proposta mais bem fundamentada nos estudos sobre atenção é:", "o": ["Introduzir pausas regulares e rodízio de tarefas, porque a atenção sustentada (vigilância) declina com o tempo de exposição a uma tarefa monótona.", "Acrescentar uma segunda tarefa aos operadores, porque a atenção dividida mantém o nível de alerta mais alto ao longo do turno.", "Treinar a atenção seletiva dos operadores, porque o erro decorre da incapacidade de ignorar estímulos irrelevantes.", "Instalar alarmes sonoros contínuos, porque a atenção involuntária substitui com vantagem o esforço de vigilância.", "Aplicar testes de memória de curto prazo na seleção, porque os erros resultam do esquecimento das imagens vistas."], "c": ["Correta. O aumento de erros com o passar do tempo, numa tarefa monótona, é o decréscimo de vigilância descrito nos estudos de atenção sustentada. Pausas e rodízio atacam a causa.", "Errada. A atenção é limitada; dividi-la entre duas tarefas tende a aumentar os erros, não a diminuí-los.", "Errada. O padrão descrito é de piora ao longo do tempo, não de distração por estímulos concorrentes. O problema é de manutenção do foco.", "Errada. Estímulos constantes perdem força por habituação, e a captura involuntária não substitui a vigilância sobre o que acontece nas imagens.", "Errada. O enunciado fala em ocorrências não detectadas no momento, não em lembranças perdidas depois."], "a": 0, "v": 1, "e": 1, "bl": "Avaliar — exige julgar qual intervenção é mais bem fundamentada entre alternativas plausíveis", "cp": "I.5 · Pesquisa e produção de conhecimento: elaborar intervenções em processos de trabalho", "ob": "X · Processos psicológicos básicos; XVIII · Saúde do trabalhador"},
+ {"t": "con", "src": "Enade 2025 · asserção-razão", "q": "Uma Unidade Básica de Saúde oferece um grupo semanal de meditação para usuários com queixas de tensão e insônia, conduzido por uma psicóloga da equipe.\n\nI. A meditação pode ser descrita como um estado alterado de consciência induzido de forma voluntária\n\nPORQUE\n\nII. durante a prática a pessoa modifica intencionalmente o foco e a amplitude da atenção, afastando-se do funcionamento habitual da vigília.\n\nA respeito dessas asserções, assinale a opção correta.", "o": ["As asserções I e II são proposições verdadeiras, e a II é uma justificativa correta da I.", "As asserções I e II são proposições verdadeiras, mas a II não é uma justificativa correta da I.", "A asserção I é uma proposição verdadeira, e a II é uma proposição falsa.", "A asserção I é uma proposição falsa, e a II é uma proposição verdadeira.", "As asserções I e II são proposições falsas."], "c": ["Correta. A I é verdadeira: a literatura de Psicologia inclui a meditação entre os estados alterados, ao lado do sono, da hipnose e do efeito de substâncias. A II é verdadeira: é justamente a mudança intencional do foco atencional que distingue a meditação da vigília comum. A II explica a I: o que torna a meditação um estado alterado é a modificação voluntária do modo de atenção em relação à vigília, o estado de referência.", "Errada. A II explica a I.", "Errada. A II é verdadeira.", "Errada. A I é verdadeira.", "Errada. A I é verdadeira; a II é verdadeira."], "a": 0, "v": 1, "e": 1, "bl": "Analisar — pede para julgar duas proposições e a relação causal entre elas", "cp": "II.2 · Avaliação, diagnóstico e intervenção: prevenção e promoção da saúde", "ob": "X · Processos psicológicos básicos; XIX · Atenção e promoção da saúde"},
+ {"t": "ori", "src": "Enade 2025 · situação-problema", "q": "Um homem de 78 anos é levado ao pronto-socorro pela filha, que conta que ele \"ficou confuso de repente\" há dois dias, junto com uma infecção urinária. No exame do estado mental, ele diz o próprio nome e a profissão que exercia, mas afirma que está em casa e não sabe o mês nem o ano. A equipe relata que a confusão piora no fim da tarde e melhora pela manhã.\n\nO registro e a conduta mais adequados da psicóloga hospitalar são:", "o": ["Registrar desorientação alopsíquica (temporal e espacial) com orientação autopsíquica preservada e comunicar à equipe médica o início súbito e a flutuação, que sugerem quadro de causa orgânica, como o delirium.", "Registrar desorientação autopsíquica, porque ele não sabe onde está, e iniciar psicoterapia para reduzir a ansiedade da internação.", "Registrar orientação preservada, porque ele sabe quem é, e liberar o caso sem outras observações.", "Registrar demência já instalada e orientar a família a procurar uma instituição de longa permanência.", "Não compartilhar as observações com a equipe, porque o sigilo profissional impede que dados do exame psicológico sejam discutidos com outros profissionais."], "c": ["Correta. Ele sabe quem é (autopsíquica preservada), mas não sabe onde nem quando está (alopsíquica comprometida). Início agudo, flutuação ao longo do dia e infecção associada são sinais que a equipe médica precisa conhecer.", "Errada. Não saber onde está é desorientação espacial, parte da orientação alopsíquica. A autopsíquica (dados sobre si) está preservada.", "Errada. Saber o próprio nome não basta: tempo e espaço também são esferas da orientação.", "Errada. A demência costuma ter instalação lenta e progressiva. Um quadro súbito e flutuante aponta para outra hipótese e não autoriza conclusão desse porte.", "Errada. O sigilo não impede o trabalho em equipe. O Código de Ética (art. 6º, b) orienta compartilhar com outros profissionais as informações relevantes para qualificar o serviço, preservando o caráter confidencial."], "a": 0, "v": 1, "e": 1, "bl": "Aplicar — pede usar os conceitos de orientação num caso clínico e decidir a conduta", "cp": "II.4 · Avaliação, diagnóstico e intervenção: atuação em equipe inter e multiprofissional; II.3 · Avaliação, diagnóstico e intervenção: avaliação, psicodiagnóstico e intervenção clínica", "ob": "X · Processos psicológicos básicos; XI · Processos psicopatológicos"},
+ {"t": "mem", "src": "Enade 2025 · situação-problema com afirmativas", "q": "Numa delegacia, uma testemunha de acidente de trânsito é ouvida três vezes ao longo de um mês. Na primeira, diz que não reparou na cor do semáforo. Na terceira, depois de ouvir a pergunta \"o carro avançou o sinal vermelho em alta velocidade?\", descreve com segurança o semáforo vermelho e o carro \"voando\". Uma psicóloga é chamada para orientar a equipe sobre a coleta de depoimentos.\n\nAvalie as afirmações a seguir.\n\nI. A memória funciona como uma gravação fiel; se a testemunha descreve o detalhe com segurança na terceira oitiva, é porque ele foi registrado no momento do acidente.\n\nII. Perguntas que embutem a resposta podem alterar a lembrança sem que a testemunha perceba, fenômeno estudado como efeito da desinformação e falsas memórias.\n\nIII. Para reduzir distorções, recomenda-se começar com relato livre e perguntas abertas, evitando sugerir detalhes.\n\nÉ correto o que se afirma em", "o": ["II e III, apenas.", "I, apenas.", "II, apenas.", "I e III, apenas.", "I, II e III."], "c": ["Correta. I falsa: a recuperação é reconstrutiva e pode incorporar informação recebida depois do evento; II verdadeira: é o que os experimentos de Elizabeth Loftus mostraram com perguntas que sugeriam velocidade ou detalhes inexistentes; III verdadeira: a entrevista que parte do relato livre reduz a contaminação da lembrança pelo entrevistador. O caso mostra que a confiança da testemunha não garante exatidão: a lembrança foi reconstruída a partir da pergunta sugestiva.", "Errada. Inclui a I, que é falsa (a recuperação é reconstrutiva e pode incorporar informação recebida depois do evento); deixa de fora a II, que é verdadeira; deixa de fora a III, que é verdadeira.", "Errada. Deixa de fora a III, que é verdadeira.", "Errada. Inclui a I, que é falsa (a recuperação é reconstrutiva e pode incorporar informação recebida depois do evento); deixa de fora a II, que é verdadeira.", "Errada. Inclui a I, que é falsa (a recuperação é reconstrutiva e pode incorporar informação recebida depois do evento)."], "a": 0, "v": 1, "e": 1, "bl": "Avaliar — pede julgar a validade de um relato e de práticas de coleta com base no funcionamento da memória", "cp": "I.2 · Pesquisa e produção de conhecimento: analisar fenômenos cognitivos, comportamentais e afetivos; II.3 · Avaliação, diagnóstico e intervenção: avaliação, psicodiagnóstico e intervenção clínica", "ob": "X · Processos psicológicos básicos; II · Métodos e técnicas de pesquisa"},
+ {"t": "pen", "src": "Enade 2025 · situação-problema com afirmativas", "q": "Um homem de 32 anos é acolhido num CAPS. Fala sem pausas, muda de assunto a cada frase e emenda temas por semelhança de som (\"fui ao banco, banco de praça, praça da Sé...\"). Afirma também, com certeza que nenhum argumento abala, que foi escolhido para salvar a cidade e que os vizinhos conspiram para impedi-lo. Ele frequenta uma igreja evangélica, cujos membros não compartilham essas ideias.\n\nAvalie as afirmações a seguir.\n\nI. A fala rápida e sem pausas indica aceleração do pensamento, alteração do curso.\n\nII. A certeza irredutível de ter sido escolhido e de ser perseguido, não compartilhada pelo seu grupo religioso, sugere delírio, alteração do conteúdo.\n\nIII. Por terem tema religioso, as ideias devem ser registradas como delírio independentemente do contexto cultural da pessoa.\n\nÉ correto o que se afirma em", "o": ["I e II, apenas.", "I, apenas.", "III, apenas.", "II e III, apenas.", "I, II e III."], "c": ["Correta. I verdadeira: curso é o fluxo e a velocidade do pensamento; II verdadeira: o delírio se define pela convicção irredutível e não compartilhada pelo meio cultural, e aqui a própria igreja não partilha a ideia; III falsa: o tema religioso, sozinho, não define delírio; é preciso verificar se a crença é compartilhada pelo grupo cultural. A questão separa curso (velocidade) de conteúdo (tema) e cobra o cuidado de não patologizar crenças religiosas compartilhadas.", "Errada. Deixa de fora a II, que é verdadeira.", "Errada. Deixa de fora a I, que é verdadeira; deixa de fora a II, que é verdadeira; inclui a III, que é falsa (o tema religioso, sozinho, não define delírio; é preciso verificar se a crença é compartilhada pelo grupo cultural).", "Errada. Deixa de fora a I, que é verdadeira; inclui a III, que é falsa (o tema religioso, sozinho, não define delírio; é preciso verificar se a crença é compartilhada pelo grupo cultural).", "Errada. Inclui a III, que é falsa (o tema religioso, sozinho, não define delírio; é preciso verificar se a crença é compartilhada pelo grupo cultural)."], "a": 0, "v": 1, "e": 1, "bl": "Analisar — exige separar dimensões do pensamento e considerar o contexto cultural", "cp": "II.3 · Avaliação, diagnóstico e intervenção: avaliação, psicodiagnóstico e intervenção clínica", "ob": "X · Processos psicológicos básicos; XI · Processos psicopatológicos"},
+ {"t": "lin", "src": "Enade 2025 · asserção-razão", "q": "Numa oficina de alfabetização de adultos realizada num CRAS, a psicóloga observa que vários participantes resolvem problemas de troco falando em voz baixa os passos da conta (\"tenho vinte, gastei sete, sobram...\"). A coordenadora pergunta se esse hábito deveria ser desestimulado.\n\nI. O hábito de falar os passos em voz baixa não deve ser desestimulado\n\nPORQUE\n\nII. para Vygotsky, a fala funciona como instrumento que organiza e regula o pensamento e a ação, sobretudo diante de tarefas difíceis.\n\nA respeito dessas asserções, assinale a opção correta.", "o": ["As asserções I e II são proposições verdadeiras, e a II é uma justificativa correta da I.", "As asserções I e II são proposições verdadeiras, mas a II não é uma justificativa correta da I.", "A asserção I é uma proposição verdadeira, e a II é uma proposição falsa.", "A asserção I é uma proposição falsa, e a II é uma proposição verdadeira.", "As asserções I e II são proposições falsas."], "c": ["Correta. A I é verdadeira: a fala dirigida a si mesmo é um recurso de autorregulação, não um sinal de déficit. A II é verdadeira: é a função da linguagem como suporte do pensamento, que Vygotsky descreve na passagem da fala social à fala interior. A II explica a I: se a fala organiza o pensamento, suprimi-la tira do participante um apoio para resolver a tarefa.", "Errada. A II explica a I.", "Errada. A II é verdadeira.", "Errada. A I é verdadeira.", "Errada. A I é verdadeira; a II é verdadeira."], "a": 0, "v": 1, "e": 1, "bl": "Avaliar — pede julgar uma prática educativa à luz da teoria", "cp": "II.5 · Avaliação, diagnóstico e intervenção: processos educativos; II.1 · Avaliação, diagnóstico e intervenção: processos psicossociais e populações vulneráveis", "ob": "X · Processos psicológicos básicos; XV · Ensino e aprendizagem; XX · Processos psicossociais"},
+ {"t": "int", "src": "Enade 2025 · situação-problema com afirmativas", "q": "A coordenação de uma escola pede ao psicólogo que aplique um questionário para classificar cada aluno num \"tipo de inteligência\" de Gardner e, a partir disso, separar as turmas e ensinar cada grupo apenas pelo seu \"estilo\".\n\nAvalie as afirmações a seguir.\n\nI. A teoria de Gardner propõe várias inteligências relativamente independentes, o que questiona reduzir a capacidade de uma pessoa a um único escore.\n\nII. Há evidência consistente de que ensinar cada aluno no seu estilo preferido de aprendizagem (visual, auditivo ou cinestésico) melhora o desempenho.\n\nIII. Usar a teoria para rotular alunos e fixar trilhas rígidas de ensino contraria a ideia de que as capacidades se desenvolvem com a experiência e a cultura.\n\nÉ correto o que se afirma em", "o": ["I e III, apenas.", "I, apenas.", "II, apenas.", "II e III, apenas.", "I, II e III."], "c": ["Correta. I verdadeira: é a tese central das inteligências múltiplas; II falsa: revisões da pesquisa não encontraram apoio para essa hipótese, e o próprio Gardner distingue inteligências de estilos de aprendizagem; III verdadeira: rotular congela o que a teoria trata como potencial a desenvolver. O pedido da escola mistura duas ideias diferentes, inteligências múltiplas e estilos de aprendizagem, e usa a primeira para rotular.", "Errada. Deixa de fora a III, que é verdadeira.", "Errada. Deixa de fora a I, que é verdadeira; inclui a II, que é falsa (revisões da pesquisa não encontraram apoio para essa hipótese, e o próprio Gardner distingue inteligências de estilos de aprendizagem); deixa de fora a III, que é verdadeira.", "Errada. Deixa de fora a I, que é verdadeira; inclui a II, que é falsa (revisões da pesquisa não encontraram apoio para essa hipótese, e o próprio Gardner distingue inteligências de estilos de aprendizagem).", "Errada. Inclui a II, que é falsa (revisões da pesquisa não encontraram apoio para essa hipótese, e o próprio Gardner distingue inteligências de estilos de aprendizagem)."], "a": 0, "v": 1, "e": 1, "bl": "Avaliar — pede julgar o uso institucional de uma teoria e separar evidência de crença difundida", "cp": "II.5 · Avaliação, diagnóstico e intervenção: processos educativos; I.1 · Pesquisa e produção de conhecimento: dominar fundamentos teóricos, metodológicos e epistemológicos", "ob": "X · Processos psicológicos básicos; XII · Avaliação psicológica; XV · Ensino e aprendizagem"},
+ {"t": "mot", "src": "Enade 2025 · situação-problema", "q": "Numa ONG, voluntários liam histórias para crianças hospitalizadas por iniciativa própria. A direção passou a pagar um valor por hora de leitura. Meses depois, quando o pagamento foi suspenso por falta de verba, a maioria deixou de ir, inclusive pessoas que liam havia anos antes do pagamento.\n\nA interpretação mais adequada, à luz das teorias da motivação, é:", "o": ["A recompensa externa associada a uma atividade antes feita por interesse pode deslocar a motivação de intrínseca para extrínseca; retirada a recompensa, o engajamento cai.", "Os voluntários tinham necessidades fisiológicas não atendidas, base da pirâmide de Maslow, e por isso só leem quando pagos.", "A necessidade de afiliação, descrita por McClelland, aumentou com o pagamento e diminuiu quando ele acabou.", "A motivação extrínseca é sempre mais estável que a intrínseca; o problema foi apenas o valor baixo do pagamento.", "O abandono se explica só pela frustração, sem relação com a mudança na fonte da motivação."], "c": ["Correta. O caso descreve o chamado efeito de superjustificação: quando uma recompensa externa passa a explicar a atividade, o interesse próprio perde peso, e a retirada da recompensa derruba o engajamento.", "Errada. Nada no enunciado indica carência básica; essas pessoas já liam sem pagamento antes.", "Errada. Afiliação é a necessidade de vínculo com outras pessoas; o pagamento não tem relação direta com ela.", "Errada. Generalização sem base: a motivação extrínseca depende da presença da recompensa, por isso é a mais frágil quando ela some.", "Errada. A frustração pode estar presente, mas não explica por que quem lia antes do pagamento também desistiu. Falta a mudança na fonte da motivação."], "a": 0, "v": 1, "e": 1, "bl": "Analisar — exige relacionar a sequência de eventos à mudança na fonte da motivação", "cp": "I.5 · Pesquisa e produção de conhecimento: elaborar intervenções em processos de trabalho", "ob": "X · Processos psicológicos básicos; XVII · Instituições e organizações"},
+ {"t": "emo", "src": "Enade 2025 · situação-problema com afirmativas", "q": "Depois de uma enchente que desalojou centenas de famílias, uma equipe de Psicologia passa a atuar num abrigo municipal. Nos primeiros dias, muitos moradores choram com frequência, têm medo de novas chuvas, dormem mal e se assustam com barulhos.\n\nAvalie as afirmações a seguir.\n\nI. Reações emocionais intensas nos primeiros dias após um desastre são, em geral, respostas esperadas a um evento anormal e não devem ser tratadas automaticamente como transtorno.\n\nII. Os primeiros cuidados psicológicos priorizam segurança, necessidades básicas, escuta sem forçar o relato e conexão com a rede de apoio.\n\nIII. O debriefing obrigatório, em que cada pessoa relata em detalhe o evento traumático logo após o ocorrido, é a intervenção mais indicada para prevenir o transtorno de estresse pós-traumático.\n\nÉ correto o que se afirma em", "o": ["I e II, apenas.", "I, apenas.", "III, apenas.", "II e III, apenas.", "I, II e III."], "c": ["Correta. I verdadeira: medo, tristeza e alteração do sono são respostas comuns e, na maioria das pessoas, diminuem com o tempo e com apoio; II verdadeira: são os princípios dos primeiros cuidados psicológicos recomendados pela OMS; III falsa: revisões sistemáticas não mostraram benefício do debriefing de sessão única, e há indícios de que pode piorar a evolução. A questão cobra a diferença entre emoção esperada e quadro clínico e a escolha de intervenções com base em evidência.", "Errada. Deixa de fora a II, que é verdadeira.", "Errada. Deixa de fora a I, que é verdadeira; deixa de fora a II, que é verdadeira; inclui a III, que é falsa (revisões sistemáticas não mostraram benefício do debriefing de sessão única, e há indícios de que pode piorar a evolução).", "Errada. Deixa de fora a I, que é verdadeira; inclui a III, que é falsa (revisões sistemáticas não mostraram benefício do debriefing de sessão única, e há indícios de que pode piorar a evolução).", "Errada. Inclui a III, que é falsa (revisões sistemáticas não mostraram benefício do debriefing de sessão única, e há indícios de que pode piorar a evolução)."], "a": 0, "v": 1, "e": 1, "bl": "Avaliar — pede julgar condutas em emergência com base em evidências", "cp": "II.1 · Avaliação, diagnóstico e intervenção: processos psicossociais e populações vulneráveis; II.2 · Avaliação, diagnóstico e intervenção: prevenção e promoção da saúde", "ob": "XVI · Emergências e desastres; X · Processos psicológicos básicos"}
+];
+const BANK = "processos-v1";
+
+/* ===================== ENADE 2025 ===================== */
+/* Questões no formato Enade, alinhadas à Portaria Inep nº 348/2025. e:1 marca a questão; bl = Taxonomia de Bloom revisada; cp = competência (art. 5º); ob = objeto de conhecimento (art. 6º) */
+function enadeMeta(q){
+  const d = document.createElement("div");
+  if(!q.bl) return d;
+  d.style.cssText = "margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px;font-size:.86rem;color:var(--ink2);line-height:1.45";
+  d.innerHTML = "<div><b>Bloom:</b> <span></span></div><div style=\"margin-top:4px\"><b>Competência avaliada (art. 5º):</b> <span></span></div><div style=\"margin-top:4px\"><b>Objeto de conhecimento (art. 6º):</b> <span></span></div>";
+  const s = d.querySelectorAll("span"); s[0].textContent = q.bl; s[1].textContent = q.cp; s[2].textContent = q.ob;
+  return d;
+}
+
+
+const IMGS = {};
+const ORIG_N = Q.filter(q=>!q.v).length;
+document.getElementById("bankN").textContent = Q.filter(q=>!q.e).length;
+document.getElementById("origN").textContent = ORIG_N;
+document.getElementById("origN2").textContent = ORIG_N;
+document.getElementById("varN").textContent = Q.filter(q=>q.v&&!q.e).length;
+const ROUND = 20;
+
+/* ===================== ESCALA ===================== */
+const SCALE = [
+  {min:0,  max:2.9, n:"Sono profundo", s:"Consciência ainda desligada da matéria. Comece por sensação, percepção e atenção."},
+  {min:3,  max:4.4, n:"Sensação sem percepção", s:"O estímulo chega, mas ainda não ganha sentido. Faltam as ligações entre os conceitos."},
+  {min:4.5,max:5.9, n:"Ponta da língua", s:"Está armazenado, mas a recuperação ainda falha. Mais uma revisão resolve."},
+  {min:6,  max:6.9, n:"Vigília", s:"Na média. Acordado e orientado no conteúdo."},
+  {min:7,  max:7.9, n:"Atenção seletiva", s:"Você já separa o que importa das pegadinhas."},
+  {min:8,  max:8.9, n:"Memória de longo prazo", s:"O conteúdo foi codificado e armazenado de verdade."},
+  {min:9,  max:9.9, n:"Autorrealização", s:"Topo da pirâmide de Maslow. Domínio quase completo."},
+  {min:10, max:10,  n:"Wundt", s:"Nota máxima. Digno do laboratório de Leipzig (1879)."}
+];
+const PASS = 6;
+const level = g => SCALE.find(s => g >= s.min && g <= s.max + 0.0001) || SCALE[0];
+const fmt = n => n.toFixed(1).replace(".", ",");
+
+/* ===================== ARMAZENAMENTO ===================== */
+let attempts = [];
+let store = "local";
+let db = null, uid = null, sample = null;
+const LS_KEY = "simulado-processos-v1";
+
+function lsLoad(){ try{ return JSON.parse(localStorage.getItem(LS_KEY) || "[]").filter(r => r.bank === BANK); }catch(e){ return []; } }
+function lsSave(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(attempts)); }catch(e){} }
+
+async function initStore(){
+  attempts = lsLoad();
+  setStoreNote(); renderHome();
+  try{
+    const c = window.claude;
+    if(!c || !c.use){ setStoreNote(); return; }
+    const [d, u, s] = await Promise.all([c.use("db"), c.use("user"), c.use("sample")]);
+    sample = s || null;
+    if(d && u){
+      const id = await u.id();
+      if(id){
+        db = d; uid = id;
+        const col = db.collection("data/users/" + uid);
+        let done = false;
+        const timer = setTimeout(() => { if(!done){ setStoreNote("Não foi possível alcançar o armazenamento agora; usando a cópia deste aparelho."); } }, 10000);
+        try{
+          const snap = await col.get();
+          done = true; clearTimeout(timer);
+          const remote = snap.docs.filter(x => x.exists).map(x => x.data()).filter(r => r.bank === BANK);
+          const ids = new Set(remote.map(r => r.id));
+          const pending = attempts.filter(a => !ids.has(a.id));
+          for(const p of pending){ try{ await col.doc(p.id).set(p); remote.push(p); }catch(e){} }
+          attempts = remote.sort((a,b) => a.ts - b.ts);
+          store = "db"; lsSave();
+        }catch(e){ done = true; clearTimeout(timer); }
+      }
+    }
+  }catch(e){}
+  setStoreNote(); renderHome(); refreshCurrent();
+}
+async function saveAttempt(a){
+  attempts.push(a); lsSave();
+  if(store === "db" && db){
+    try{ await db.collection("data/users/" + uid).doc(a.id).set(a); }
+    catch(e){ setStoreNote("A tentativa ficou salva neste aparelho, mas não subiu para a nuvem. Ela será enviada na próxima abertura."); }
+  }
+}
+async function clearAll(){
+  if(store === "db" && db){
+    const col = db.collection("data/users/" + uid);
+    for(const a of attempts){ try{ await col.doc(a.id).delete(); }catch(e){} }
+  }
+  attempts = []; lsSave();
+}
+function setStoreNote(msg){
+  const el = document.getElementById("storeNote");
+  if(msg){ el.textContent = msg; return; }
+  el.textContent = store === "db"
+    ? `Resultados guardados na sua conta (${attempts.length} tentativa${attempts.length===1?"":"s"}). Ficam disponíveis em qualquer aparelho.`
+    : `Resultados guardados neste aparelho (${attempts.length} tentativa${attempts.length===1?"":"s"}).`;
+}
+
+/* ===================== NAVEGAÇÃO ===================== */
+const views = ["home","quiz","result","evo","rep"];
+let current = "home";
+function show(v){
+  current = v;
+  views.forEach(x => document.getElementById("v-"+x).classList.toggle("hide", x !== v));
+  document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.v === v));
+  document.getElementById("tabs").classList.toggle("hide", v === "quiz");
+  if(v === "evo") renderEvo();
+  if(v === "rep") renderReport();
+  if(v === "home") renderHome();
+  window.scrollTo(0,0);
+}
+function refreshCurrent(){ if(current === "evo") renderEvo(); if(current === "rep") renderReport(); }
+document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => show(b.dataset.v));
+
+/* ===================== HOME ===================== */
+function renderHome(){
+  const last = attempts[attempts.length-1];
+  const sl = document.getElementById("scaleList");
+  sl.innerHTML = SCALE.slice().reverse().map(s => {
+    const cur = last && level(last.grade) === s;
+    const rng = s.min === s.max ? "10,0" : `${fmt(s.min)}–${fmt(s.max)}`;
+    return `<span class="r">${rng}</span><span class="n ${cur?"cur":""}">${s.n}${cur?" ← última":""}</span><span class="${s.min>=PASS?"badge ok":"badge no"}" style="padding:1px 8px;font-size:.72rem">${s.min>=PASS?"aprovado":"abaixo"}</span>
+      <span></span><span class="s" style="grid-column:2 / 4">${s.s}</span>`;
+  }).join("");
+  const lc = document.getElementById("lastCard");
+  if(last){
+    const best = Math.max(...attempts.map(a=>a.grade));
+    const avg = attempts.reduce((s,a)=>s+a.grade,0)/attempts.length;
+    lc.style.display = "";
+    lc.innerHTML = `<h2>Seu histórico</h2>
+      <div class="stats" style="margin-top:12px">
+        <div class="stat"><b>${fmt(last.grade)}</b><span>Última nota</span></div>
+        <div class="stat"><b>${fmt(best)}</b><span>Melhor nota</span></div>
+        <div class="stat"><b>${fmt(avg)}</b><span>Média (${attempts.length})</span></div>
+      </div>
+      <div class="row" style="margin-top:12px"><button class="btn" onclick="show('evo')">Ver evolução</button><button class="btn" onclick="show('rep')">Relatório do professor</button></div>`;
+  } else lc.style.display = "none";
+}
+
+/* ===================== QUIZ ===================== */
+let run = null, tick = null;
+const shuffle = arr => { const a = arr.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+
+function buildRound(){
+  const only = document.getElementById("onlyOrig").checked;
+  const en = document.getElementById("enadeMode").checked;
+  const pool = shuffle(Q.map((q,i)=>i).filter(i => en ? Q[i].e : (!Q[i].e && (!only || !Q[i].v))));
+  if(pool.length <= ROUND) return pool;
+  const pick = [], used = new Set();
+  Object.keys(TOPICS).forEach(t => { const i = pool.find(x => Q[x].t === t); if(i !== undefined){ pick.push(i); used.add(i); } });
+  for(const i of pool){ if(pick.length >= ROUND) break; if(!used.has(i)){ pick.push(i); used.add(i); } }
+  return shuffle(pick);
+}
+document.getElementById("startBtn").onclick = () => {
+  const ids = buildRound();
+  run = { ids, i:0, start:Date.now(), instant:document.getElementById("instant").checked,
+          answers: ids.map(id => ({ qid:id, order: shuffle([0,1,2,3,4]), pick:null })), confirmed:false };
+  clearInterval(tick);
+  tick = setInterval(()=>{ const s = Math.floor((Date.now()-run.start)/1000); document.getElementById("qTimer").textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`; }, 1000);
+  show("quiz"); renderQ();
+};
+let quitArmed = false;
+document.getElementById("quitBtn").onclick = (e) => {
+  if(!quitArmed){ quitArmed = true; e.target.textContent = "Sair sem salvar?"; setTimeout(()=>{ quitArmed=false; e.target.textContent="Sair"; }, 3000); return; }
+  quitArmed = false; e.target.textContent = "Sair"; clearInterval(tick); run = null; show("home");
+};
+function commentList(q, order, pick){
+  const ul = document.createElement("ul"); ul.className = "oc";
+  order.forEach((oi, k) => {
+    const li = document.createElement("li");
+    const ok = oi === q.a;
+    li.innerHTML = `<span class="k ${ok?"ok":"no"}">${"ABCDE"[k]}</span><span class="ot"></span><span class="cm"></span>`;
+    li.querySelector(".ot").textContent = (ok ? "✓ " : "✗ ") + q.o[oi] + (oi === pick && !ok ? "  (sua resposta)" : "");
+    li.querySelector(".cm").textContent = q.c[oi];
+    ul.appendChild(li);
+  });
+  return ul;
+}
+function renderQ(){
+  const a = run.answers[run.i], q = Q[a.qid];
+  run.confirmed = false;
+  document.getElementById("qCount").textContent = `Questão ${run.i+1} de ${run.ids.length}`;
+  document.getElementById("qBar").style.width = `${(run.i)/run.ids.length*100}%`;
+  document.getElementById("qTopic").textContent = TOPICS[q.t] + " · " + q.src;
+  document.getElementById("qText").textContent = q.q;
+  const im = document.getElementById("qImg");
+  if(q.img){ im.src = IMGS[q.img]; im.classList.remove("hide"); } else im.classList.add("hide");
+  document.getElementById("qFb").innerHTML = "";
+  const box = document.getElementById("qOpts"); box.innerHTML = "";
+  const nb = document.getElementById("nextBtn");
+  a.order.forEach((oi, k) => {
+    const b = document.createElement("button");
+    b.className = "opt"; b.dataset.oi = oi;
+    b.innerHTML = `<span class="l">${"ABCDE"[k]}</span><span class="t"></span>`;
+    b.querySelector(".t").textContent = q.o[oi];
+    b.onclick = () => { if(run.confirmed) return; a.pick = oi; box.querySelectorAll(".opt").forEach(x => x.classList.toggle("sel", +x.dataset.oi === oi)); nb.disabled = false; };
+    box.appendChild(b);
+  });
+  nb.disabled = true; nb.textContent = run.instant ? "Confirmar" : (run.i === run.ids.length-1 ? "Finalizar" : "Próxima");
+}
+document.getElementById("nextBtn").onclick = () => {
+  const a = run.answers[run.i], q = Q[a.qid];
+  const nb = document.getElementById("nextBtn");
+  if(run.instant && !run.confirmed){
+    run.confirmed = true;
+    const ok = a.pick === q.a;
+    document.querySelectorAll("#qOpts .opt").forEach(x => {
+      const oi = +x.dataset.oi; x.classList.remove("sel");
+      if(oi === q.a) x.classList.add("ok"); else if(oi === a.pick) x.classList.add("no");
+    });
+    const fb = document.getElementById("qFb");
+    fb.innerHTML = `<div class="feedback ${ok?"ok":"no"}"><b>${ok?"Correto.":"Não foi dessa vez."}</b> Comentário de cada alternativa:</div>`;
+    fb.firstChild.appendChild(commentList(q, a.order, a.pick));
+    fb.firstChild.appendChild(enadeMeta(q));
+    nb.textContent = run.i === run.ids.length-1 ? "Ver resultado" : "Próxima";
+    return;
+  }
+  if(run.i < run.ids.length-1){ run.i++; renderQ(); window.scrollTo(0,0); }
+  else finish();
+};
+async function finish(){
+  clearInterval(tick);
+  const items = run.answers.map(a => ({ qid:a.qid, t:Q[a.qid].t, ok: a.pick === Q[a.qid].a, pick:a.pick }));
+  const correct = items.filter(x=>x.ok).length;
+  const N = items.length;
+  const att = { id: "t" + Date.now(), ts: Date.now(), bank: BANK, grade: Math.round(correct/N*100)/10, correct, total:N,
+                secs: Math.round((Date.now()-run.start)/1000), items, mode: document.getElementById("enadeMode").checked ? "enade" : "tea" };
+  const answers = run.answers; run = null;
+  await saveAttempt(att);
+  setStoreNote();
+  renderResult(att, answers);
+  show("result");
+}
+
+/* ===================== RESULTADO ===================== */
+function renderResult(att, answers){
+  const lv = level(att.grade), pass = att.grade >= PASS;
+  const prev = attempts.length > 1 ? attempts[attempts.length-2] : null;
+  const delta = prev ? att.grade - prev.grade : null;
+  const segs = SCALE.map(s => `<div class="${s===lv?"on":""}" title="${s.n}"></div>`).join("");
+  const byT = {}; att.items.forEach(it => { (byT[it.t] ||= {ok:0,n:0}); byT[it.t].n++; if(it.ok) byT[it.t].ok++; });
+  const weak = Object.entries(byT).filter(([t,v]) => v.ok/v.n < 0.6).map(([t]) => TOPICS[t]);
+  const el = document.getElementById("v-result");
+  el.innerHTML = `
+  <div class="card">
+    <div class="eyebrow">Resultado · ${new Date(att.ts).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"})}</div>
+    <div class="score" style="margin-top:10px">
+      <div class="big">${fmt(att.grade)}</div>
+      <div>
+        <div class="badge ${pass?"ok":"no"}">${pass?"✓ Aprovado":"✕ Abaixo da média"}</div>
+        <h2 style="margin-top:8px">${lv.n}</h2>
+        <div class="ink2">${lv.s}</div>
+      </div>
+    </div>
+    <div class="scale">${segs}</div>
+    <div class="row muted" style="justify-content:space-between;font-size:.75rem"><span>0</span><span>média 6,0</span><span>10</span></div>
+    <div class="stats" style="margin-top:14px">
+      <div class="stat"><b>${att.correct}/${att.total}</b><span>Acertos</span></div>
+      <div class="stat"><b>${Math.floor(att.secs/60)}:${String(att.secs%60).padStart(2,"0")}</b><span>Tempo</span></div>
+      <div class="stat"><b>${delta===null?"—":(delta>=0?"+":"")+fmt(delta)}</b><span>vs. anterior</span></div>
+    </div>
+    ${weak.length ? `<p class="ink2" style="margin-top:14px"><b>Blocos abaixo de 60% nesta tentativa:</b> ${weak.join("; ")}.</p>` : `<p class="ink2" style="margin-top:14px">Nenhum bloco ficou abaixo de 60% nesta tentativa.</p>`}
+    <div class="row" style="margin-top:12px">
+      <button class="btn primary" onclick="document.getElementById('startBtn').click()">Nova tentativa</button>
+      <button class="btn" onclick="show('rep')">Relatório do professor</button>
+      <button class="btn" onclick="show('evo')">Evolução</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Correção</h2>
+    <div id="reviewList" style="margin-top:8px"></div>
+  </div>`;
+  const rl = el.querySelector("#reviewList");
+  answers.forEach((a, i) => {
+    const q = Q[a.qid], ok = a.pick === q.a;
+    const d = document.createElement("div"); d.className = "review-item";
+    d.innerHTML = `<div class="row" style="justify-content:space-between"><span class="eyebrow">${i+1}. ${TOPICS[q.t]} · ${q.src}</span><span class="badge ${ok?"ok":"no"}" style="font-size:.72rem;padding:2px 9px">${ok?"acertou":"errou"}</span></div>
+      <p style="margin:.4em 0;font-weight:600;white-space:pre-line"></p>${q.img?`<img class="qimg" style="width:180px" src="${IMGS[q.img]}" alt="">`:""}`;
+    d.querySelector("p").textContent = q.q;
+    d.appendChild(commentList(q, a.order, a.pick));
+    d.appendChild(enadeMeta(q));
+    rl.appendChild(d);
+  });
+}
+
+/* ===================== ANÁLISE ===================== */
+function topicStats(list){
+  const r = {}; Object.keys(TOPICS).forEach(t => r[t] = {ok:0,n:0});
+  list.forEach(a => a.items.forEach(it => { if(r[it.t]){ r[it.t].n++; if(it.ok) r[it.t].ok++; } }));
+  return r;
+}
+function slope(ys){
+  const n = ys.length; if(n < 2) return 0;
+  const xm = (n-1)/2, ym = ys.reduce((s,y)=>s+y,0)/n;
+  let num=0, den=0; ys.forEach((y,i)=>{ num += (i-xm)*(y-ym); den += (i-xm)**2; });
+  return num/den;
+}
+
+/* ===================== EVOLUÇÃO ===================== */
+function svgEl(tag, attrs){ const e = document.createElementNS("http://www.w3.org/2000/svg", tag); for(const k in attrs) e.setAttribute(k, attrs[k]); return e; }
+function renderEvo(){
+  const el = document.getElementById("v-evo");
+  if(!attempts.length){ el.innerHTML = `<div class="card"><h2>Evolução</h2><p class="ink2">Faça a primeira tentativa para ver o gráfico.</p></div>`; return; }
+  const grades = attempts.map(a=>a.grade);
+  const avg = grades.reduce((s,g)=>s+g,0)/grades.length;
+  const passN = grades.filter(g=>g>=PASS).length;
+  el.innerHTML = `
+  <div class="card">
+    <h2>Notas por tentativa</h2>
+    <div class="stats" style="margin:12px 0">
+      <div class="stat"><b>${attempts.length}</b><span>Tentativas</span></div>
+      <div class="stat"><b>${fmt(avg)}</b><span>Média geral</span></div>
+      <div class="stat"><b>${passN}/${attempts.length}</b><span>Acima da média</span></div>
+    </div>
+    <div class="chart" id="lineChart"><div class="tip" id="lineTip"></div></div>
+    <div class="legend"><span><i></i>Nota</span><span><i class="dash"></i>Média de aprovação (6,0)</span></div>
+  </div>
+  <div class="card">
+    <h2>Acerto por bloco</h2>
+    <p class="note" style="margin:.3em 0 10px">Todas as tentativas somadas. A linha tracejada marca 60%, o equivalente à média.</p>
+    <div class="chart" id="barChart"><div class="tip" id="barTip"></div></div>
+  </div>
+  <div class="card">
+    <h2>Histórico</h2>
+    <div style="overflow-x:auto"><table><thead><tr><th>#</th><th>Data</th><th>Nota</th><th>Faixa</th><th>Tempo</th></tr></thead><tbody id="histBody"></tbody></table></div>
+    <div class="row" style="margin-top:14px"><button class="btn danger" id="clearBtn">Apagar histórico</button></div>
+  </div>`;
+  drawLine(document.getElementById("lineChart"), grades);
+  drawBars(document.getElementById("barChart"), topicStats(attempts));
+  document.getElementById("histBody").innerHTML = attempts.map((a,i) => `<tr><td>${i+1}</td><td>${new Date(a.ts).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})} ${new Date(a.ts).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}</td><td class="num" style="color:${a.grade>=PASS?"var(--good)":"var(--bad)"}">${fmt(a.grade)}</td><td>${level(a.grade).n}</td><td>${Math.floor(a.secs/60)}min</td></tr>`).reverse().join("");
+  let armed = false;
+  document.getElementById("clearBtn").onclick = async (e) => {
+    if(!armed){ armed = true; e.target.textContent = "Toque de novo para apagar tudo"; setTimeout(()=>{armed=false; e.target.textContent="Apagar histórico";},4000); return; }
+    e.target.disabled = true; e.target.textContent = "Apagando…";
+    await clearAll(); setStoreNote(); renderEvo(); renderHome();
+  };
+}
+function drawLine(host, ys){
+  const W = Math.max(300, Math.round(host.clientWidth || 600)), H = 230, L = 30, R = 16, T = 22, B = 28;
+  const svg = svgEl("svg", {viewBox:`0 0 ${W} ${H}`, role:"img", "aria-label":"Notas por tentativa"});
+  const x = i => ys.length === 1 ? L + (W-L-R)/2 : L + i*(W-L-R)/(ys.length-1);
+  const y = v => T + (10 - v)*(H-T-B)/10;
+  for(let g=0; g<=10; g+=2){
+    svg.appendChild(svgEl("line",{x1:L,x2:W-R,y1:y(g),y2:y(g),stroke:"var(--grid)","stroke-width":1}));
+    const tx = svgEl("text",{x:L-8,y:y(g)+4,"text-anchor":"end","font-size":11,fill:"var(--muted)"}); tx.textContent = g; svg.appendChild(tx);
+  }
+  svg.appendChild(svgEl("line",{x1:L,x2:W-R,y1:y(PASS),y2:y(PASS),stroke:"var(--muted)","stroke-width":1.5,"stroke-dasharray":"5 4"}));
+  const step = Math.max(1, Math.ceil(ys.length/10));
+  ys.forEach((v,i) => { if(i % step === 0 || i === ys.length-1){ const tx = svgEl("text",{x:x(i),y:H-8,"text-anchor":"middle","font-size":11,fill:"var(--muted)"}); tx.textContent = i+1; svg.appendChild(tx); } });
+  if(ys.length > 1) svg.appendChild(svgEl("polyline",{points:ys.map((v,i)=>`${x(i)},${y(v)}`).join(" "),fill:"none",stroke:"var(--accent)","stroke-width":2,"stroke-linejoin":"round","stroke-linecap":"round"}));
+  ys.forEach((v,i) => svg.appendChild(svgEl("circle",{cx:x(i),cy:y(v),r:4.5,fill:"var(--accent)",stroke:"var(--card)","stroke-width":2})));
+  const last = ys.length-1;
+  const lab = svgEl("text",{x:x(last),y:y(ys[last])-12,"text-anchor":"middle","font-size":12,"font-weight":700,fill:"var(--ink)"}); lab.textContent = fmt(ys[last]); svg.appendChild(lab);
+  const cross = svgEl("line",{y1:T,y2:H-B,stroke:"var(--muted)","stroke-width":1,opacity:0}); svg.appendChild(cross);
+  const hit = svgEl("rect",{x:L,y:T,width:W-L-R,height:H-T-B,fill:"transparent"}); svg.appendChild(hit);
+  host.insertBefore(svg, host.firstChild);
+  const tip = host.querySelector(".tip");
+  const move = ev => {
+    const p = ev.touches ? ev.touches[0] : ev; const r = svg.getBoundingClientRect();
+    const px = (p.clientX - r.left) * W / r.width;
+    let i = ys.length === 1 ? 0 : Math.round((px - L) / ((W-L-R)/(ys.length-1))); i = Math.max(0, Math.min(ys.length-1, i));
+    cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("opacity", .6);
+    tip.textContent = `Tentativa ${i+1} · ${fmt(ys[i])} · ${level(ys[i]).n}`;
+    tip.style.left = (x(i)*r.width/W) + "px"; tip.style.top = (y(ys[i])*r.height/H) + "px"; tip.style.opacity = 1;
+  };
+  const out = () => { tip.style.opacity = 0; cross.setAttribute("opacity",0); };
+  hit.addEventListener("mousemove", move); hit.addEventListener("touchstart", move, {passive:true}); hit.addEventListener("touchmove", move, {passive:true});
+  hit.addEventListener("mouseleave", out); hit.addEventListener("touchend", () => setTimeout(out, 1500));
+}
+function drawBars(host, st){
+  const keys = Object.keys(TOPICS);
+  const wrap = document.createElement("div");
+  wrap.innerHTML = keys.map(k => {
+    const v = st[k].n ? st[k].ok/st[k].n : null;
+    const pct = v===null ? 0 : Math.round(v*100);
+    return `<div class="brow" data-k="${k}" style="padding:7px 0;cursor:default">
+      <div class="row" style="justify-content:space-between;font-size:.86rem"><span class="ink2">${TOPICS[k]}</span><b style="color:${v===null?"var(--muted)":(v<0.6?"var(--bad)":"var(--ink)")};font-variant-numeric:tabular-nums">${v===null?"—":pct+"%"}</b></div>
+      <div style="position:relative;height:12px;background:var(--grid);border-radius:4px;margin-top:5px">
+        ${v ? `<div style="height:100%;width:${Math.max(2,pct)}%;background:var(--accent);border-radius:4px"></div>` : ""}
+        <div style="position:absolute;left:60%;top:-3px;bottom:-3px;border-left:1.5px dashed var(--muted)"></div>
+      </div>
+      <div class="note bdet" style="display:none;margin-top:3px">${v===null?"Sem questões ainda":`${st[k].ok} acertos em ${st[k].n} questões`}</div>
+    </div>`;
+  }).join("");
+  wrap.querySelectorAll(".brow").forEach(r => {
+    const on = () => wrap.querySelectorAll(".bdet").forEach(d => d.style.display = d.parentNode === r ? "block" : "none");
+    r.addEventListener("mouseenter", on); r.addEventListener("click", on);
+  });
+  host.insertBefore(wrap, host.firstChild);
+}
+/* ===================== RELATÓRIO DO PROFESSOR ===================== */
+function buildReport(){
+  const n = attempts.length, grades = attempts.map(a=>a.grade);
+  const last = attempts[n-1], first = attempts[0];
+  const avg = grades.reduce((s,g)=>s+g,0)/n;
+  const sl = slope(grades);
+  const recent = attempts.slice(-3);
+  const stAll = topicStats(attempts), stRecent = topicStats(recent);
+  const rows = Object.keys(TOPICS).map(t => ({ t, all: stAll[t].n ? stAll[t].ok/stAll[t].n : null, rec: stRecent[t].n ? stRecent[t].ok/stRecent[t].n : null, n: stAll[t].n }))
+    .filter(r => r.all !== null).sort((a,b) => a.all - b.all);
+  const miss = {}; attempts.forEach(a => a.items.forEach(it => { if(!it.ok) miss[it.qid] = (miss[it.qid]||0) + 1; }));
+  const seen = {}; attempts.forEach(a => a.items.forEach(it => seen[it.qid] = (seen[it.qid]||0)+1));
+  const chronic = Object.entries(miss).filter(([q,c]) => c >= 2 && Q[+q]).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([q,c]) => ({q:+q, c, s:seen[q]}));
+  const sd = Math.sqrt(grades.reduce((s,g)=>s+(g-avg)**2,0)/n);
+  return {n, grades, last, first, avg, sl, sd, rows, chronic};
+}
+function renderReport(){
+  const el = document.getElementById("v-rep");
+  if(!attempts.length){ el.innerHTML = `<div class="card"><h2>Relatório do professor</h2><p class="ink2">O relatório aparece depois da primeira tentativa.</p></div>`; return; }
+  const R = buildReport();
+  const weak = R.rows.filter(r => r.all < 0.6), mid = R.rows.filter(r => r.all >= 0.6 && r.all < 0.8), strong = R.rows.filter(r => r.all >= 0.8);
+  let diag;
+  if(R.n === 1) diag = `Há só uma tentativa, com nota ${fmt(R.last.grade)} (${level(R.last.grade).n}). Ela serve de linha de base. As comparações ganham peso a partir da terceira tentativa.`;
+  else {
+    const tr = R.sl > 0.25 ? "em alta" : R.sl < -0.25 ? "em queda" : "estável";
+    diag = `Em ${R.n} tentativas, a média é ${fmt(R.avg)} e a tendência está ${tr} (cerca de ${R.sl>=0?"+":""}${fmt(R.sl)} ponto por tentativa). Da primeira (${fmt(R.first.grade)}) para a última (${fmt(R.last.grade)}) a variação foi de ${R.last.grade-R.first.grade>=0?"+":""}${fmt(R.last.grade-R.first.grade)}. `;
+    diag += R.sd > 1.5 ? `As notas oscilam bastante (desvio de ${fmt(R.sd)}). Isso costuma indicar conhecimento ainda dependente de quais questões caem, e não domínio consolidado.` : `As notas oscilam pouco (desvio de ${fmt(R.sd)}), o que sugere um patamar real de conhecimento, e não sorte no sorteio.`;
+  }
+  const verdict = R.last.grade >= PASS
+    ? (weak.length ? `A última nota está acima da média, mas ainda há ${weak.length===1?"um bloco abaixo":"blocos abaixo"} de 60%. Numa prova real, com outras questões, isso pode custar a aprovação.` : `A última nota está acima da média e nenhum bloco ficou abaixo de 60%. O trabalho agora é consolidar, não remediar.`)
+    : `A última nota ficou abaixo da média. A prioridade não é refazer o simulado várias vezes, e sim estudar os blocos marcados abaixo antes da próxima tentativa.`;
+  const pill = v => v < 0.6 ? `<span class="pill no">${Math.round(v*100)}%</span>` : v < 0.8 ? `<span class="pill warn">${Math.round(v*100)}%</span>` : `<span class="pill ok">${Math.round(v*100)}%</span>`;
+  const trendTxt = r => (r.rec === null || R.n < 3) ? "" : (r.rec - r.all > 0.1 ? " · melhorando nas últimas tentativas" : r.all - r.rec > 0.1 ? " · piorou nas últimas tentativas" : "");
+  el.innerHTML = `
+  <div class="card report">
+    <div class="eyebrow">Parecer · ${new Date().toLocaleDateString("pt-BR")}</div>
+    <h2 style="margin-top:4px">Relatório do professor</h2>
+    <h3>Diagnóstico geral</h3>
+    <p>${diag}</p>
+    <p><b>${verdict}</b></p>
+    <h3>O que precisa melhorar</h3>
+    ${weak.length ? `<ul>${weak.map(r => `<li><b>${TOPICS[r.t]}</b>${pill(r.all)}<span class="note">${trendTxt(r)}</span><br><span class="ink2">${STUDY[r.t]}</span></li>`).join("")}</ul>` : `<p class="ink2">Nenhum bloco abaixo de 60%. Veja os pontos de atenção.</p>`}
+    ${mid.length ? `<h3>Pontos de atenção (60 a 79%)</h3><ul>${mid.map(r => `<li><b>${TOPICS[r.t]}</b>${pill(r.all)}<span class="note">${trendTxt(r)}</span><br><span class="ink2">${STUDY[r.t]}</span></li>`).join("")}</ul>` : ""}
+    ${strong.length ? `<h3>Pontos fortes</h3><p>${strong.map(r => `${TOPICS[r.t]}${pill(r.all)}`).join(" · ")}</p>` : ""}
+    ${R.chronic.length ? `<h3>Erros recorrentes</h3><p class="ink2">Questões que você errou mais de uma vez. Aqui o problema é uma ideia fixada de forma errada, não esquecimento.</p><ul>${R.chronic.map(c => `<li>${escapeHtml(Q[c.q].q)}<br><span class="note">Errou ${c.c} de ${c.s} vezes · Resposta: <b>${escapeHtml(Q[c.q].o[Q[c.q].a])}</b></span></li>`).join("")}</ul>` : ""}
+    <h3>Plano para a próxima tentativa</h3>
+    <ul>
+      ${weak.length ? `<li>Estude primeiro ${weak.slice(0,2).map(r=>TOPICS[r.t]).join(" e ")}, de preferência pelo material da aula e não pelo simulado.</li>` : `<li>Mantenha uma tentativa por semana para não perder o que já consolidou.</li>`}
+      <li>Nas questões de asserção e razão, julgue cada frase isoladamente. Só se as duas forem verdadeiras, faça o teste: "a I acontece porque a II" faz sentido como explicação? Se for só uma comparação ou uma definição, a II não justifica a I.</li>
+      <li>Desconfie das alternativas que trocam pares parecidos: sensação e percepção, atenção dividida e alternada, autopsíquica e alopsíquica, intrapessoal e interpessoal, emoção e sentimento. É a pegadinha mais frequente nessas TEAs.</li>
+      <li>Leia devagar os enunciados com "NÃO", "EXCEÇÃO" e "INCORRETA": a resposta é a alternativa que está fora da lista.</li>
+      <li>Espere pelo menos um dia entre tentativas. Repetir na sequência mede memória de curto prazo, não aprendizagem.</li>
+    </ul>
+  </div>
+  <div class="card" id="aiCard">
+    <h2>Parecer por extenso</h2>
+    <p class="ink2" style="margin-top:.3em">Gera um parecer escrito com base nos seus dados, no tom de um professor de Processos Psicológicos.</p>
+    <button class="btn primary" id="aiBtn">Gerar parecer</button>
+    <div id="aiOut" class="ai" style="margin-top:14px"></div>
+  </div>`;
+  const aiCard = document.getElementById("aiCard");
+  if(!sample){ aiCard.classList.add("hide"); return; }
+  document.getElementById("aiBtn").onclick = async (e) => {
+    const out = document.getElementById("aiOut"); e.target.disabled = true; out.textContent = "Escrevendo…";
+    const data = {
+      tentativas: R.n, notas: R.grades, media_aprovacao: PASS, media_geral: +R.avg.toFixed(2), tendencia_por_tentativa: +R.sl.toFixed(2),
+      blocos: R.rows.map(r => ({bloco: TOPICS[r.t], acerto_total: Math.round(r.all*100), acerto_ultimas3: r.rec===null?null:Math.round(r.rec*100), questoes_vistas: r.n})),
+      erros_recorrentes: R.chronic.map(c => ({questao: Q[c.q].q, resposta_correta: Q[c.q].o[Q[c.q].a], erros: c.c, vezes: c.s}))
+    };
+    const prompt = `Você é um professor experiente de Processos Psicológicos num curso de graduação em Psicologia no Brasil. O simulado usa questões das TEAs (atividades) da disciplina. Escreva um parecer em português do Brasil, em prosa, com 3 a 5 parágrafos curtos, dirigido ao aluno (Fernando, adulto, estudante do 1º semestre). Comente: (1) o desempenho e a tendência, comparando com a média 6; (2) os blocos mais fracos, explicando qual confusão conceitual provavelmente está por trás deles, com base nos erros recorrentes; (3) um plano concreto de estudo para a próxima semana. Seja direto e específico. Não use listas com marcadores nem títulos, não elogie em excesso e não invente dados que não estão abaixo.\n\nDADOS:\n${JSON.stringify(data)}`;
+    try{
+      const r = await sample(prompt, { onText: ({text}) => { out.textContent = text; } });
+      out.textContent = r.text;
+    }catch(err){
+      if(err && err.code === "not_granted"){ aiCard.classList.add("hide"); }
+      else out.textContent = err && err.code === "rate_limited" ? "Limite de uso atingido. Tente de novo em alguns minutos." : "Não foi possível gerar o parecer agora.";
+    }
+    e.target.disabled = false; e.target.textContent = "Gerar de novo";
+  };
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+initStore();
+</script>
+</body>
+</html>

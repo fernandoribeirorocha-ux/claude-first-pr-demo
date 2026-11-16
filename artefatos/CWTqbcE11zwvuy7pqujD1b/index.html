@@ -1,0 +1,566 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Hora Marcada</title>
+<meta name="description" content="Agende sua sessão de psicoterapia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..600;1,7..72,400&family=Figtree:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --ground: #F2F4F1;
+    --surface: #FFFFFF;
+    --ink: #1D2427;
+    --muted: #5B6769;
+    --line: #D9DFDC;
+    --accent: #2C5C64;
+    --accent-ink: #FFFFFF;
+    --accent-soft: #DDE9E8;
+    --ochre: #B8862B;
+    --busy: #A9B2B0;
+    --warn-bg: #FBF1DC;
+    --warn-ink: #6B4E12;
+    --serif: "Literata", Georgia, "Times New Roman", serif;
+    --sans: "Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ground: #111618;
+      --surface: #192023;
+      --ink: #E5EBE9;
+      --muted: #9AA7A7;
+      --line: #2B3538;
+      --accent: #7DB5BC;
+      --accent-ink: #0E1A1C;
+      --accent-soft: #1E3236;
+      --ochre: #D9A94E;
+      --busy: #4A5557;
+      --warn-bg: #2E2715;
+      --warn-ink: #EBCB88;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground: #111618;
+    --surface: #192023;
+    --ink: #E5EBE9;
+    --muted: #9AA7A7;
+    --line: #2B3538;
+    --accent: #7DB5BC;
+    --accent-ink: #0E1A1C;
+    --accent-soft: #1E3236;
+    --ochre: #D9A94E;
+    --busy: #4A5557;
+    --warn-bg: #2E2715;
+    --warn-ink: #EBCB88;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.55;
+    padding-inline: 20px;
+    padding-block: 0 56px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+
+  .example-note {
+    margin-top: 16px;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    background: var(--warn-bg);
+    color: var(--warn-ink);
+    font-size: 14px;
+  }
+  .example-note code { font-size: 13px; }
+
+  header.top {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding-block: 22px;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px; color: var(--muted);
+  }
+  .mark { font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--ink); }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 56px;
+    padding-top: 44px;
+    align-items: start;
+  }
+  @media (max-width: 880px) {
+    .layout { grid-template-columns: minmax(0, 1fr); gap: 36px; padding-top: 28px; }
+  }
+
+  /* Perfil */
+  .profile h1 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: clamp(34px, 5vw, 46px);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    margin: 0 0 10px;
+    text-wrap: balance;
+  }
+  .role { color: var(--muted); margin: 0; font-size: 15px; }
+  .role strong { color: var(--ink); font-weight: 600; }
+  .bio { margin: 22px 0 0; max-width: 60ch; }
+  .facts {
+    margin: 28px 0 0; padding: 0;
+    display: grid; grid-template-columns: auto 1fr; column-gap: 20px; row-gap: 12px;
+    border-top: 1px solid var(--line); padding-top: 20px;
+    font-size: 15px;
+  }
+  .facts dt {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--muted); padding-top: 2px;
+  }
+  .facts dd { margin: 0; font-variant-numeric: tabular-nums; }
+  .ethics {
+    margin-top: 28px; font-size: 14px; color: var(--muted);
+    border-left: 2px solid var(--ochre); padding-left: 14px; max-width: 52ch;
+  }
+
+  /* Agendamento */
+  .booking {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 28px;
+    display: grid; gap: 30px;
+  }
+  @media (max-width: 480px) { .booking { padding: 20px 16px; } }
+  .step { display: grid; gap: 12px; }
+  .step h2 {
+    margin: 0; font-size: 13px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);
+    display: flex; gap: 10px; align-items: baseline;
+  }
+  .step h2 .n {
+    font-family: var(--serif); font-style: italic; font-size: 17px;
+    text-transform: none; letter-spacing: 0; color: var(--accent);
+  }
+
+  .seg { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opt {
+    font: inherit; font-size: 15px;
+    border: 1px solid var(--line); background: transparent; color: var(--ink);
+    border-radius: 999px; padding: 8px 16px; cursor: pointer;
+    transition: background .15s, border-color .15s;
+  }
+  .opt small { color: var(--muted); margin-left: 6px; font-variant-numeric: tabular-nums; }
+  .opt:hover { border-color: var(--accent); }
+  .opt[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .opt[aria-pressed="true"] small { color: inherit; opacity: .8; }
+
+  .days {
+    display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px;
+    scroll-snap-type: x proximity;
+  }
+  .day {
+    flex: 0 0 64px; scroll-snap-align: start;
+    font: inherit; cursor: pointer;
+    border: 1px solid var(--line); background: transparent; color: var(--ink);
+    border-radius: var(--radius); padding: 8px 0 10px;
+    display: grid; justify-items: center; gap: 0;
+  }
+  .day .wd { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .day .dn { font-family: var(--serif); font-size: 24px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+  .day .mo { font-size: 12px; color: var(--muted); }
+  .day .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--ochre); margin-top: 4px; }
+  .day:hover:not(:disabled) { border-color: var(--accent); }
+  .day[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .day[aria-pressed="true"] .wd, .day[aria-pressed="true"] .mo { color: inherit; opacity: .8; }
+  .day[aria-pressed="true"] .dot { background: var(--accent-ink); }
+  .day:disabled { cursor: not-allowed; opacity: .4; }
+  .day:disabled .dot { visibility: hidden; }
+
+  .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+  .slot {
+    font: inherit; font-size: 15px; font-variant-numeric: tabular-nums;
+    border: 1px solid var(--line); background: transparent; color: var(--ink);
+    border-radius: 8px; padding: 9px 0; cursor: pointer;
+  }
+  .slot:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+  .slot[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .slot:disabled { color: var(--busy); text-decoration: line-through; cursor: not-allowed; border-style: dashed; }
+  .hint { font-size: 14px; color: var(--muted); margin: 0; }
+
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 520px) { .fields { grid-template-columns: 1fr; } }
+  .field { display: grid; gap: 6px; }
+  .field.full { grid-column: 1 / -1; }
+  .field label { font-size: 14px; font-weight: 500; }
+  .field input, .field textarea {
+    font: inherit; font-size: 15px; color: var(--ink);
+    background: var(--ground); border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px 12px; width: 100%;
+  }
+  .field textarea { resize: vertical; min-height: 72px; }
+  .field .sub { font-size: 13px; color: var(--muted); }
+
+  .summary {
+    border-top: 1px solid var(--line); padding-top: 24px;
+    display: grid; gap: 16px;
+  }
+  .chosen { font-family: var(--serif); font-size: 21px; line-height: 1.35; margin: 0; text-wrap: balance; }
+  .chosen.empty { color: var(--muted); font-style: italic; font-size: 18px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    font: inherit; font-weight: 600; font-size: 16px; text-decoration: none;
+    background: var(--accent); color: var(--accent-ink);
+    border: 0; border-radius: 999px; padding: 13px 24px; cursor: pointer;
+  }
+  .cta[aria-disabled="true"] { opacity: .45; pointer-events: none; }
+  .ghost {
+    font: inherit; font-size: 15px; background: transparent; color: var(--accent);
+    border: 1px solid var(--line); border-radius: 999px; padding: 11px 18px; cursor: pointer;
+  }
+  details.preview { font-size: 14px; }
+  details.preview summary { cursor: pointer; color: var(--muted); }
+  details.preview pre {
+    white-space: pre-wrap; font-family: var(--sans); font-size: 14px;
+    background: var(--ground); border-radius: 8px; padding: 12px 14px; margin: 10px 0 0;
+  }
+  .fine { font-size: 13px; color: var(--muted); margin: 0; }
+  .toast { font-size: 14px; color: var(--accent); min-height: 1.4em; margin: 0; }
+
+  footer { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+
+  :focus-visible { outline: 2px solid var(--ochre); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+  <div class="example-note" id="exampleNote" hidden>
+    <strong>Página de exemplo.</strong> Nome, CRP, WhatsApp, valores e horários são fictícios — edite o bloco <code>CONFIG</code> no início do script e mude <code>exemplo</code> para <code>false</code>.
+  </div>
+
+  <header class="top">
+    <span class="mark">Hora Marcada</span>
+    <span id="topContact"></span>
+  </header>
+
+  <main class="layout">
+    <section class="profile" aria-labelledby="pName">
+      <h1 id="pName"></h1>
+      <p class="role"><span id="pTitle"></span> · <strong id="pCrp"></strong></p>
+      <p class="bio" id="pBio"></p>
+      <dl class="facts" id="pFacts"></dl>
+      <p class="ethics">Tudo o que você compartilha é protegido pelo sigilo profissional (Código de Ética Profissional do Psicólogo, art. 9º). Esta página não guarda nenhum dado seu.</p>
+    </section>
+
+    <section class="booking" aria-label="Agendar consulta">
+      <div class="step">
+        <h2><span class="n">1</span> Tipo de consulta</h2>
+        <div class="seg" id="tipoSeg" role="group" aria-label="Tipo de consulta"></div>
+      </div>
+
+      <div class="step">
+        <h2><span class="n">2</span> Modalidade</h2>
+        <div class="seg" id="modSeg" role="group" aria-label="Modalidade"></div>
+      </div>
+
+      <div class="step">
+        <h2><span class="n">3</span> Dia</h2>
+        <div class="days" id="days" role="group" aria-label="Dias disponíveis"></div>
+      </div>
+
+      <div class="step">
+        <h2><span class="n">4</span> Horário</h2>
+        <div class="slots" id="slots" role="group" aria-label="Horários"></div>
+        <p class="hint" id="slotHint"></p>
+      </div>
+
+      <div class="step">
+        <h2><span class="n">5</span> Seus dados</h2>
+        <div class="fields">
+          <div class="field">
+            <label for="fNome">Nome</label>
+            <input id="fNome" autocomplete="name" placeholder="Como prefere ser chamado(a)">
+          </div>
+          <div class="field">
+            <label for="fTel">Telefone (opcional)</label>
+            <input id="fTel" type="tel" autocomplete="tel" inputmode="tel" placeholder="(11) 90000-0000">
+          </div>
+          <div class="field full">
+            <label for="fObs">Observação (opcional)</label>
+            <textarea id="fObs" placeholder="Ex.: prefiro horários no fim da tarde"></textarea>
+            <span class="sub">Não é preciso contar o motivo da consulta por aqui — falamos disso na sessão.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary">
+        <p class="chosen empty" id="chosen">Escolha um dia e um horário.</p>
+        <div class="actions">
+          <a class="cta" id="cta" href="#" target="_blank" rel="noopener" aria-disabled="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3a.4.4 0 0 0 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 2.9 2.9 0 0 0-.9 2.2 5 5 0 0 0 1 2.6 11.5 11.5 0 0 0 4.4 3.9c1.6.7 2.3.8 3.1.6a2.7 2.7 0 0 0 1.7-1.2 2.1 2.1 0 0 0 .2-1.2c-.1-.1-.3-.2-.5-.3Z"/></svg>
+            Enviar pedido pelo WhatsApp
+          </a>
+          <button class="ghost" id="copyBtn" type="button" disabled>Copiar mensagem</button>
+        </div>
+        <p class="toast" id="toast" role="status"></p>
+        <details class="preview">
+          <summary>Ver a mensagem que será enviada</summary>
+          <pre id="preview"></pre>
+        </details>
+        <p class="fine" id="fine"></p>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer"></footer>
+</div>
+
+<script>
+/* ============================================================
+   CONFIGURAÇÃO — edite aqui os seus dados.
+   ============================================================ */
+const CONFIG = {
+  exemplo: true,                       // mude para false quando preencher seus dados
+  nome: "Nome do Psicólogo",
+  titulo: "Psicólogo clínico",
+  crp: "CRP 00/000000",
+  apresentacao: "Atendo adolescentes e adultos em psicoterapia individual, com foco em ansiedade, luto e momentos de transição. Abordagem: Terapia Cognitivo-Comportamental.",
+  whatsapp: "5511900000000",           // DDI + DDD + número, só dígitos
+  email: "contato@exemplo.com.br",
+  duracaoMin: 50,
+  valores: { primeira: "R$ 220", retorno: "R$ 200" },
+  modalidades: {
+    online: "Online · videochamada",
+    presencial: "Presencial · Rua Exemplo, 123 — São Paulo/SP",
+  },
+  // Horários de início por dia da semana (0 = domingo … 6 = sábado)
+  horarios: {
+    1: ["08:00", "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00", "18:00"],
+    2: ["08:00", "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00", "18:00"],
+    3: ["14:00", "15:00", "16:00", "17:00", "18:00", "19:00"],
+    4: ["08:00", "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00", "18:00"],
+    5: ["08:00", "09:00", "10:00", "11:00"],
+  },
+  presencialDias: [1, 2, 4],           // dias em que há atendimento presencial
+  antecedenciaHoras: 24,               // agendamento mínimo com X horas de antecedência
+  diasVisiveis: 21,
+  folgas: ["2026-10-12", "2026-11-02", "2026-11-20", "2026-12-25"],   // feriados / férias
+  ocupados: [],                        // ex.: ["2026-09-28 09:00", "2026-09-29 14:00"]
+};
+/* ============================================================ */
+
+const $ = (id) => document.getElementById(id);
+const state = { tipo: "primeira", mod: "online", dia: null, hora: null };
+
+const pad = (n) => String(n).padStart(2, "0");
+const isoDate = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const fmtWd = new Intl.DateTimeFormat("pt-BR", { weekday: "short" });
+const fmtMo = new Intl.DateTimeFormat("pt-BR", { month: "short" });
+const fmtLong = new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+const clean = (s) => s.replace(".", "");
+
+// Em modo de exemplo, marca alguns horários como ocupados para a agenda parecer real.
+function exampleBusy(key) {
+  let h = 0;
+  for (const c of key) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return h % 10 < 4;
+}
+
+function buildDays() {
+  const out = [];
+  const now = new Date();
+  const limit = now.getTime() + CONFIG.antecedenciaHoras * 3600e3;
+  const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  for (let i = 0; i < CONFIG.diasVisiveis; i++, d.setDate(d.getDate() + 1)) {
+    const wd = d.getDay();
+    const iso = isoDate(d);
+    const base = CONFIG.horarios[wd];
+    if (!base) continue;
+    const off = CONFIG.folgas.includes(iso);
+    const noPresencial = state.mod === "presencial" && !CONFIG.presencialDias.includes(wd);
+    const slots = base.map((hora) => {
+      const [hh, mm] = hora.split(":").map(Number);
+      const at = new Date(d.getFullYear(), d.getMonth(), d.getDate(), hh, mm).getTime();
+      const key = `${iso} ${hora}`;
+      const busy = off || noPresencial || at < limit || CONFIG.ocupados.includes(key) || (CONFIG.exemplo && exampleBusy(key));
+      return { hora, busy };
+    });
+    out.push({ date: new Date(d), iso, slots, free: slots.some((s) => !s.busy) });
+  }
+  return out;
+}
+
+let days = [];
+
+function renderProfile() {
+  $("pName").textContent = CONFIG.nome;
+  $("pTitle").textContent = CONFIG.titulo;
+  $("pCrp").textContent = CONFIG.crp;
+  $("pBio").textContent = CONFIG.apresentacao;
+  $("topContact").textContent = CONFIG.email;
+  const facts = [
+    ["Sessão", `${CONFIG.duracaoMin} minutos`],
+    ["Primeira", CONFIG.valores.primeira],
+    ["Retorno", CONFIG.valores.retorno],
+    ["Online", "Link enviado na confirmação"],
+    ["Presencial", CONFIG.modalidades.presencial.split("·").pop().trim()],
+  ];
+  const dl = $("pFacts");
+  dl.replaceChildren();
+  for (const [k, v] of facts) {
+    const dt = document.createElement("dt"); dt.textContent = k;
+    const dd = document.createElement("dd"); dd.textContent = v;
+    dl.append(dt, dd);
+  }
+  $("footer").textContent = `${CONFIG.nome} · ${CONFIG.crp} · ${CONFIG.email}`;
+  $("fine").textContent = `O horário só fica reservado depois da confirmação por mensagem. Cancelamentos e remarcações com pelo menos ${CONFIG.antecedenciaHoras} horas de antecedência.`;
+  $("exampleNote").hidden = !CONFIG.exemplo;
+}
+
+function segButtons(el, opts, key) {
+  el.replaceChildren();
+  for (const [value, label, extra] of opts) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt";
+    b.setAttribute("aria-pressed", String(state[key] === value));
+    b.textContent = label;
+    if (extra) { const s = document.createElement("small"); s.textContent = extra; b.append(s); }
+    b.addEventListener("click", () => {
+      state[key] = value;
+      if (key === "mod") { state.hora = null; days = buildDays(); pickFirstFreeIfNeeded(); }
+      render();
+    });
+    el.append(b);
+  }
+}
+
+function pickFirstFreeIfNeeded() {
+  const cur = days.find((d) => d.iso === state.dia);
+  if (!cur || !cur.free) state.dia = (days.find((d) => d.free) || {}).iso || null;
+}
+
+function renderDays() {
+  const el = $("days");
+  el.replaceChildren();
+  for (const d of days) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "day";
+    b.disabled = !d.free;
+    b.setAttribute("aria-pressed", String(state.dia === d.iso));
+    b.setAttribute("aria-label", fmtLong.format(d.date) + (d.free ? "" : ", sem horários"));
+    b.innerHTML = `<span class="wd"></span><span class="dn"></span><span class="mo"></span><span class="dot"></span>`;
+    b.querySelector(".wd").textContent = clean(fmtWd.format(d.date));
+    b.querySelector(".dn").textContent = d.date.getDate();
+    b.querySelector(".mo").textContent = clean(fmtMo.format(d.date));
+    b.addEventListener("click", () => { state.dia = d.iso; state.hora = null; render(); });
+    el.append(b);
+  }
+}
+
+function renderSlots() {
+  const el = $("slots");
+  el.replaceChildren();
+  const d = days.find((x) => x.iso === state.dia);
+  if (!d) { $("slotHint").textContent = "Nenhum dia disponível nas próximas semanas. Envie uma mensagem para combinarmos."; return; }
+  for (const s of d.slots) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "slot";
+    b.textContent = s.hora;
+    b.disabled = s.busy;
+    b.setAttribute("aria-pressed", String(state.hora === s.hora));
+    if (s.busy) b.setAttribute("aria-label", `${s.hora}, indisponível`);
+    b.addEventListener("click", () => { state.hora = s.hora; render(); });
+    el.append(b);
+  }
+  $("slotHint").textContent = `Horários de Brasília · sessões de ${CONFIG.duracaoMin} min`;
+}
+
+function message() {
+  const d = days.find((x) => x.iso === state.dia);
+  const nome = $("fNome").value.trim();
+  const tel = $("fTel").value.trim();
+  const obs = $("fObs").value.trim();
+  const primeiro = CONFIG.nome.split(" ")[0];
+  const lines = [
+    `Olá, ${primeiro}! Gostaria de agendar uma consulta.`,
+    ``,
+    `• Tipo: ${state.tipo === "primeira" ? "Primeira consulta" : "Retorno"}`,
+    `• Modalidade: ${state.mod === "online" ? "Online" : "Presencial"}`,
+    `• Data: ${d ? fmtLong.format(d.date) : "—"}, às ${state.hora || "—"}`,
+    `• Nome: ${nome || "—"}`,
+  ];
+  if (tel) lines.push(`• Telefone: ${tel}`);
+  if (obs) lines.push(``, `Observação: ${obs}`);
+  return lines.join("\n");
+}
+
+function renderSummary() {
+  const d = days.find((x) => x.iso === state.dia);
+  const ready = Boolean(d && state.hora && $("fNome").value.trim());
+  const chosen = $("chosen");
+  if (d && state.hora) {
+    const label = fmtLong.format(d.date);
+    chosen.textContent = `${label[0].toUpperCase() + label.slice(1)}, às ${state.hora} · ${state.mod === "online" ? "online" : "presencial"}`;
+    chosen.classList.remove("empty");
+  } else {
+    chosen.textContent = "Escolha um dia e um horário.";
+    chosen.classList.add("empty");
+  }
+  const msg = message();
+  $("preview").textContent = msg;
+  const cta = $("cta");
+  cta.href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
+  cta.setAttribute("aria-disabled", String(!ready));
+  cta.tabIndex = ready ? 0 : -1;
+  $("copyBtn").disabled = !ready;
+  if (!ready && d && state.hora) $("toast").textContent = "Falta só o seu nome.";
+  else if ($("toast").dataset.kind !== "copy") $("toast").textContent = "";
+}
+
+function render() {
+  segButtons($("tipoSeg"), [
+    ["primeira", "Primeira consulta", CONFIG.valores.primeira],
+    ["retorno", "Retorno", CONFIG.valores.retorno],
+  ], "tipo");
+  segButtons($("modSeg"), [
+    ["online", "Online"],
+    ["presencial", "Presencial"],
+  ], "mod");
+  renderDays();
+  renderSlots();
+  renderSummary();
+}
+
+$("fNome").addEventListener("input", renderSummary);
+$("fTel").addEventListener("input", renderSummary);
+$("fObs").addEventListener("input", renderSummary);
+
+$("copyBtn").addEventListener("click", async () => {
+  const t = $("toast");
+  t.dataset.kind = "copy";
+  try {
+    await navigator.clipboard.writeText(message());
+    t.textContent = `Mensagem copiada. Cole no WhatsApp ou envie para ${CONFIG.email}.`;
+  } catch {
+    $("preview").closest("details").open = true;
+    t.textContent = "Não foi possível copiar automaticamente — selecione o texto abaixo.";
+  }
+  setTimeout(() => { t.dataset.kind = ""; }, 4000);
+});
+
+// Estado inicial: primeiro dia livre e um horário de exemplo já escolhido.
+renderProfile();
+days = buildDays();
+pickFirstFreeIfNeeded();
+if (CONFIG.exemplo) {
+  const d = days.find((x) => x.iso === state.dia);
+  const s = d && d.slots.find((x) => !x.busy);
+  if (s) state.hora = s.hora;
+}
+render();
+</script>
+
+</body></html>
